@@ -9,4 +9,4 @@
 
     * **feature**: It contains specific features under the module. For example, under authentication, we have a feature called registration. Sample branch name: "feature/registration"
 
-    * **bugfix**: [It contains bug fixing during the testing phase and  branch name start with the issue number for example "bugfix/3-validate-for-wrong-user-name"
+    * **bugfix**: It contains bug fixing during the testing phase and  branch name start with the issue number for example "bugfix/3-validate-for-wrong-user-name"
