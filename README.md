@@ -1,6 +1,10 @@
 # Sales-Lead-Qualifier Project (AMOS WS 2023/24)
 
-![Screenshot 2023-10-24 at 19 48 33](https://github.com/amosproj/amos2023ws06-sales-lead-qualifier/assets/45459787/003c9302-760f-4ca7-8c7a-12be99886715)
+## Sum Insight Logo
+
+![team-logo-white-1280x720](https://github.com/amosproj/amos2023ws06-sales-lead-qualifier/assets/45459787/7d38795e-6bd5-4003-9b23-29911532b0f8)
+![team-logo-black-1280x720](https://github.com/amosproj/amos2023ws06-sales-lead-qualifier/assets/45459787/a7314df0-1917-4384-8f6c-2ab9f9831047)
+
 
 ## Branching Strategy  
 
