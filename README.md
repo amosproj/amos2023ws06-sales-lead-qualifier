@@ -56,7 +56,7 @@ When you have any issues with the environment contact `felix-zailskas`.
 
 ### Commits and Pull Requests
 
-The stable branches `main` and `dev` are protected against direct pushes. To commit code to these branches create a pull request (PR) describing the feature/bugfix that you are committing to the `dev` branch. This PR will then be reviewed by another SD from the project. Only after being approved by another SD a PR may be merged into the `dev` branch. Periodically the stable code on the `dev` branch will be merged into the `main` branch by creating a PR from `dev`. Hence, every feature that should be committed to the `main` branch mus first run without issues on the `dev` branch for some time.
+The stable branches `main` and `dev` are protected against direct pushes. To commit code to these branches create a pull request (PR) describing the feature/bugfix that you are committing to the `dev` branch. This PR will then be reviewed by another SD from the project. Only after being approved by another SD a PR may be merged into the `dev` branch. Periodically the stable code on the `dev` branch will be merged into the `main` branch by creating a PR from `dev`. Hence, every feature that should be committed to the `main` branch must first run without issues on the `dev` branch for some time.
 
 Before contributing to this repository make sure that you are identifiable in your git user settings. This way commits and PRs created by you can be identified and easily traced back.
 
@@ -81,6 +81,8 @@ git commit -a -m "Fixed problem #123
 ### License
 
 This project is operated under an MIT license. Every file must contain the REUSE-compliant license and copyright declaration:
+
+[REUSE documentation](https://reuse.software/)
 
 ```[bash]
 # SPDX-License-Identifier: MIT
