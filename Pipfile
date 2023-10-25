@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: MIT
-SPDX-FileCopyrightText: 2023 Felix Zailskas <felixzailskas@gmail.com>
+# SPDX-FileCopyrightText: 2023 Felix Zailskas <felixzailskas@gmail.com>
 
 [[source]]
 url = "https://pypi.python.org/simple"
