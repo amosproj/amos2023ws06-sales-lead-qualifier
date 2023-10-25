@@ -1,9 +1,16 @@
 <!--
 SPDX-License-Identifier: MIT
-SPDX-FileCopyrightText: 2023
+SPDX-FileCopyrightText: 2023 Felix Zailskas <felixzailskas@gmail.com>
+SPDX-FileCopyrightText: 2023 Berkay Bozkurt <resitberkaybozkurt@gmail.com>
 -->
 
 # Sales-Lead-Qualifier Project (AMOS WS 2023/24)
+
+## Sum Insight Logo
+
+![Team logo in white colour](https://github.com/amosproj/amos2023ws06-sales-lead-qualifier/assets/45459787/7d38795e-6bd5-4003-9b23-29911532b0f8#gh-dark-mode-only)
+
+![Team logo in black colour](https://github.com/amosproj/amos2023ws06-sales-lead-qualifier/assets/45459787/a7314df0-1917-4384-8f6c-2ab9f9831047#gh-light-mode-only)
 
 ## Creating the Environment
 
@@ -82,7 +89,7 @@ git commit -a -m "Fixed problem #123
 
 This project is operated under an MIT license. Every file must contain the REUSE-compliant license and copyright declaration:
 
-[REUSE documentation](https://reuse.software/)
+[REUSE documentation](https://reuse.software/faq/)
 
 ```[bash]
 # SPDX-License-Identifier: MIT
