@@ -1,4 +1,9 @@
-Deliverables that are uploadable files (e.g. PDFs, your logo, but not your code) go here. 
+<!--
+SPDX-License-Identifier: MIT
+SPDX-FileCopyrightText: 2023
+-->
+
+Deliverables that are uploadable files (e.g. PDFs, your logo, but not your code) go here.
 
 Please upload deliverables to a dedicated folder for the sprint they belong to.
 
