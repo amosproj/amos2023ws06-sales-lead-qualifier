@@ -9,8 +9,8 @@ SPDX-FileCopyrightText: 2023 Berkay Bozkurt <resitberkaybozkurt@gmail.com>
 ## Sum Insight Logo
 
 <picture>
-  <source media="(prefers-color-scheme:dark)" scrset="https://github.com/amosproj/amos2023ws06-sales-lead-qualifier/assets/45459787/7d38795e-6bd5-4003-9b23-29911532b0f8">
-  <source media="(prefers-color-scheme:light)" scrset="https://github.com/amosproj/amos2023ws06-sales-lead-qualifier/assets/45459787/a7314df0-1917-4384-8f6c-2ab9f9831047">
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/amosproj/amos2023ws06-sales-lead-qualifier/assets/45459787/7d38795e-6bd5-4003-9b23-29911532b0f8">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/amosproj/amos2023ws06-sales-lead-qualifier/assets/45459787/a7314df0-1917-4384-8f6c-2ab9f9831047">
   <img alt="Sum Insights Logo" src="https://github.com/amosproj/amos2023ws06-sales-lead-qualifier/assets/45459787/a7314df0-1917-4384-8f6c-2ab9f9831047">
 </picture>
 
