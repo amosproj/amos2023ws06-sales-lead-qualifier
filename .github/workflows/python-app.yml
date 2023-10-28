@@ -27,6 +27,17 @@ jobs:
           pip install flake8 pytest pipenv
           # if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pipenv install
+      - name: Get all dependencies
+        run: |
+          pip freeze > requirements-all.txt
+      - name: Check copyright
+        id: license_check_report
+        uses: pilosus/action-pip-license-checker@v2
+        with:
+          requirements: "requirements-all.txt"
+          fail: "Copyleft"
+      - name: Print copyright report
+        run: echo "${{ steps.license_check_report.outputs.report }}"
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
