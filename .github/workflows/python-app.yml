@@ -37,6 +37,7 @@ jobs:
           requirements: "requirements-all.txt"
           fail: "Copyleft"
           verbose: 3
+          exclude: "(?i)^(pylint|aio[-_]*).*"
       - name: Print copyright report
         run: echo "${{ steps.license_check_report.outputs.report }}"
       - name: Lint with flake8
