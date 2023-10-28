@@ -36,6 +36,7 @@ jobs:
         with:
           requirements: "requirements-all.txt"
           fail: "Copyleft"
+          verbose: 3
       - name: Print copyright report
         run: echo "${{ steps.license_check_report.outputs.report }}"
       - name: Lint with flake8
