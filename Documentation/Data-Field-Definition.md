@@ -1,6 +1,6 @@
 <!--
 SPDX-License-Identifier: MIT
-SPDX-FileCopyrightText: 2023 Sophie Heasman
+SPDX-FileCopyrightText: 2023 Sophie Heasman <sophieheasmann@gmail.com>
 -->
 
 # Data Field Definitions
