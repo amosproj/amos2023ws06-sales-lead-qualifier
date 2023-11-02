@@ -2,58 +2,58 @@
   "training_leads": [
     {
       "lead_id": 0,
-      "company_name": "test_company",
-      "first_name": "test_first",
-      "last_name": "test_last",
-      "country_code": "DE",
-      "phone_number": 176123123,
+      "annual_income": 25000,
+      "product_of_interest": "Terminals",
+      "first_name": "Anton",
+      "last_name": "Kerner",
+      "phone_number": "49176123123",
       "email_address": "test@test.de",
       "customer_probability": 0.1,
       "life_time_value": 400000
     },
     {
       "lead_id": 1,
-      "company_name": "test_company",
-      "first_name": "test_first",
-      "last_name": "test_last",
-      "country_code": "DE",
-      "phone_number": 176123123,
+      "annual_income": 70000,
+      "product_of_interest": "Terminals",
+      "first_name": "Anton",
+      "last_name": "Kerner",
+      "phone_number": "49176123123",
       "email_address": "test@test.de",
-      "customer_probability": 0.9,
-      "life_time_value": 1000
+      "customer_probability": 0.4,
+      "life_time_value": 40000
     },
     {
       "lead_id": 2,
-      "company_name": "test_company",
-      "first_name": "test_first",
-      "last_name": "test_last",
-      "country_code": "DE",
-      "phone_number": 176123123,
+      "annual_income": 15000,
+      "product_of_interest": "Terminals",
+      "first_name": "Anton",
+      "last_name": "Kerner",
+      "phone_number": "49176123123",
       "email_address": "test@test.de",
-      "customer_probability": 0.7,
-      "life_time_value": 3500
+      "customer_probability": 0.8,
+      "life_time_value": 40000
     },
     {
       "lead_id": 3,
-      "company_name": "test_company",
-      "first_name": "test_first",
-      "last_name": "test_last",
-      "country_code": "DE",
-      "phone_number": 176123123,
+      "annual_income": 2500000,
+      "product_of_interest": "Terminals",
+      "first_name": "Anton",
+      "last_name": "Kerner",
+      "phone_number": "49176123123",
       "email_address": "test@test.de",
-      "customer_probability": 0.4,
-      "life_time_value": 10000
+      "customer_probability": 0.08,
+      "life_time_value": 400000
     },
     {
       "lead_id": 4,
-      "company_name": "test_company",
-      "first_name": "test_first",
-      "last_name": "test_last",
-      "country_code": "DE",
-      "phone_number": 176123123,
+      "annual_income": 1200,
+      "product_of_interest": "Terminals",
+      "first_name": "Anton",
+      "last_name": "Kerner",
+      "phone_number": "49176123123",
       "email_address": "test@test.de",
-      "customer_probability": 0.32,
-      "life_time_value": 20000
+      "customer_probability": 0.9,
+      "life_time_value": 3400.23
     }
   ]
 }

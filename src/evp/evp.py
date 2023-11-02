@@ -5,20 +5,7 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 
 from database import get_database
-
-
-class LeadValue:
-    def __init__(
-        self, lifetime_value: float = 0, customer_probability: float = 0
-    ) -> None:
-        assert (
-            0.0 <= customer_probability <= 1.0
-        ), "Probability of becoming a customer must be between 0.0 and 1.0"
-        self.life_time_value = lifetime_value
-        self.customer_probability = customer_probability
-
-    def get_lead_value(self) -> float:
-        return self.life_time_value * self.customer_probability
+from database.models import LeadValue
 
 
 class EstimatedValuePredictor:
@@ -26,22 +13,23 @@ class EstimatedValuePredictor:
         self.probability_predictor = LinearRegression()
         self.life_time_value_predictor = LinearRegression()
 
-        data = get_database().get_all_entries()
-        X = np.random.random((len(data), len(data)))
+        all_leads = get_database().get_all_leads()
+        X = np.random.random((len(all_leads), len(all_leads)))
         y_probability = np.array(
-            [item["customer_probability"] for item in data.values()]
+            [lead.lead_value.customer_probability for lead in all_leads]
         )
-        y_value = np.array([item["customer_probability"] for item in data.values()])
+        y_value = np.array([lead.lead_value.life_time_value for lead in all_leads])
 
         self.probability_predictor.fit(X, y_probability)
         self.life_time_value_predictor.fit(X, y_value)
 
     def estimate_value(self, lead_id) -> LeadValue:
         # make call to data base to retrieve relevant fields for this lead
-        lead_data = get_database().get_entry_by_id(lead_id)
+        lead = get_database().get_lead_by_id(lead_id)
 
         # preprocess lead_data to get feature vector for our ML model
-        feature_vector = np.random.random((1, 5))
+        feature_vector = np.zeros((1, 5))
+        feature_vector[0][lead.lead_id] = 1.0
 
         # use the models to predict required values
         lead_value_pred = self.life_time_value_predictor.predict(feature_vector)
@@ -50,4 +38,10 @@ class EstimatedValuePredictor:
             1 + np.exp(-self.probability_predictor.predict(feature_vector))
         )
 
-        return LeadValue(lead_value_pred, cust_prob_pred)
+        lead.lead_value = LeadValue(
+            life_time_value=lead_value_pred, customer_probability=cust_prob_pred
+        )
+        get_database().update_lead(lead)
+
+        # might not need to return here if the database is updated by this function
+        return lead.lead_value
