@@ -14,7 +14,7 @@ class EstimatedValuePredictor:
         self.life_time_value_predictor = LinearRegression()
 
         all_leads = get_database().get_all_leads()
-        X = np.random.random((len(all_leads), len(all_leads)))
+        X = np.identity(len(all_leads))
         y_probability = np.array(
             [lead.lead_value.customer_probability for lead in all_leads]
         )
