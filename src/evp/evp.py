@@ -43,5 +43,9 @@ class EstimatedValuePredictor:
         )
         get_database().update_lead(lead)
 
+        # saving the trained models
+        joblib.dump(self.probability_predictor, 'probability_model.joblib')
+        joblib.dump(self.life_time_value_predictor, 'life_time_value_model.joblib')
+
         # might not need to return here if the database is updated by this function
         return lead.lead_value
