@@ -18,10 +18,7 @@ class DatabaseDummy:
         return LeadParser.parse_lead_from_dict(self.data[id_])
 
     def get_all_leads(self) -> List[Lead]:
-        leads = []
-        for entry in self.data.values():
-            leads.append(LeadParser.parse_lead_from_dict(entry))
-        return leads
+        return [LeadParser.parse_lead_from_dict(entry) for entry in self.data.values()]
 
     def update_lead(self, lead: Lead):
         print(f"Updating database entry for lead#{lead.lead_id}")
