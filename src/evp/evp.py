@@ -6,6 +6,7 @@ from sklearn.linear_model import LinearRegression
 
 from database import get_database
 from database.models import LeadValue
+import joblib
 
 
 class EstimatedValuePredictor:
