@@ -26,10 +26,11 @@ class LeadParser:
         else:
             lead_value = None
 
+        annual_income = AnnualIncome.Nothing
         for income_value in AnnualIncome:
-            annual_income = income_value
             if data["annual_income"] < income_value:
                 break
+            annual_income = income_value
 
         return Lead(
             lead_id=data["lead_id"],
