@@ -31,7 +31,7 @@ class ProductOfInterest(str, Enum):
 
 
 class LeadValue(BaseModel):
-    life_time_value: float
+    life_time_value: float = Field(..., ge=0)
     customer_probability: float = Field(..., ge=0, le=1)
 
     def get_lead_value(self) -> float:
