@@ -1,7 +1,10 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Felix Zailskas <felixzailskas@gmail.com>
 
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
+import os
+import sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
 
 from database import get_database
 from database.models import LeadValue
