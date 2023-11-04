@@ -1,19 +1,302 @@
-{
-    "id": 1,
-    "title": "iPhone 9",
-    "description": "An apple mobile which is nothing like apple",
-    "price": 549,
-    "discountPercentage": 12.96,
-    "rating": 4.69,
-    "stock": 94,
-    "brand": "Apple",
-    "category": "smartphones",
-    "thumbnail": "https://i.dummyjson.com/data/products/1/thumbnail.jpg",
-    "images": [
-        "https://i.dummyjson.com/data/products/1/1.jpg",
-        "https://i.dummyjson.com/data/products/1/2.jpg",
-        "https://i.dummyjson.com/data/products/1/3.jpg",
-        "https://i.dummyjson.com/data/products/1/4.jpg",
-        "https://i.dummyjson.com/data/products/1/thumbnail.jpg"
-    ]
-}
+[
+    {
+        "user_id": 1,
+        "first_name": "Terry",
+        "last_name": "Medhurst",
+        "phone": "+63 791 675 8914",
+        "email": "atuny0@sohu.com",
+        "company_address": "629 Debbie Drive",
+        "company_department": "Marketing",
+        "company_name": "Blanda-O'Keefe"
+    },
+    {
+        "user_id": 2,
+        "first_name": "Sheldon",
+        "last_name": "Quigley",
+        "phone": "+7 813 117 7139",
+        "email": "hbingley1@plala.or.jp",
+        "company_address": "8821 West Myrtle Avenue",
+        "company_department": "Services",
+        "company_name": "Aufderhar-Cronin"
+    },
+    {
+        "user_id": 3,
+        "first_name": "Terrill",
+        "last_name": "Hills",
+        "phone": "+63 739 292 7942",
+        "email": "rshawe2@51.la",
+        "company_address": "18 Densmore Drive",
+        "company_department": "Marketing",
+        "company_name": "Lindgren LLC"
+    },
+    {
+        "user_id": 4,
+        "first_name": "Miles",
+        "last_name": "Cummerata",
+        "phone": "+86 461 145 4186",
+        "email": "yraigatt3@nature.com",
+        "company_address": "210 Green Road",
+        "company_department": "Business Development",
+        "company_name": "Wolff and Sons"
+    },
+    {
+        "user_id": 5,
+        "first_name": "Mavis",
+        "last_name": "Schultz",
+        "phone": "+372 285 771 1911",
+        "email": "kmeus4@upenn.edu",
+        "company_address": "8398 West Denton Lane",
+        "company_department": "Support",
+        "company_name": "Adams Inc"
+    },
+    {
+        "user_id": 6,
+        "first_name": "Alison",
+        "last_name": "Reichert",
+        "phone": "+351 527 735 3642",
+        "email": "jtreleven5@nhs.uk",
+        "company_address": "6231 North 67th Avenue",
+        "company_department": "Accounting",
+        "company_name": "D'Amore and Sons"
+    },
+    {
+        "user_id": 7,
+        "first_name": "Oleta",
+        "last_name": "Abbott",
+        "phone": "+62 640 802 7111",
+        "email": "dpettegre6@columbia.edu",
+        "company_address": "1407 Walden Court",
+        "company_department": "Product Management",
+        "company_name": "Schimmel, Wilderman and Orn"
+    },
+    {
+        "user_id": 8,
+        "first_name": "Ewell",
+        "last_name": "Mueller",
+        "phone": "+86 946 297 2275",
+        "email": "ggude7@chron.com",
+        "company_address": "81 Seaton Place Northwest",
+        "company_department": "Services",
+        "company_name": "Corkery, Reichert and Hodkiewicz"
+    },
+    {
+        "user_id": 9,
+        "first_name": "Demetrius",
+        "last_name": "Corkery",
+        "phone": "+86 356 590 9727",
+        "email": "nloiterton8@aol.com",
+        "company_address": "12245 West 71st Place",
+        "company_department": "Human Resources",
+        "company_name": "Gorczany Group"
+    },
+    {
+        "user_id": 10,
+        "first_name": "Eleanora",
+        "last_name": "Price",
+        "phone": "+60 184 408 0824",
+        "email": "umcgourty9@jalbum.net",
+        "company_address": "1649 Timberridge Court",
+        "company_department": "Marketing",
+        "company_name": "Bins Group"
+    },
+    {
+        "user_id": 11,
+        "first_name": "Marcel",
+        "last_name": "Jones",
+        "phone": "+967 253 210 0344",
+        "email": "acharlota@liveinternet.ru",
+        "company_address": "308 Woodleaf Court",
+        "company_department": "Business Development",
+        "company_name": "Kuhn-Harber"
+    },
+    {
+        "user_id": 12,
+        "first_name": "Assunta",
+        "last_name": "Rath",
+        "phone": "+380 962 542 6549",
+        "email": "rhallawellb@dropbox.com",
+        "company_address": "388 East Main Street",
+        "company_department": "Product Management",
+        "company_name": "Goodwin-Skiles"
+    },
+    {
+        "user_id": 13,
+        "first_name": "Trace",
+        "last_name": "Douglas",
+        "phone": "+1 609 937 3468",
+        "email": "lgribbinc@posterous.com",
+        "company_address": "310 Timrod Road",
+        "company_department": "Research and Development",
+        "company_name": "Casper Inc"
+    },
+    {
+        "user_id": 14,
+        "first_name": "Enoch",
+        "last_name": "Lynch",
+        "phone": "+94 912 100 5118",
+        "email": "mturleyd@tumblr.com",
+        "company_address": "21950 Arnold Center Road",
+        "company_department": "Sales",
+        "company_name": "Schoen Inc"
+    },
+    {
+        "user_id": 15,
+        "first_name": "Jeanne",
+        "last_name": "Halvorson",
+        "phone": "+86 581 108 7855",
+        "email": "kminchelle@qq.com",
+        "company_address": "22572 Toreador Drive",
+        "company_department": "Marketing",
+        "company_name": "Hahn-MacGyver"
+    },
+    {
+        "user_id": 16,
+        "first_name": "Trycia",
+        "last_name": "Fadel",
+        "phone": "+420 833 708 0340",
+        "email": "dpierrof@vimeo.com",
+        "company_address": "1407 Walden Court",
+        "company_department": "Research and Development",
+        "company_name": "Steuber, Considine and Padberg"
+    },
+    {
+        "user_id": 17,
+        "first_name": "Bradford",
+        "last_name": "Prohaska",
+        "phone": "+420 874 628 3710",
+        "email": "vcholdcroftg@ucoz.com",
+        "company_address": "20930 Todd Valley Road",
+        "company_department": "Sales",
+        "company_name": "Bogisich and Sons"
+    },
+    {
+        "user_id": 18,
+        "first_name": "Arely",
+        "last_name": "Skiles",
+        "phone": "+55 886 766 8617",
+        "email": "sberminghamh@chron.com",
+        "company_address": "3162 Martin Luther King Junior Boulevard",
+        "company_department": "Support",
+        "company_name": "Metz Group"
+    },
+    {
+        "user_id": 19,
+        "first_name": "Gust",
+        "last_name": "Purdy",
+        "phone": "+86 886 889 0258",
+        "email": "bleveragei@so-net.ne.jp",
+        "company_address": "6463 Vrain Street",
+        "company_department": "Sales",
+        "company_name": "Bahringer, Auer and Wehner"
+    },
+    {
+        "user_id": 20,
+        "first_name": "Lenna",
+        "last_name": "Renner",
+        "phone": "+1 904 601 7177",
+        "email": "aeatockj@psu.edu",
+        "company_address": "491 Arabian Way",
+        "company_department": "Support",
+        "company_name": "Hoppe Group"
+    },
+    {
+        "user_id": 21,
+        "first_name": "Doyle",
+        "last_name": "Ernser",
+        "phone": "+86 634 419 6839",
+        "email": "ckensleyk@pen.io",
+        "company_address": "5906 Milton Avenue",
+        "company_department": "Product Management",
+        "company_name": "Brekke Group"
+    },
+    {
+        "user_id": 22,
+        "first_name": "Tressa",
+        "last_name": "Weber",
+        "phone": "+34 517 104 6248",
+        "email": "froachel@howstuffworks.com",
+        "company_address": "8800 Cordell Circle",
+        "company_department": "Research and Development",
+        "company_name": "Durgan Group"
+    },
+    {
+        "user_id": 23,
+        "first_name": "Felicity",
+        "last_name": "O'Reilly",
+        "phone": "+63 919 564 1690",
+        "email": "beykelhofm@wikispaces.com",
+        "company_address": "1770 Colony Way",
+        "company_department": "Legal",
+        "company_name": "Romaguera, Williamson and Kessler"
+    },
+    {
+        "user_id": 24,
+        "first_name": "Jocelyn",
+        "last_name": "Schuster",
+        "phone": "+7 968 462 1292",
+        "email": "brickeardn@fema.gov",
+        "company_address": "80 North East Street",
+        "company_department": "Product Management",
+        "company_name": "Wintheiser-Boehm"
+    },
+    {
+        "user_id": 25,
+        "first_name": "Edwina",
+        "last_name": "Ernser",
+        "phone": "+86 376 986 8945",
+        "email": "dfundello@amazon.co.jp",
+        "company_address": "125 John Street",
+        "company_department": "Marketing",
+        "company_name": "Volkman Group"
+    },
+    {
+        "user_id": 26,
+        "first_name": "Griffin",
+        "last_name": "Braun",
+        "phone": "+62 511 790 0161",
+        "email": "lgronaverp@cornell.edu",
+        "company_address": "1508 Massachusetts Avenue Southeast",
+        "company_department": "Engineering",
+        "company_name": "Boyle, Boyer and Lang"
+    },
+    {
+        "user_id": 27,
+        "first_name": "Piper",
+        "last_name": "Schowalter",
+        "phone": "+60 785 960 7918",
+        "email": "fokillq@amazon.co.jp",
+        "company_address": "600 West 19th Avenue",
+        "company_department": "Human Resources",
+        "company_name": "O'Hara and Sons"
+    },
+    {
+        "user_id": 28,
+        "first_name": "Kody",
+        "last_name": "Terry",
+        "phone": "+81 859 545 8951",
+        "email": "xisherwoodr@ask.com",
+        "company_address": "109 Summit Street",
+        "company_department": "Support",
+        "company_name": "Leffler, Beatty and Kilback"
+    },
+    {
+        "user_id": 29,
+        "first_name": "Macy",
+        "last_name": "Greenfelder",
+        "phone": "+81 915 649 2384",
+        "email": "jissetts@hostgator.com",
+        "company_address": "5403 Illinois Avenue",
+        "company_department": "Product Management",
+        "company_name": "Bruen and Sons"
+    },
+    {
+        "user_id": 30,
+        "first_name": "Maurine",
+        "last_name": "Stracke",
+        "phone": "+48 143 590 6847",
+        "email": "kdulyt@umich.edu",
+        "company_address": "816 West 19th Avenue",
+        "company_department": "Support",
+        "company_name": "Balistreri-Kshlerin"
+    }
+]
