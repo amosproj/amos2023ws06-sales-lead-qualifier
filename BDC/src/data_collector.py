@@ -3,6 +3,7 @@
 import csv
 import requests
 import json
+import os
 
 
 class DataCollector:
@@ -13,7 +14,8 @@ class DataCollector:
     def get_data_from_csv():
         """Retrieve information from the CSV file and utilize it in the Google API"""
         data = []
-        with open('../data/given_data.csv', 'r', encoding='utf8') as file:
+        file_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../data/given_data.csv')
+        with open(file_path, 'r', encoding='utf8') as file:
             csv_reader = csv.reader(file)
             next(csv_reader)
 
@@ -39,8 +41,8 @@ class DataCollector:
 
         if response.status_code == 200:
             data = response.json()
-
-            with open("../data/collected_data.json", "w") as json_file:
+            file_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../data/collected_data.json')
+            with open(file_path, "w") as json_file:
                 user_data = []
                 for users in data["users"]:
                     data_dict = {
