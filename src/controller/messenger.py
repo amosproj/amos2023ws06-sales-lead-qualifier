@@ -12,9 +12,14 @@ class MessageType(Enum):
     PREDICTION = "prediction"
 
 
+class SenderType(Enum):
+    BDC = "base_data_collector"
+    EVP = "estimated_value_predictor"
+
+
 class Message(BaseModel):
-    sender_name: str
-    data_type: str
+    sender_name: SenderType
+    data_type: MessageType
     data: Optional[Dict] = {}
     result: Optional[Dict] = {}
 
@@ -23,7 +28,11 @@ def create_data_message(lead_id, **features):
     """
     Creates a data message, called by BDC.
     """
-    message = Message("BDC", MessageType.DATA, {"lead_id": lead_id, **features})
+    message = Message(
+        sender_name=SenderType.BDC,
+        data_type=MessageType.DATA,
+        data={"lead_id": lead_id, **features},
+    )
     return message
 
 
@@ -32,8 +41,8 @@ def create_prediction_message(lead_id, prediction_value):
     Create a prediction message, called by EVP.
     """
     message = Message(
-        "EVP",
-        MessageType.PREDICTION,
+        sender_name=SenderType.EVP,
+        data_type=MessageType.PREDICTION,
         result={"lead_id": lead_id, "prediction value": prediction_value},
     )
     return message
