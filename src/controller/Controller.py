@@ -181,24 +181,3 @@ class Controller(metaclass=ControllerMeta):
         print(f"Threads finished... ")
         print(f"routing queue size... {self._routing_queue.unfinished_tasks}")
         print(f"message queue size... {self._message_queue.unfinished_tasks}")
-
-
-if __name__ == "__main__":
-    c1 = Controller("First Controller")
-    c2 = Controller("Second Controller")
-
-    if id(c1) == id(c2):
-        print(
-            f"Singleton works, both variables contain the same instance. c1 {c1.name} and c2 {c2.name}"
-        )
-    else:
-        print("Singleton failed, variables contain different instances.")
-
-    msg = create_data_message(2023, {"name": "AMOS"})
-
-    for item in range(5):
-        c1.send_message(msg)
-
-    c1.finish()
-    c1.send_message(msg)
-    print("All work completed")
