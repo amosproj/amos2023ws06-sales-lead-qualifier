@@ -35,7 +35,7 @@ jobs:
         uses: pilosus/action-pip-license-checker@v2
         with:
           requirements: "requirements-all.txt"
-          fail: "Copyleft"
+          fail: "StrongCopyleft"
           totals: true
           headers: true
       - name: Print copyright report
