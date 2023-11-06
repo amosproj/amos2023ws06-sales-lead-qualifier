@@ -2,8 +2,7 @@
 # SPDX-FileCopyrightText: 2023 Berkay Bozkurt <resitberkaybozkurt@gmail.com>
 
 from queue import Queue
-from threading import Lock, Thread, current_thread
-from time import sleep
+from threading import Lock, Thread
 from typing import Any
 
 from messenger import Message, MessageType, create_data_message
