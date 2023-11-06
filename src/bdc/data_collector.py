@@ -24,8 +24,8 @@ class DataCollector:
                     "last_name": row[0],
                     "first_name": row[1],
                     "company_account": row[2],
-                    "phone": row[3],
-                    "email": row[4],
+                    "phone_number": row[3],
+                    "email_address": row[4],
                 }
 
                 data.append(data_dict)
@@ -46,11 +46,11 @@ class DataCollector:
                 user_data = []
                 for users in data["users"]:
                     data_dict = {
-                        "user_id": users["id"],
+                        "lead_id": users["id"],
                         "first_name": users["firstName"],
                         "last_name": users["lastName"],
-                        "phone": users["phone"],
-                        "email": users["email"],
+                        "phone_number": users["phone"],
+                        "email_address": users["email"],
                         "company_address": users["company"]["address"]["address"],
                         "company_department": users["company"]["department"],
                         "company_name": users["company"]["name"],
