@@ -17,13 +17,11 @@ class Message:
         self.result = result if result is not None else {}
 
 
-def create_data_message(lead_id, features: {}):
+def create_data_message(lead_id, **features):
     """
     Creates a data message, called by BDC.
     """
-    message = Message(
-        "BDC", MessageType.DATA, {"lead_id": lead_id, "features": features}
-    )
+    message = Message("BDC", MessageType.DATA, {"lead_id": lead_id, **features})
     return message
 
 
