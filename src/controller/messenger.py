@@ -2,6 +2,9 @@
 # SPDX-FileCopyrightText: 2023 Berkay Bozkurt <resitberkaybozkurt@gmail.com>
 
 from enum import Enum
+from typing import Dict, Optional
+
+from pydantic import BaseModel
 
 
 class MessageType(Enum):
@@ -9,12 +12,11 @@ class MessageType(Enum):
     PREDICTION = "prediction"
 
 
-class Message:
-    def __init__(self, sender_name, data_type, data=None, result=None):
-        self.sender_name = sender_name
-        self.data_type = data_type
-        self.data = data if data is not None else {}
-        self.result = result if result is not None else {}
+class Message(BaseModel):
+    sender_name: str
+    data_type: str
+    data: Optional[Dict] = {}
+    result: Optional[Dict] = {}
 
 
 def create_data_message(lead_id, **features):
