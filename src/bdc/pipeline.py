@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Lucca Baumgärtner <lucca.baumgaertner@fau.de>
-
-from bdc.steps.enrich_custom_domains import EnrichCustomDomains
+from bdc.steps import EnrichCustomDomains
 
 
 class Pipeline:
