@@ -3,19 +3,16 @@
 
 import numpy as np
 import pandas as pd
-from pandas import DataFrame
 
 from bdc.steps.step import Step
 
 
 class EnrichCustomDomains(Step):
-    df: DataFrame
-
     def load_data(self):
-        self.df = pd.read_csv(self._input_location)
+        self._df = pd.read_csv(self._input_location)
 
     def verify(self):
-        return "Email" in self.df
+        return "Email" in self._df
 
     def run(self):
         commercial_domains = [
@@ -54,15 +51,16 @@ class EnrichCustomDomains(Step):
             "arcor.de",
             "aol.de",
             "me.com",
+            "gmail.con",
         ]
         # extract domain from email
-        self.df["domain"] = self.df["Email"].str.split("@").str[1]
+        self._df["domain"] = self._df["Email"].str.split("@").str[1]
 
         # remove commercial domains
-        self.df["domain"].replace(commercial_domains, np.nan, inplace=True)
+        self._df["domain"].replace(commercial_domains, np.nan, inplace=True)
 
     def finish(self):
         # print(self.df.head())
-        p_custom_domains = self.df["domain"].notna().sum() / len(self.df) * 100
+        p_custom_domains = self._df["domain"].notna().sum() / len(self._df) * 100
         print(f"Percentage of custom domains: {p_custom_domains:.2f}%")
-        print(self.df["domain"].value_counts(sort=True))
+        print(self._df["domain"].value_counts(sort=True))
