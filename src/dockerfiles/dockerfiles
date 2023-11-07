@@ -20,5 +20,5 @@ COPY ../database/database_leads.json /demo/ml/data
 COPY ../evp/probability_model.joblib /demo/ml/model
 COPY ../evp/life_time_model.joblib /demo/ml/model
 
-# run the training algorithm
+# run the training algorithm for AWS SageMaker
 ENV SAGEMAKER_PROGRAM evp_demo.py
