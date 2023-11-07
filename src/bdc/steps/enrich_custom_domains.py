@@ -1,6 +1,5 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Lucca Baumgärtner <lucca.baumgaertner@fau.de>
-import os
 
 import numpy as np
 import pandas as pd
@@ -13,11 +12,7 @@ class EnrichCustomDomains(Step):
     df: DataFrame
 
     def load_data(self):
-        file_path = os.path.join(
-            os.path.abspath(os.path.dirname(__file__)),
-            "../../data/sumup_leads_email.csv",
-        )
-        self.df = pd.read_csv(file_path)
+        self.df = pd.read_csv(self._input_location)
 
     def verify(self):
         return "Email" in self.df
@@ -48,6 +43,17 @@ class EnrichCustomDomains(Step):
             "gmx.ch",
             "gmx.at",
             "hotmail.ch",
+            "live.nl",
+            "hotmail.de",
+            "home.nl",
+            "bluewin.ch",
+            "freenet.de",
+            "upcmail.nl",
+            "zeelandnet.nl",
+            "hotmail.nl",
+            "arcor.de",
+            "aol.de",
+            "me.com",
         ]
         # extract domain from email
         self.df["domain"] = self.df["Email"].str.split("@").str[1]
@@ -56,6 +62,7 @@ class EnrichCustomDomains(Step):
         self.df["domain"].replace(commercial_domains, np.nan, inplace=True)
 
     def finish(self):
-        print(self.df.head())
+        # print(self.df.head())
         p_custom_domains = self.df["domain"].notna().sum() / len(self.df) * 100
         print(f"Percentage of custom domains: {p_custom_domains:.2f}%")
+        print(self.df["domain"].value_counts(sort=True))
