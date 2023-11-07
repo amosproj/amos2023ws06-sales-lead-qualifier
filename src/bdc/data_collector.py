@@ -124,8 +124,8 @@ class DataCollector:
 
                 data_dict = {
                     "business_status": top_result["business_status"],
-                    "address": top_result["formatted_address"],
-                    "coordinates": top_result["geometry"]["location"],
+                    "company_address": top_result["formatted_address"],
+                    "company_coordinates": top_result["geometry"]["location"],
                     "company_name": top_result["name"],
                     "ratings_no": top_result["user_ratings_total"],
                 }
