@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: 2023 Lucca Baumgärtner <lucca.baumgaertner@fau.de>
 
 from bdc.steps import EnrichCustomDomains
+from bdc.steps.scrape_address import ScrapeAddress
 
 
 class Pipeline:
@@ -30,9 +31,17 @@ class Pipeline:
             # cleanup
             step.finish()
 
+        print(f"[PIPELINE] - Finished running {len(self.steps)} steps!")
+        print(self.steps[-1].df.head())
+
+        self.steps[-1].df.to_csv("../data/leads_enriched.csv")
+
 
 if __name__ == "__main__":
     enrich_domain_step = EnrichCustomDomains()
     enrich_domain_step.input_location = "../data/sumup_leads_email.csv"
-    pipeline = Pipeline([enrich_domain_step])
+
+    scrape_address_step = ScrapeAddress()
+
+    pipeline = Pipeline([enrich_domain_step, scrape_address_step])
     pipeline.run()

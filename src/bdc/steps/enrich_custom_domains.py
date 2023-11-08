@@ -8,6 +8,8 @@ from bdc.steps.step import Step
 
 
 class EnrichCustomDomains(Step):
+    name = "Custom-Domains"
+
     def load_data(self):
         self._df = pd.read_csv(self._input_location)
 
@@ -62,5 +64,5 @@ class EnrichCustomDomains(Step):
     def finish(self):
         # print(self.df.head())
         p_custom_domains = self._df["domain"].notna().sum() / len(self._df) * 100
-        print(f"Percentage of custom domains: {p_custom_domains:.2f}%")
-        print(self._df["domain"].value_counts(sort=True))
+        self.log(f"Percentage of custom domains: {p_custom_domains:.2f}%")
+        # print(self._df["domain"].value_counts(sort=True))
