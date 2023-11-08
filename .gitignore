@@ -21,7 +21,7 @@ pids
 # Python
 *.pyc
 __pycache__/
-Pipfile.lock
+# Pipfile.lock
 
 # Jupyter Notebook
 .ipynb_checkpoints
@@ -46,3 +46,7 @@ bin/
 
 # License
 .reuse
+
+# Binary files
+**/data/*.csv
+**/data/*.json
