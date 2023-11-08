@@ -1,14 +1,17 @@
-# PDX-License-Identifier: MIT
+# SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Ahmed Sheta <ahmed.sheta@fau.de>
 
 # Dockerfile
-FROM python:3.8
+FROM python:3.10
 
 # set the working directory
 WORKDIR /demo/ml/code
 
-# install any necessary libraries
-RUN pip install scikit-learn joblib numpy pandas json typing enum typing
+COPY ../../Pipfile .
+COPY ../../Pipefile.lock .
+
+# install pipenv the accociated dependencies
+RUN pip install pipenv && pipenv install
 
 # copy code, data, and models
 COPY ../evp_demo.py /demo/ml/code
@@ -21,4 +24,4 @@ COPY ../evp/probability_model.joblib /demo/ml/model
 COPY ../evp/life_time_model.joblib /demo/ml/model
 
 # run the training algorithm for AWS SageMaker
-ENV SAGEMAKER_PROGRAM evp_demo.py
+ENV SAGEMAKER_PROGRAM ../evp_demo.py

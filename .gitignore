@@ -26,6 +26,9 @@ __pycache__/
 # Jupyter Notebook
 .ipynb_checkpoints
 
+# ML models joblib
+*.joblib
+
 # vscode
 .vscode/
 web-build/
