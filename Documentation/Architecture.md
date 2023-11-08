@@ -1,6 +1,7 @@
 <!--
 SPDX-License-Identifier: MIT
 SPDX-FileCopyrightText: 2023 Simon Zimmermann
+SPDX-FileCopyrightText: 2023 Berkay Bozkurt <resitberkaybozkurt@gmail.com>
 -->
 
 # Software Architecture
@@ -47,3 +48,7 @@ That said, another (more advanced) approach would be to use a pipelined control 
 ### Sequence Diagram
 
 ![Sequence Diagram](Media/sequence-diagram.svg)
+
+### Controller Workflow Diagram
+
+![Controller Workflow Diagram](Media/controller-workflow-diagram.jpg)
