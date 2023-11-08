@@ -46,3 +46,7 @@ bin/
 
 # License
 .reuse
+
+# Binary files
+**/data/*.csv
+**/data/*.json
