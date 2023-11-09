@@ -2,14 +2,15 @@
 # SPDX-FileCopyrightText: 2023 Lucca Baumgärtner <lucca.baumgaertner@fau.de>
 from pandas import DataFrame
 
+class StepError(Exception):
+    pass
+
 
 class Step:
     name = None
 
     def __init__(self) -> None:
         self._df = None
-        self._input_location = None
-        self._output_location = None
 
     @property
     def df(self) -> DataFrame:
@@ -18,32 +19,6 @@ class Step:
     @df.setter
     def df(self, df) -> None:
         self._df = df
-
-    @property
-    def input_location(self) -> str:
-        return self._input_location
-
-    @input_location.setter
-    def input_location(self, input_location) -> None:
-        """
-        Set the location for input data. This could be an API endpoint or a CSV file path.
-        :param input_location: String file path or API endpoint
-        :return:
-        """
-        self._input_location = input_location
-
-    @property
-    def output_location(self) -> str:
-        return self._output_location
-
-    @output_location.setter
-    def output_location(self, output_location) -> None:
-        """
-        Set the location for output data. This could be an API endpoint or a CSV file path.
-        :param output_location: String file path or API endpoint
-        :return:
-        """
-        self._output_location = output_location
 
     def load_data(self) -> None:
         """
@@ -58,9 +33,11 @@ class Step:
         """
         raise NotImplementedError
 
-    def run(self) -> None:
+    def run(self) -> DataFrame:
         """
         Perform the actual processing step.
+        
+        raises StepError
         """
         raise NotImplementedError
 

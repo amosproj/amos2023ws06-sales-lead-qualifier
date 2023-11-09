@@ -38,6 +38,7 @@ class ScrapeAddress(Step):
         # Approach 2: if it's a commercial domain, use the account name
         # self.df['address_ver_2'] = (self.df[self.df['domain'].isna()]
         #                             .apply(lambda lead: scrape_for_address(get_shop_url(lead['Email'])), axis=1))
+        return self.df
 
     def finish(self):
         p_address = self._df["address_ver_1"].notna().sum() / len(self._df) * 100

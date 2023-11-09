@@ -11,15 +11,17 @@ from http import HTTPStatus
 import requests
 from requests import RequestException
 from tqdm import tqdm
+import pandas as pd
 
 from bdc.steps.step import Step
 from config import GOOGLE_PLACES_API_KEY
 
 
 class GooglePlacesStep(Step):
-    name = "Google-Places"
-
-    fields = ["business_status", "formatted_address", "name", "ratings_no"]
+    # TODO: replace the requests package with the python client for Google Maps Service https://github.com/googlemaps/google-maps-services-python
+    name = "Google_Places"
+    URL = "https://maps.googleapis.com/maps/api/place/textsearch/json?query="
+    fields = ["business_status", "formatted_address", "name", "user_ratings_total"]
 
     def load_data(self) -> None:
         pass
@@ -29,77 +31,48 @@ class GooglePlacesStep(Step):
 
     def run(self) -> None:
         tqdm.pandas(desc="Getting info from Places API")
-        self.df = self.df[:100]
-        values = self.df.progress_apply(
+        self.df[[f"{self.name.lower()}_{field}" for field in self.fields]]  = self.df.progress_apply(
             lambda lead: self.get_data_from_google_api(lead), axis=1
         )
-        self.df[self.fields] = values
-        pass
+        return self.df
 
     def finish(self) -> None:
         pass
 
     def get_data_from_google_api(self, lead_row):
-        """Test of the Google Places Text Sesrch API using Ruchita's BDC skeleton"""
-        # This is to show how the Google API can be used with the provided data.
-        # There is no defensive programming/data preprocessing. It's a proof of concept.
-
-        # Retrieve API key from env file
-
-        api_key = GOOGLE_PLACES_API_KEY
-
-        # Keep track of API calls
-        calls = 0
-
-        # Define a regular expression pattern to match the domain part of the email
-        url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query="
+        """Request Google Places Text Search API"""
+        error_return_value = pd.Series([None] * len(self.fields))
 
         # Go through each email address entry and remove the domain name (can do this in preprocessing, this is for test)
         domain = lead_row["domain"]
         if domain is None:
-            return [None, None, None, None]
+            return error_return_value
 
         try:
             # Retrieve response
-            response = requests.get(url + domain + "&key=" + api_key)
+            response = requests.get(self.URL + domain + "&key=" + GOOGLE_PLACES_API_KEY)
         except RequestException as e:
             self.log(f"Error: {str(e)}")
-            return [None, None, None, None]
+            return error_return_value
 
-        if response.status_code == HTTPStatus.OK:
-            data = response.json()
 
-            # data_dict = {
-            #     "business_status": top_result["business_status"],
-            #    "company_address": top_result["formatted_address"],
-            #    "company_coordinates": top_result["geometry"]["location"],
-            #    "company_name": top_result["name"],
-            #    "ratings_no": top_result["user_ratings_total"],
-            # }
-
-            if "results" in data and len(data["results"]) > 0:
-                # Only look at the top result
-                top_result = data["results"][0]
-
-                business_status = (
-                    top_result["business_status"]
-                    if "business_satus" in top_result
-                    else None
-                )
-                formatted_address = (
-                    top_result["formatted_address"]
-                    if "formatted_address" in top_result
-                    else None
-                )
-                name = top_result["name"] if "name" in top_result else None
-                ratings_no = (
-                    top_result["user_ratings_total"]
-                    if "user_ratings_total" in top_result
-                    else None
-                )
-
-                return [business_status, formatted_address, name, ratings_no]
-
-        else:
+        if not response.status_code == HTTPStatus.OK:
             self.log(f"Failed to fetch data. Status code: {response.status_code}")
-            return [None, None, None, None]
+            return error_return_value
+        
+        data = response.json()
+        
+        if "results" not in data or len(data["results"]) == 0:
+            return error_return_value
+        
+        # Only look at the top result TODO: Check if we can cross check available values to rate results
+        top_result = data["results"][0]
+
+        results_list = [
+            top_result[field]
+            if field in top_result
+            else None
+            for field in self.fields
+        ]
+
+        return pd.Series(results_list)

@@ -2,7 +2,8 @@
 # SPDX-FileCopyrightText: 2023 Lucca Baumgärtner <lucca.baumgaertner@fau.de>
 
 import pandas as pd
-
+from email_validator import validate_email, EmailNotValidError
+from typing import Optional
 from bdc.steps.step import Step
 
 
@@ -10,7 +11,7 @@ class EnrichCustomDomains(Step):
     name = "Custom-Domains"
 
     def load_data(self):
-        self._df = pd.read_csv(self._input_location)
+        pass
 
     def verify(self):
         return "Email" in self._df
@@ -55,13 +56,22 @@ class EnrichCustomDomains(Step):
             "gmail.con",
         ]
         # extract domain from email
-        self._df["domain"] = self._df["Email"].str.split("@").str[1]
+        # Possibly add the normalized email here
+        self._df["domain"] = self._df.apply(lambda row: self.check_valid_email(str(row["Email"])), axis=1)
 
         # remove commercial domains
         self._df["domain"].replace(commercial_domains, None, inplace=True)
+        return self.df
 
     def finish(self):
         # print(self.df.head())
         p_custom_domains = self._df["domain"].notna().sum() / len(self._df) * 100
         self.log(f"Percentage of custom domains: {p_custom_domains:.2f}%")
         # print(self._df["domain"].value_counts(sort=True))
+    
+    def check_valid_email(self, email: str) -> Optional[str]:
+        try:
+            validate_email(email,check_deliverability=False)
+            return email.split("@")[1]
+        except EmailNotValidError as e:
+            return None
