@@ -51,7 +51,7 @@ When you have any issues with the environment contact `felix-zailskas`.
 
 ## Build Process
 
-This application is run using a Docker container. For this the `Dockerfile` at root level is used. It copies the Pipfile to the container and installs the deployment environment using pipenv. Afterwards all source code from the `src/`. As the entrypoint the main.py is chosen.
+This application is run using a Docker container. For this the `Dockerfile` at root level is used. It copies the Pipfile to the container and installs the deployment environment using pipenv. Afterwards all source code from the `src/`. As the entrypoint the main.py is chosen. Ensure that Docker is installed and that the Docker daemon is running.
 
 To build the application run
 

@@ -9,8 +9,8 @@ from database.parsers import LeadParser
 
 
 class DatabaseDummy:
-    def __init__(self) -> None:
-        with open("src/data/collected_data.json") as f:
+    def __init__(self, source: str = "src/data/collected_data.json") -> None:
+        with open(source) as f:
             json_data = json.load(f)
             self.data = {d["lead_id"]: d for d in json_data}
 
