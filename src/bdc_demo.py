@@ -8,4 +8,6 @@ dc.get_data_from_csv()
 print("Successfully Get Data From the CSV File")
 
 dc.get_data_from_api()
-print("Successfully Get Data From the API and stored in JSOn file at 'src/data/collected_data.json'")
+print(
+    "Successfully Get Data From the API and stored in JSOn file at 'src/data/collected_data.json'"
+)

@@ -8,10 +8,10 @@
 
 from http import HTTPStatus
 
+import pandas as pd
 import requests
 from requests import RequestException
 from tqdm import tqdm
-import pandas as pd
 
 from bdc.steps.step import Step
 from config import GOOGLE_PLACES_API_KEY
@@ -31,7 +31,9 @@ class GooglePlacesStep(Step):
 
     def run(self) -> None:
         tqdm.pandas(desc="Getting info from Places API")
-        self.df[[f"{self.name.lower()}_{field}" for field in self.fields]]  = self.df.progress_apply(
+        self.df[
+            [f"{self.name.lower()}_{field}" for field in self.fields]
+        ] = self.df.progress_apply(
             lambda lead: self.get_data_from_google_api(lead), axis=1
         )
         return self.df
@@ -55,24 +57,20 @@ class GooglePlacesStep(Step):
             self.log(f"Error: {str(e)}")
             return error_return_value
 
-
         if not response.status_code == HTTPStatus.OK:
             self.log(f"Failed to fetch data. Status code: {response.status_code}")
             return error_return_value
-        
+
         data = response.json()
-        
+
         if "results" not in data or len(data["results"]) == 0:
             return error_return_value
-        
+
         # Only look at the top result TODO: Check if we can cross check available values to rate results
         top_result = data["results"][0]
 
         results_list = [
-            top_result[field]
-            if field in top_result
-            else None
-            for field in self.fields
+            top_result[field] if field in top_result else None for field in self.fields
         ]
 
         return pd.Series(results_list)

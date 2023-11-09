@@ -1,20 +1,26 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Lucca Baumgärtner <lucca.baumgaertner@fau.de>
 
-from bdc.steps import EnrichCustomDomains
-from bdc.steps.step import StepError
-from bdc.steps.google_places import GooglePlacesStep
 import pandas as pd
 
+from bdc.steps import EnrichCustomDomains
+from bdc.steps.google_places import GooglePlacesStep
+from bdc.steps.step import StepError
+
+
 class Pipeline:
-    def __init__(self, steps, input_location: str, output_location: str = None, limit:int=None):
+    def __init__(
+        self, steps, input_location: str, output_location: str = None, limit: int = None
+    ):
         self.steps = steps
         self.limit = limit
         self.df = pd.read_csv(input_location)
         if limit is not None:
             self.df = self.df[:limit]
-        self.output_location = input_location if output_location is None else output_location
-        
+        self.output_location = (
+            input_location if output_location is None else output_location
+        )
+
     def run(self):
         # helper to pass the dataframe and/or input location from previous step to next step
         for step in self.steps:
@@ -29,7 +35,6 @@ class Pipeline:
                     self.df = step_df
                 except StepError as e:
                     print(f"Step {step.name} failed!")
-
 
             # cleanup
             step.finish()

@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: 2023 Lucca Baumgärtner <lucca.baumgaertner@fau.de>
 from pandas import DataFrame
 
+
 class StepError(Exception):
     pass
 
@@ -36,7 +37,7 @@ class Step:
     def run(self) -> DataFrame:
         """
         Perform the actual processing step.
-        
+
         raises StepError
         """
         raise NotImplementedError
