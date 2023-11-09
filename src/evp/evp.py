@@ -43,7 +43,7 @@ class EstimatedValuePredictor:
         lead.lead_value = LeadValue(
             life_time_value=lead_value_pred, customer_probability=cust_prob_pred
         )
-        get_database().update_lead(lead)
+        # get_database().update_lead(lead)
 
         # might not need to return here if the database is updated by this function
         return lead.lead_value

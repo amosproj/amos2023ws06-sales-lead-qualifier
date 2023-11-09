@@ -65,6 +65,6 @@ class DataCollector:
                     user_data.append(data_dict)
 
                 json.dump(user_data, json_file, indent=4)
-            return
+            return random.choice(user_data)
         else:
             return f"Failed to fetch data. Status code: {response.status_code}"
