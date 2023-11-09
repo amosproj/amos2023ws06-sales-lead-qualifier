@@ -7,6 +7,8 @@ import os
 import re
 import random
 import requests
+import random
+from database.models import ProductOfInterest
 
 from database.models import ProductOfInterest
 
