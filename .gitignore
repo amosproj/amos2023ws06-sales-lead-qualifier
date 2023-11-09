@@ -51,3 +51,6 @@ bin/
 **/data/*.csv
 **/data/*.json
 **/data/*.env
+
+# Env files
+*.env

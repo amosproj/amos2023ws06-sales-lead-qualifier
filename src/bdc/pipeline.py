@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: 2023 Lucca Baumgärtner <lucca.baumgaertner@fau.de>
 
 from bdc.steps import EnrichCustomDomains
-from bdc.steps.scrape_address import ScrapeAddress
+from bdc.steps.google_places import GooglePlacesStep
 
 
 class Pipeline:
@@ -41,7 +41,9 @@ if __name__ == "__main__":
     enrich_domain_step = EnrichCustomDomains()
     enrich_domain_step.input_location = "../data/sumup_leads_email.csv"
 
-    scrape_address_step = ScrapeAddress()
+    # scrape_address_step = ScrapeAddress()
 
-    pipeline = Pipeline([enrich_domain_step, scrape_address_step])
+    google_places_step = GooglePlacesStep()
+
+    pipeline = Pipeline([enrich_domain_step, google_places_step])
     pipeline.run()

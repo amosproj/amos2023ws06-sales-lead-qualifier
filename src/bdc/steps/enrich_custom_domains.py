@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Lucca Baumgärtner <lucca.baumgaertner@fau.de>
 
-import numpy as np
 import pandas as pd
 
 from bdc.steps.step import Step
@@ -59,7 +58,7 @@ class EnrichCustomDomains(Step):
         self._df["domain"] = self._df["Email"].str.split("@").str[1]
 
         # remove commercial domains
-        self._df["domain"].replace(commercial_domains, np.nan, inplace=True)
+        self._df["domain"].replace(commercial_domains, None, inplace=True)
 
     def finish(self):
         # print(self.df.head())
