@@ -3,8 +3,6 @@
 
 import pandas as pd
 
-from bdc.steps import EnrichCustomDomains
-from bdc.steps.google_places import GooglePlacesStep
 from bdc.steps.step import StepError
 
 

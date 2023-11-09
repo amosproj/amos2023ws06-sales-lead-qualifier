@@ -17,7 +17,7 @@ from bdc.steps.step import Step
 from config import GOOGLE_PLACES_API_KEY
 
 
-class GooglePlacesStep(Step):
+class GooglePlaces(Step):
     # TODO: replace the requests package with the python client for Google Maps Service https://github.com/googlemaps/google-maps-services-python
     name = "Google_Places"
     URL = "https://maps.googleapis.com/maps/api/place/textsearch/json?query="

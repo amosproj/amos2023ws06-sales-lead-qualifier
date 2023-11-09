@@ -9,11 +9,11 @@
 
 from bdc.pipeline import Pipeline
 from bdc.steps import EnrichCustomDomains
-from bdc.steps.google_places import GooglePlacesStep
+from bdc.steps.google_places import GooglePlaces
 
 if __name__ == "__main__":
     enrich_domain_step = EnrichCustomDomains()
-    google_places_step = GooglePlacesStep()
+    google_places_step = GooglePlaces()
     # scrape_address_step = ScrapeAddress()
 
     pipeline = Pipeline(

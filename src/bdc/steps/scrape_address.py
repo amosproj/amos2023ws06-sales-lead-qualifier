@@ -7,7 +7,6 @@ from json import JSONDecodeError
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-from googlesearch import search
 from requests import RequestException
 from tqdm import tqdm
 
@@ -35,27 +34,11 @@ class ScrapeAddress(Step):
             lambda lead: scrape_for_address(lead["domain"]), axis=1
         )
 
-        # Approach 2: if it's a commercial domain, use the account name
-        # self.df['address_ver_2'] = (self.df[self.df['domain'].isna()]
-        #                             .apply(lambda lead: scrape_for_address(get_shop_url(lead['Email'])), axis=1))
         return self.df
 
     def finish(self):
         p_address = self._df["address_ver_1"].notna().sum() / len(self._df) * 100
         self.log(f"Percentage of addresses scraped: {p_address:.2f}%")
-
-
-# Function to perform a web search and get shop url
-def get_shop_url(email):
-    # Assuming the email contains the shop name or identifier.
-    shop_identifier = email.split("@")[0]
-    query = f"{shop_identifier} shop information"
-    for url in search(query, num_results=1, lang="de"):
-        # Extracting shop information from the result
-        # This would require parsing the returned result, which is dependent on the structure of the result page.
-        print(f"Shop information URL: {url}")
-        # You would typically extract information from the page here.
-        return url
 
 
 def scrape_for_address(domain):
@@ -96,13 +79,9 @@ def scrape_for_address(domain):
 
         if address:
             address = address[0]  # Store the first match
-            # google_maps_link = self.get_google_maps_link()  # Assuming this function is defined elsewhere
-            # print(f"Google Maps link for the address: {google_maps_link}")
         else:
-            # print("No address could be found on the page. Continue with alternative approach.")
             address = alternative_scrape_for_address(website_html)
 
-        # print(f"Found address: {address}")
         return address  # Return the first match
     return None
 
@@ -135,8 +114,6 @@ def alternative_scrape_for_address(raw_html):
                 street_address = address_info.get("streetAddress")
                 address_locality = address_info.get("addressLocality")
                 address = f"{street_address}, {address_locality}"
-                # print(f"Extracted address: {address}")
-                # ... continue with getting the Google Maps link
         except AttributeError as e:
             pass
 
