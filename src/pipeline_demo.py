@@ -18,8 +18,8 @@ if __name__ == "__main__":
 
     pipeline = Pipeline(
         steps=[enrich_domain_step, google_places_step],
-        input_location="./data/sumup_leads_email.csv",
-        output_location="./data/leads_enriched.csv",
+        input_location="src/data/sumup_leads_email.csv",
+        output_location="src/data/leads_enriched.csv",
         limit=25,
     )
     pipeline.run()

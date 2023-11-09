@@ -20,7 +20,7 @@ class DataCollector:
         """Retrieve information from the CSV file and utilize it in the Google API"""
         self.data = []
         file_path = os.path.join(
-            os.path.abspath(os.path.dirname(__file__)), "../data/given_data.csv"
+            os.path.abspath(os.path.dirname(__file__)), "../data/sumup_leads_email.csv"
         )
         with open(file_path, "r", encoding="utf8") as file:
             csv_reader = csv.reader(file)
