@@ -8,6 +8,9 @@ import re
 import random
 import requests
 import random
+
+import requests
+
 from database.models import ProductOfInterest
 
 from database.models import ProductOfInterest
