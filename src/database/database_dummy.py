@@ -19,7 +19,7 @@ class DatabaseDummy:
 
     def get_all_leads(self) -> List[Lead]:
         return [LeadParser.parse_lead_from_dict(entry) for entry in self.data.values()]
-    
+
     def get_cardinality(self) -> int:
         return len(self.data)
 

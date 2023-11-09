@@ -15,7 +15,7 @@ class EstimatedValuePredictor:
 
         all_leads = get_database().get_all_leads()
         self.dimension = len(all_leads)
-        
+
         X = np.identity(self.dimension)
         y_probability = np.array(
             [lead.lead_value.customer_probability for lead in all_leads]

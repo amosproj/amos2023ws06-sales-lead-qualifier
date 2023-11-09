@@ -1,10 +1,12 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Ruchita Nathani <ruchita.nathani@fau.de>
 import csv
-import requests
 import json
 import os
 import random
+
+import requests
+
 from database.models import ProductOfInterest
 
 
@@ -16,8 +18,10 @@ class DataCollector:
     def get_data_from_csv():
         """Retrieve information from the CSV file and utilize it in the Google API"""
         data = []
-        file_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../data/given_data.csv')
-        with open(file_path, 'r', encoding='utf8') as file:
+        file_path = os.path.join(
+            os.path.abspath(os.path.dirname(__file__)), "../data/sumup_leads_email.csv"
+        )
+        with open(file_path, "r", encoding="utf8") as file:
             csv_reader = csv.reader(file)
             next(csv_reader)
 
@@ -38,12 +42,18 @@ class DataCollector:
     def get_data_from_api():
         """will utilize the data from the CSV file in the API key we are using, retrieve the necessary information from the API, and extract specific information that we need for the predictor. This relevant data will be stored in a JSON file."""
         api_url = "https://dummyjson.com/users"
-
-        response = requests.get(api_url)
+        try:
+            response = requests.get(api_url)
+        except Exception as e:
+            print("Error when fetching dummies")
+            return None
 
         if response.status_code == 200:
             data = response.json()
-            file_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../data/collected_data.json')
+            file_path = os.path.join(
+                os.path.abspath(os.path.dirname(__file__)),
+                "../data/collected_data.json",
+            )
             with open(file_path, "w") as json_file:
                 user_data = []
                 for users in data["users"]:
