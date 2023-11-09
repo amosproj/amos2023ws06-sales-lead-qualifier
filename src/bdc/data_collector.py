@@ -4,6 +4,8 @@ import csv
 import requests
 import json
 import os
+import random
+from database.models import ProductOfInterest
 
 
 class DataCollector:
@@ -54,6 +56,10 @@ class DataCollector:
                         "company_address": users["company"]["address"]["address"],
                         "company_department": users["company"]["department"],
                         "company_name": users["company"]["name"],
+                        "annual_income": random.randint(0, 1000000),
+                        "life_time_value": random.randint(0, 5000000),
+                        "customer_probability": random.random(),
+                        "product_of_interest": random.choice(list(ProductOfInterest)),
                     }
 
                     user_data.append(data_dict)
