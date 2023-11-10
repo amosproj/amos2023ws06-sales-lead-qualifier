@@ -1,13 +1,8 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Felix Zailskas <felixzailskas@gmail.com>
 
-import os
-import sys
-
 import pytest
 from pydantic import ValidationError
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
 
 from database.models import AnnualIncome, LeadValue, ProductOfInterest
 from database.parsers import LeadParser
