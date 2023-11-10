@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Lucca Baumgärtner <lucca.baumgaertner@fau.de>
-
+import os
+import sys
 import unittest
 from unittest import mock
 
@@ -9,6 +10,8 @@ from pandas import DataFrame
 
 from bdc.pipeline import Pipeline
 from bdc.steps.step import Step
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
 
 
 class DummyStepOne(Step):
