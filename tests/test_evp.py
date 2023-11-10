@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Felix Zailskas <felixzailskas@gmail.com>
 
+from database import get_database
 from database.models import LeadValue
 from evp.evp import EstimatedValuePredictor
 
