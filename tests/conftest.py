@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Felix Zailskas <felixzailskas@gmail.com>
 
-import os
-import sys
 from typing import Dict
 
 import pytest
@@ -11,9 +9,6 @@ from mock_components import get_database_mock
 
 @pytest.fixture
 def mock_database():
-    sys.path.append(
-        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src"))
-    )
     import database
 
     database._database = get_database_mock()
