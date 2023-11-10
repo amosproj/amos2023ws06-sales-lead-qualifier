@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Felix Zailskas <felixzailskas@gmail.com>
 
-import json
 from typing import Dict
 
 import pytest
