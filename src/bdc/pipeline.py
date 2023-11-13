@@ -12,14 +12,23 @@ class Pipeline:
     ):
         self.steps = steps
         self.limit = limit
-        self.df = pd.read_csv(input_location)
-        if limit is not None:
-            self.df = self.df[:limit]
+        try:
+            self.df = pd.read_csv(input_location)
+            if limit is not None:
+                self.df = self.df[:limit]
+        except FileNotFoundError:
+            print("Error: Could not find input file for Pipeline.")
+            self.df = None
         self.output_location = (
             input_location if output_location is None else output_location
         )
 
     def run(self):
+        if self.df is None:
+            print(
+                "Error: DataFrame of pipeline has not been initialized, aborting pipeline run!"
+            )
+            return
         # helper to pass the dataframe and/or input location from previous step to next step
         for step in self.steps:
             # load dataframe and/or input location for this step

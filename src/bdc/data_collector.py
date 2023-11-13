@@ -8,7 +8,7 @@ import random
 
 import requests
 
-from database.models import ProductOfInterest
+from database.models import AnnualIncome, ProductOfInterest
 
 
 class DataCollector:
@@ -18,30 +18,32 @@ class DataCollector:
     def __init__(self):
         self.data = []
 
-    def get_data_from_csv(self):
+    def get_data_from_csv(self, file_path: str = "../data/sumup_leads_email.csv"):
         """Retrieve information from the CSV file and utilize it in the Google API"""
         self.data = []
-        file_path = os.path.join(
-            os.path.abspath(os.path.dirname(__file__)), "../data/sumup_leads_email.csv"
-        )
-        with open(file_path, "r", encoding="utf8") as file:
-            csv_reader = csv.reader(file)
-            next(csv_reader)
+        file_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), file_path)
+        try:
+            with open(file_path, "r", encoding="utf8") as file:
+                csv_reader = csv.reader(file)
+                next(csv_reader)
 
-            for row in csv_reader:
-                data_dict = {
-                    "last_name": row[0],
-                    "first_name": row[1],
-                    "company_account": row[2],
-                    "phone_number": row[3],
-                    "email_address": row[4],
-                }
+                for row in csv_reader:
+                    data_dict = {
+                        "last_name": row[0],
+                        "first_name": row[1],
+                        "company_account": row[2],
+                        "phone_number": row[3],
+                        "email_address": row[4],
+                    }
 
-                self.data.append(data_dict)
+                    self.data.append(data_dict)
+            print(f"Successfully read data from {file_path}")
+        except FileNotFoundError as e:
+            print(f"Error: Input file {file_path} for BDC not found.")
 
         return self.data
 
-    def get_data_from_api(self):
+    def get_data_from_api(self, file_path: str = "../data/collected_data.json"):
         """will utilize the data from the CSV file in the API key we are using, retrieve the necessary information from the API, and extract specific information that we need for the predictor. This relevant data will be stored in a JSON file."""
         api_url = "https://dummyjson.com/users"
         try:
@@ -54,7 +56,7 @@ class DataCollector:
             data = response.json()
             file_path = os.path.join(
                 os.path.abspath(os.path.dirname(__file__)),
-                "../data/collected_data.json",
+                file_path,
             )
             with open(file_path, "w") as json_file:
                 user_data = []
@@ -68,8 +70,10 @@ class DataCollector:
                         "company_address": users["company"]["address"]["address"],
                         "company_department": users["company"]["department"],
                         "company_name": users["company"]["name"],
-                        "annual_income": random.randint(0, 1000000),
-                        "life_time_value": random.randint(0, 5000000),
+                        "annual_income": random.randint(0, AnnualIncome.Class10.value),
+                        "life_time_value": random.randint(
+                            0, AnnualIncome.Class10.value
+                        ),
                         "customer_probability": random.random(),
                         "product_of_interest": random.choice(list(ProductOfInterest)),
                     }
@@ -77,6 +81,10 @@ class DataCollector:
                     user_data.append(data_dict)
 
                 json.dump(user_data, json_file, indent=4)
+            print(f"Successfully fetched data from {api_url} and stored at {file_path}")
             return random.choice(user_data)
         else:
-            return f"Failed to fetch data. Status code: {response.status_code}"
+            print(
+                f"Failed to fetch data from {api_url}. Status code: {response.status_code}"
+            )
+            return None

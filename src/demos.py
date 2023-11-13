@@ -15,17 +15,15 @@ from evp import EstimatedValuePredictor
 
 def bdc_demo():
     dc = DataCollector()
+    input_file = "../data/sumup_leads_email.csv"
+    output_file = "../data/collected_data.json"
     try:
         choice = int(input("(1) read CSV\n(2) Dummy API\n"))
         match choice:
             case 1:
-                dc.get_data_from_csv()
-                print("Successfully Get Data From the CSV File")
+                dc.get_data_from_csv(file_path=input_file)
             case 2:
-                dc.get_data_from_api()
-                print(
-                    "Successfully Get Data From the API and stored in JSON file at 'src/data/collected_data.json'"
-                )
+                dc.get_data_from_api(file_path=output_file)
             case other:
                 print("Invalid choice")
     except ValueError:
