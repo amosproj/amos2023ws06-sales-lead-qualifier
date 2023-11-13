@@ -13,3 +13,5 @@ from dotenv import load_dotenv
 load_dotenv()
 
 GOOGLE_PLACES_API_KEY = os.getenv("GOOGLE_PLACES_API_KEY")
+
+FACEBOOK_SDK_GRAPH_API_KEY = os.getenv("FACEBOOK_SDK_GRAPH_API_KEY")
