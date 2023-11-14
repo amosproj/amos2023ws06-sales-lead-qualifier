@@ -4,6 +4,16 @@
 from typing import Dict
 
 import pytest
+from mock_components import get_database_mock
+
+
+@pytest.fixture
+def mock_database():
+    import database
+
+    database._database = get_database_mock()
+    yield database.get_database()
+    database._database = None
 
 
 @pytest.fixture

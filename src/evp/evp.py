@@ -14,7 +14,8 @@ class EstimatedValuePredictor:
         self.life_time_value_predictor = LinearRegression()
 
         all_leads = get_database().get_all_leads()
-        X = np.identity(len(all_leads))
+        self.dimension = len(all_leads)
+        X = np.identity(self.dimension)
         y_probability = np.array(
             [lead.lead_value.customer_probability for lead in all_leads]
         )
@@ -28,8 +29,8 @@ class EstimatedValuePredictor:
         lead = get_database().get_lead_by_id(lead_id)
 
         # preprocess lead_data to get feature vector for our ML model
-        feature_vector = np.zeros((1, 5))
-        feature_vector[0][lead.lead_id] = 1.0
+        feature_vector = np.zeros((1, self.dimension))
+        feature_vector[0][lead.lead_id - 1] = 1.0
 
         # use the models to predict required values
         lead_value_pred = self.life_time_value_predictor.predict(feature_vector)
@@ -41,7 +42,7 @@ class EstimatedValuePredictor:
         lead.lead_value = LeadValue(
             life_time_value=lead_value_pred, customer_probability=cust_prob_pred
         )
-        get_database().update_lead(lead)
+        # get_database().update_lead(lead)
 
         # might not need to return here if the database is updated by this function
         return lead.lead_value
