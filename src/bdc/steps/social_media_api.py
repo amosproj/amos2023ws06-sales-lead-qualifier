@@ -10,13 +10,13 @@ from requests import RequestException
 from tqdm import tqdm
 
 from bdc.steps.step import Step
-from config import FACEBOOK_SDK_GRAPH_API_KEY
+from config import FACEBOOK_APP_SECRET, FACEBOOK_SDK_GRAPH_API_KEY
 
 
 class FacebookGraphAPI(Step):
     # app credentials
     app_id = 1386886602242547
-    app_secret = "d7c15c28f0d2e725ec227293eaff20d6"
+    app_secret = FACEBOOK_APP_SECRET
     access_token = FACEBOOK_SDK_GRAPH_API_KEY
 
     # create facebook session
