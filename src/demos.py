@@ -8,7 +8,7 @@
 
 from bdc import DataCollector
 from bdc.pipeline import Pipeline
-from bdc.steps import EnrichCustomDomains, GooglePlaces, ScrapeAddress
+from bdc.steps import EnrichCustomDomains, FacebookGraphAPI, GooglePlaces, ScrapeAddress
 from database import get_database
 from evp import EstimatedValuePredictor
 
@@ -84,6 +84,13 @@ def pipeline_demo():
         choice = str(input(f"Run Scrape Address step? (will take a long time) (y/N)\n"))
         if choice == "y" or choice == "Y":
             steps.append(ScrapeAddress())
+    except ValueError:
+        print("Invalid Choice")
+
+    try:
+        choice = str(input(f"Run Facebook Graph API step? (will use token) (y/N)\n"))
+        if choice == "y" or choice == "Y":
+            steps.append(FacebookGraphAPI())
     except ValueError:
         print("Invalid Choice")
 
