@@ -28,15 +28,29 @@ class FacebookGraphAPI(Step):
     first_name = "Sherlock"
     last_name = "Holmes"
     search_query = f"{first_name} {last_name}"
-    search_results = graph.search(q=search_query, type="user")
+    # search_results = graph.search(q=search_query, type="user")
+    search_results = graph.request("/search", {"q": search_query, "type": "user"})
 
-    for user in search_results.get("data", []):
-        print(user)
-        print(graph.get_object(user["id"]))
-        # Access the user's email (if the 'email' permission is granted)
-        if "email" in graph.get_object(user["id"]):
-            user_email = graph.get_object(user["id"])["email"]
-            print(f"User Email: {user_email}")
+    if search_results.get("data"):
+        for user in search_results["data"]:
+            user_id = user.get("id")
+            user_details = graph.get_object(
+                user_id, fields="id, name, email"
+            )  # odify fields as needed
+            print(user_details)
+            if "email" in graph.get_object(user_id):
+                user_email = graph.get_object(user_id)["email"]
+                print(f"User Email: {user_email}")
+    else:
+        print("No users found.")
+
+    # for user in search_results.get("data", []):
+    #     print(user)
+    #     print(graph.get_object(user["id"]))
+    #     # Access the user's email (if the 'email' permission is granted)
+    #     if "email" in graph.get_object(user["id"]):
+    #         user_email = graph.get_object(user["id"])["email"]
+    #         print(f"User Email: {user_email}")
 
     def load_data(self) -> None:
         pass
