@@ -21,10 +21,11 @@ class GooglePlaces(Step):
     name = "Google_Places"
     URL = "https://maps.googleapis.com/maps/api/place/textsearch/json?query="
     fields = ["business_status", "formatted_address", "name", "user_ratings_total"]
-    gmaps = googlemaps.Client(key=GOOGLE_PLACES_API_KEY)
+    gmaps = None
 
     def load_data(self) -> None:
-        pass
+        # don't perform this in class body or else it will fail in tests due to missing API key
+        self.gmaps = googlemaps.Client(key=GOOGLE_PLACES_API_KEY)
 
     def verify(self) -> bool:
         return self.df is not None and "Email" in self.df and "domain" in self.df
