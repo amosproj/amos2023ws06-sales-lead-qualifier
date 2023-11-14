@@ -138,6 +138,13 @@ def pipeline_demo():
         print("Invalid Choice")
 
     try:
+        choice = str(input(f"Run Facebook Graph API step? (will use token) (y/N)\n"))
+        if choice == "y" or choice == "Y":
+            steps.append(FacebookGraphAPI())
+    except ValueError:
+        print("Invalid Choice")
+
+    try:
         choice = str(
             input(
                 f"Validate the phone number and using the phone number to get information about the location? (y/N)\n"
