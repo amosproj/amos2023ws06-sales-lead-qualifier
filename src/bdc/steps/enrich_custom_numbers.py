@@ -1,10 +1,11 @@
 # SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: 2023 Lucca Baumgärtner <lucca.baumgaertner@fau.de>
+# SPDX-FileCopyrightText: 2023 Fabian-Paul Utech <f.utech@gmx.net>
 
 from typing import Optional
 
-import phonenumbers
+
 import pandas as pd
+import phonenumbers
 from phonenumbers import geocoder
 
 
@@ -24,7 +25,7 @@ class EnrichCustomNumbers(Step):
         number_features = {'number_number': [], 'number_country': [], 'number_area': [], 'number_valid': [], 'number_possible': []}
 
         # Define a lambda function for each row of the df
-        process_row = lambda row: self.check_number('+' + row['Phone']) or {key: False if 'valid' in key or 'possible' in key else '' for key in number_features}
+        process_row = lambda row: self.check_number('+' + str(row['Phone'])) or {key: False if 'valid' in key or 'possible' in key else '' for key in number_features}
 
         # Apply the lambda function and save the resulting dictionaries in a pd.series 
         sr_features = self.df.apply(process_row, axis=1)
