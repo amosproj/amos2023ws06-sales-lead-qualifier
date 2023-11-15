@@ -6,7 +6,6 @@ from http import HTTPStatus
 import facebook
 import pandas as pd
 import requests
-from requests import RequestException
 from tqdm import tqdm
 
 from bdc.steps.step import Step
@@ -46,10 +45,9 @@ class FacebookGraphAPI(Step):
         if response.status_code == 200:
             # Extract the new access token from the response
             access_token = response.json()["access_token"]
-            print(f"New Access Token: {access_token}")
+            print(f"New Access Token!")
         else:
-            print("Failed to retrieve a new access token, tryng the initial")
-            access_token = FACEBOOK_SDK_GRAPH_API_KEY
+            print("Failed to retrieve a new access token")
 
         desired_fields = "id, name, email"
         graph = facebook.GraphAPI(access_token)
