@@ -13,6 +13,7 @@ from bdc import DataCollector
 from bdc.pipeline import Pipeline
 from bdc.steps import (
     EnrichCustomDomains,
+    FacebookGraphAPI,
     GooglePlaces,
     PreprocessPhonenumbers,
     ScrapeAddress,
