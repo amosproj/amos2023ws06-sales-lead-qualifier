@@ -35,8 +35,10 @@ class FacebookGraphAPI(Step):
 
     def search_facebook_graph(self, full_name):
         search_results = None
+        access_token = None
         # app credentials
-        app_id = 1386886602242547
+        # app_id = 1386886602242547
+        app_id = 1050489642767036  # customer app id
         app_secret = FACEBOOK_APP_SECRET
 
         token_url = f"https://graph.facebook.com/oauth/access_token?client_id={app_id}&client_secret={app_secret}&grant_type=client_credentials"
@@ -49,7 +51,7 @@ class FacebookGraphAPI(Step):
         else:
             print("Failed to retrieve a new access token")
 
-        desired_fields = "id, name, email"
+        desired_fields = "id, name, email,business_management"
         graph = facebook.GraphAPI(access_token)
         try:
             search_results = graph.request("/search", {"q": full_name, "type": "user"})
