@@ -8,26 +8,34 @@
 
 from http import HTTPStatus
 
+import googlemaps
 import pandas as pd
-import requests
 from requests import RequestException
 from tqdm import tqdm
 
-from bdc.steps.step import Step
+from bdc.steps.step import Step, StepError
 from config import GOOGLE_PLACES_API_KEY
 
 
 class GooglePlaces(Step):
-    # TODO: replace the requests package with the python client for Google Maps Service https://github.com/googlemaps/google-maps-services-python
     name = "Google_Places"
     URL = "https://maps.googleapis.com/maps/api/place/textsearch/json?query="
     fields = ["business_status", "formatted_address", "name", "user_ratings_total"]
+    gmaps = None
 
     def load_data(self) -> None:
-        pass
+        # don't perform this in class body or else it will fail in tests due to missing API key
+        if GOOGLE_PLACES_API_KEY is None:
+            raise StepError("An API key for Google Places is needed to run this step!")
+        self.gmaps = googlemaps.Client(key=GOOGLE_PLACES_API_KEY)
 
     def verify(self) -> bool:
-        return self.df is not None and "Email" in self.df and "domain" in self.df
+        return (
+            self.df is not None
+            and "Email" in self.df
+            and "domain" in self.df
+            and GOOGLE_PLACES_API_KEY is not None
+        )
 
     def run(self) -> None:
         tqdm.pandas(desc="Getting info from Places API")
@@ -51,23 +59,22 @@ class GooglePlaces(Step):
             return error_return_value
 
         try:
+            response = self.gmaps.find_place(domain, "textquery", fields=self.fields)
             # Retrieve response
-            response = requests.get(self.URL + domain + "&key=" + GOOGLE_PLACES_API_KEY)
+            # response = requests.get(self.URL + domain + "&key=" + GOOGLE_PLACES_API_KEY)
         except RequestException as e:
             self.log(f"Error: {str(e)}")
             return error_return_value
 
-        if not response.status_code == HTTPStatus.OK:
-            self.log(f"Failed to fetch data. Status code: {response.status_code}")
+        if not response["status"] == HTTPStatus.OK.name:
+            self.log(f"Failed to fetch data. Status code: {response['status']}")
             return error_return_value
 
-        data = response.json()
-
-        if "results" not in data or len(data["results"]) == 0:
+        if "candidates" not in response or len(response["candidates"]) == 0:
             return error_return_value
 
         # Only look at the top result TODO: Check if we can cross check available values to rate results
-        top_result = data["results"][0]
+        top_result = response["candidates"][0]
 
         results_list = [
             top_result[field] if field in top_result else None for field in self.fields
