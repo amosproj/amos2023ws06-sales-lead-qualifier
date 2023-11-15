@@ -9,7 +9,7 @@ import requests
 from tqdm import tqdm
 
 from bdc.steps.step import Step
-from config import FACEBOOK_APP_SECRET, FACEBOOK_SDK_GRAPH_API_KEY
+from config import FACEBOOK_APP_ID, FACEBOOK_APP_SECRET
 
 
 class FacebookGraphAPI(Step):
@@ -30,15 +30,14 @@ class FacebookGraphAPI(Step):
             self.df["Full Name"].progress_apply(
                 lambda lead: self.search_facebook_graph(lead)
             )
-        except facebook.GraphAPIError as e:
-            print(f"Graph API Error: {e}")
+        except ValueError as e:
+            self.log(f"Error: {e}")
 
     def search_facebook_graph(self, full_name):
         search_results = None
         access_token = None
         # app credentials
-        # app_id = 1386886602242547
-        app_id = 1050489642767036  # customer app id
+        app_id = FACEBOOK_APP_ID
         app_secret = FACEBOOK_APP_SECRET
 
         token_url = f"https://graph.facebook.com/oauth/access_token?client_id={app_id}&client_secret={app_secret}&grant_type=client_credentials"
@@ -47,9 +46,9 @@ class FacebookGraphAPI(Step):
         if response.status_code == 200:
             # Extract the new access token from the response
             access_token = response.json()["access_token"]
-            print(f"New Access Token!")
+            self.log(f"New access token acquired!")
         else:
-            print("Failed to retrieve a new access token")
+            self.log(f"Failed to retrieve a new access token")
 
         desired_fields = "id, name, email,business_management"
         graph = facebook.GraphAPI(access_token)
@@ -59,14 +58,14 @@ class FacebookGraphAPI(Step):
                 for user in search_results["data"]:
                     user_id = user.get("id")
                     user_details = graph.get_object(user_id, fields=desired_fields)
-                print(user_details)
+                self.log(f"user_details={user_details}")
                 if "email" in graph.get_object(user_id):
                     user_email = graph.get_object(user_id)["email"]
-                    print(f"User Email: {user_email}")
+                    self.log(f"User Email: {user_email}")
             else:
-                print(f"No users found with the given name {full_name}")
+                self.log(f"No users found with the given name {full_name}")
         except facebook.GraphAPIError as e:
-            print(f"Graph API Error: {e}")
+            self.log(f"Graph API Error: {e}")
 
     def finish(self) -> None:
         pass
