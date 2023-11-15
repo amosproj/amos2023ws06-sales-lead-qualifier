@@ -169,7 +169,7 @@
       ],
       "index": "pypi",
       "version": "==3.1.0"
-
+    },
     "googlemaps": {
       "hashes": [
         "sha256:3055fcbb1aa262a9159b589b5e6af762b10e80634ae11c59495bd44867e47d88"
@@ -177,7 +177,6 @@
       "index": "pypi",
       "markers": "python_version >= '3.5'",
       "version": "==4.10.0"
-
     },
     "idna": {
       "hashes": [

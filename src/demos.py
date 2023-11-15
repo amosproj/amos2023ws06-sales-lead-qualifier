@@ -8,14 +8,13 @@
 
 from bdc import DataCollector
 from bdc.pipeline import Pipeline
-
 from bdc.steps import (
     EnrichCustomDomains,
+    FacebookGraphAPI,
     GooglePlaces,
     PreprocessPhonenumbers,
     ScrapeAddress,
-    FacebookGraphAPI
-
+)
 from database import get_database
 from evp import EstimatedValuePredictor
 
