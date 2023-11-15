@@ -78,8 +78,8 @@ def db_demo():
 
 def pipeline_demo():
     steps = [EnrichCustomDomains()]
-    input_location = "src/data/sumup_leads_email.csv"
-    output_location = "src/data/leads_enriched.csv"
+    input_location = "data/sumup_leads_email.csv"
+    output_location = "data/leads_enriched.csv"
     try:
         choice = str(input(f"Run Scrape Address step? (will take a long time) (y/N)\n"))
         if choice == "y" or choice == "Y":
