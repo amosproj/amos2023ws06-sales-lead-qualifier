@@ -13,7 +13,7 @@ import pandas as pd
 from requests import RequestException
 from tqdm import tqdm
 
-from bdc.steps.step import Step
+from bdc.steps.step import Step, StepError
 from config import GOOGLE_PLACES_API_KEY
 
 
@@ -25,10 +25,17 @@ class GooglePlaces(Step):
 
     def load_data(self) -> None:
         # don't perform this in class body or else it will fail in tests due to missing API key
+        if GOOGLE_PLACES_API_KEY is None:
+            raise StepError("An API key for Google Places is needed to run this step!")
         self.gmaps = googlemaps.Client(key=GOOGLE_PLACES_API_KEY)
 
     def verify(self) -> bool:
-        return self.df is not None and "Email" in self.df and "domain" in self.df
+        return (
+            self.df is not None
+            and "Email" in self.df
+            and "domain" in self.df
+            and GOOGLE_PLACES_API_KEY is not None
+        )
 
     def run(self) -> None:
         tqdm.pandas(desc="Getting info from Places API")

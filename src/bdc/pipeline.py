@@ -35,13 +35,13 @@ class Pipeline:
             if step.df is None:
                 step.df = self.df.copy()
 
-            step.load_data()
-            if step.verify():
-                try:
+            try:
+                step.load_data()
+                if step.verify():
                     step_df = step.run()
                     self.df = step_df
-                except StepError as e:
-                    print(f"Step {step.name} failed!")
+            except StepError as e:
+                print(f"Step {step.name} failed! {e}")
 
             # cleanup
             step.finish()
