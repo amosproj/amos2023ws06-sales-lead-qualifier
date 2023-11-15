@@ -16,6 +16,8 @@ SPDX-FileCopyrightText: 2023 Berkay Bozkurt <resitberkaybozkurt@gmail.com>
 
 ## Creating the Environment
 
+The repository contains the file `.env.template`. This file is a template for the environment variables that need to be set for the application to run. Copy this file into a file called `.env` at the root level of this repository and fill in all values with the corresponding secrets.
+
 To create the virtual environment in this project you must have `pipenv` installed on your machine. Then run the following commands:
 
 ```[bash]
@@ -48,6 +50,22 @@ To install new packages in the environment add them to the `Pipfile`. Always pin
 Note that this project runs under an MIT license and we only permit the use of non-copyleft-licensed packages. Please be aware of this when installing new packages and inform yourself before blindly installing.
 
 When you have any issues with the environment contact `felix-zailskas`.
+
+## Build Process
+
+This application is run using a Docker container. For this the `Dockerfile` at root level is used. It copies the Pipfile to the container and installs the deployment environment using pipenv. Afterwards all source code from the `src/`. As the entrypoint the main.py is chosen. Ensure that Docker is installed and that the Docker daemon is running.
+
+To build the application run
+
+```[bash]
+./build_app.sh
+```
+
+To run the application interactively run
+
+```[bash]
+./run_app.sh
+```
 
 ### License
 
