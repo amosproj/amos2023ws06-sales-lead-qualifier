@@ -8,7 +8,12 @@
 
 from bdc import DataCollector
 from bdc.pipeline import Pipeline
-from bdc.steps import EnrichCustomDomains, GooglePlaces, ScrapeAddress
+from bdc.steps import (
+    EnrichCustomDomains,
+    GooglePlaces,
+    PreprocessPhonenumbers,
+    ScrapeAddress,
+)
 from database import get_database
 from evp import EstimatedValuePredictor
 
@@ -84,6 +89,17 @@ def pipeline_demo():
         choice = str(input(f"Run Scrape Address step? (will take a long time) (y/N)\n"))
         if choice == "y" or choice == "Y":
             steps.append(ScrapeAddress())
+    except ValueError:
+        print("Invalid Choice")
+
+    try:
+        choice = str(
+            input(
+                f"Validate the phone number and using the phone number to get information about the location? (y/N)\n"
+            )
+        )
+        if choice == "y" or choice == "Y":
+            steps.append(PreprocessPhonenumbers())
     except ValueError:
         print("Invalid Choice")
 

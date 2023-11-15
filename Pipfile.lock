@@ -257,6 +257,14 @@
       "markers": "python_version >= '3.8'",
       "version": "==2.0.3"
     },
+    "phonenumbers": {
+      "hashes": [
+        "sha256:4ae2d2e253a4752a269ae1147822b9aa500f14b2506a91f884e68b136901f128",
+        "sha256:7a57cceb8145d3099a0cda7a1f2581b6829936069224790be5de0adf14b39f13"
+      ],
+      "index": "pypi",
+      "version": "==8.13.25"
+    },
     "pydantic": {
       "hashes": [
         "sha256:94f336138093a5d7f426aac732dcfe7ab4eb4da243c88f891d65deb4a2556ee7",
