@@ -43,7 +43,7 @@ class FacebookGraphAPI(Step):
         token_url = f"https://graph.facebook.com/oauth/access_token?client_id={app_id}&client_secret={app_secret}&grant_type=client_credentials"
 
         response = requests.get(token_url)
-        if response.status_code == 200:
+        if response.status_code == HTTPStatus.OK:
             # Extract the new access token from the response
             access_token = response.json()["access_token"]
             self.log(f"New access token acquired!")
