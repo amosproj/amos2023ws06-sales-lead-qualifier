@@ -75,9 +75,11 @@ class GooglePlaces(Step):
                 lead_row["first_name_in_account"] and lead_row["last_name_in_account"]
             ):
                 # use account name as search query and replace special characters with whitespace
-                search_query = re.sub(r"[^a-zA-Z0-9\n.]", " ", account_name)
-        else:
-            # if account name consists only of first and last name, skip the search as no results are expected
+                search_query = re.sub(r"[^a-zA-Z0-9\n]", " ", account_name)
+
+        if search_query is None:
+            # if account name consists only of first and last name and no custom domain is available,
+            # skip the search as no results are expected
             return error_return_value
 
         try:
