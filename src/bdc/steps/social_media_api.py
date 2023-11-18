@@ -25,6 +25,12 @@ class FacebookGraphAPI(Step):
 
     def run(self):
         self.df["Full Name"] = self.df["First Name"] + " " + self.df["Last Name"]
+        self.desired_fields = "email"
+        self.desired_fields_list = [
+            field.strip() for field in self.desired_fields.split(",")
+        ]
+        for field in self.desired_fields_list:
+            self.df[field] = None
         tqdm.pandas(desc="Searching Facebook Graph API")
         try:
             self.df["Full Name"].progress_apply(
@@ -38,6 +44,7 @@ class FacebookGraphAPI(Step):
     def search_facebook_graph(self, full_name):
         search_results = None
         access_token = None
+        user_email = None
         # app credentials
         app_id = FACEBOOK_APP_ID
         app_secret = FACEBOOK_APP_SECRET
@@ -48,24 +55,25 @@ class FacebookGraphAPI(Step):
         if response.status_code == HTTPStatus.OK:
             # Extract the new access token from the response
             access_token = response.json()["access_token"]
-            self.log(f"New access token acquired!")
+            self.log(f"New access token acquired")
         else:
             self.log(f"Failed to retrieve a new access token")
-
-        desired_fields = "id, name, email,business_management"
         graph = facebook.GraphAPI(access_token)
         try:
             search_results = graph.request("/search", {"q": full_name, "type": "user"})
             if isinstance(search_results, dict) and search_results.get("data"):
-                for user in search_results["data"]:
-                    user_id = user.get("id")
-                    user_details = graph.get_object(user_id, fields=desired_fields)
+                user = search_results["data"][0]
+                user_id = user.get("id")
+                user_details = graph.get_object(user_id, fields=self.desired_fields)
                 self.log(f"user_details={user_details}")
                 if "email" in graph.get_object(user_id):
                     user_email = graph.get_object(user_id)["email"]
                     self.log(f"User Email: {user_email}")
+                    self.df["email"] = user_email
+                else:
+                    self.log(f"No user email found for {full_name}!")
             else:
-                self.log(f"No users found with the given name {full_name}")
+                self.log(f"No users found with the given name {full_name}!")
         except facebook.GraphAPIError as e:
             self.log(f"Graph API Error: {e}")
 
