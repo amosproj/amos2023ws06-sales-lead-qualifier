@@ -22,6 +22,7 @@ class GooglePlaces(Step):
     name = "Google_Places"
     URL = "https://maps.googleapis.com/maps/api/place/textsearch/json?query="
 
+    # fields that are expected as an output of the df.apply lambda function
     df_fields = [
         "business_status",
         "formatted_address",
@@ -29,6 +30,7 @@ class GooglePlaces(Step):
         "user_ratings_total",
         "no_candidates",
     ]
+    # fields that are accessed directly from the api
     api_fields = ["business_status", "formatted_address", "name", "user_ratings_total"]
 
     gmaps = None
