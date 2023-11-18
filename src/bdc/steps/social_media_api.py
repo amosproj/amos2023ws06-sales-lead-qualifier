@@ -25,13 +25,15 @@ class FacebookGraphAPI(Step):
 
     def run(self):
         self.df["Full Name"] = self.df["First Name"] + " " + self.df["Last Name"]
-        tqdm.pandas(desc="Searching Facebook")
+        tqdm.pandas(desc="Searching Facebook Graph API")
         try:
             self.df["Full Name"].progress_apply(
                 lambda lead: self.search_facebook_graph(lead)
             )
         except ValueError as e:
             self.log(f"Error: {e}")
+
+        return self.df
 
     def search_facebook_graph(self, full_name):
         search_results = None

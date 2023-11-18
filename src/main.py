@@ -3,12 +3,7 @@
 
 import os
 
-from database.models import ProductOfInterest
-from database.parsers import LeadParser
 from demos import bdc_demo, db_demo, evp_demo, pipeline_demo
-from evp import EstimatedValuePredictor
-from evp.data_processing import split_dataset
-from evp.predictors import Predictors
 
 abspath = os.path.abspath(__file__)
 dname = os.path.dirname(abspath)
