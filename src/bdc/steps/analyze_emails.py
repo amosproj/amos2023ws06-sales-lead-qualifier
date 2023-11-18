@@ -1,0 +1,115 @@
+# SPDX-License-Identifier: MIT
+# SPDX-FileCopyrightText: 2023 Lucca Baumgärtner <lucca.baumgaertner@fau.de>
+
+import pandas as pd
+from email_validator import EmailNotValidError, validate_email
+
+from bdc.steps.step import Step
+
+
+def extract_custom_domain(email: str) -> pd.Series:
+    try:
+        validate_email(email, check_deliverability=False)
+        return pd.Series([email.split("@")[1], True])
+    except EmailNotValidError as e:
+        return pd.Series([None, False])
+
+
+def analyze_email_account(lead) -> pd.Series:
+    if not lead["email_valid"]:
+        return pd.Series([False, False])
+    email_account = lead["Email"].split("@")[0]
+    first_name_in_account = (
+        lead["First Name"].lower() in email_account.lower()
+        if "First Name" in lead
+        else False
+    )
+    last_name_in_account = (
+        lead["Last Name"].lower() in email_account.lower()
+        if "Last Name" in lead
+        else False
+    )
+    return pd.Series([first_name_in_account, last_name_in_account])
+
+
+class AnalyzeEmails(Step):
+    """
+    A pipeline step performing various preprocessing steps with the given email address.
+    The following columns will be added on successful processing:
+    - domain: The custom domain name/website if any
+    - email_valid: Boolean result of email check
+    - first_name_in_account: Boolean, True if the given first name is part of the email account name
+    - first_name_in_account: Boolean, True if the given last name is part of the email account name
+    """
+
+    name = "Analyze-Emails"
+
+    def load_data(self):
+        pass
+
+    def verify(self):
+        return (
+            self._df is not None
+            and "Email" in self._df
+            and "First Name" in self._df
+            and "Last Name" in self._df
+        )
+
+    def run(self):
+        commercial_domains = [
+            "web.de",
+            "mail.com",
+            "mail.de",
+            "msn.com",
+            "gmail.com",
+            "yahoo.com",
+            "hotmail.com",
+            "aol.com",
+            "hotmail.co.uk",
+            "hotmail.fr",
+            "yahoo.fr",
+            "live.com",
+            "gmx.de",
+            "outlook.com",
+            "icloud.com",
+            "outlook.de",
+            "online.de",
+            "gmx.net",
+            "googlemail.com",
+            "yahoo.de",
+            "t-online.de",
+            "gmx.ch",
+            "gmx.at",
+            "hotmail.ch",
+            "live.nl",
+            "hotmail.de",
+            "home.nl",
+            "bluewin.ch",
+            "freenet.de",
+            "upcmail.nl",
+            "zeelandnet.nl",
+            "hotmail.nl",
+            "arcor.de",
+            "aol.de",
+            "me.com",
+            "gmail.con",
+            "office.de",
+            "my.com",
+        ]
+        # extract domain from email
+        # Possibly add the normalized email here
+        self._df[["domain", "email_valid"]] = self._df.apply(
+            lambda lead: extract_custom_domain(str(lead["Email"])), axis=1
+        )
+
+        self._df[["first_name_in_account", "last_name_in_account"]] = self._df.apply(
+            lambda lead: analyze_email_account(lead), axis=1
+        )
+
+        # remove commercial domains
+        self._df["domain"].replace(commercial_domains, None, inplace=True)
+        return self.df
+
+    def finish(self):
+        p_custom_domains = self._df["domain"].notna().sum() / len(self._df) * 100
+        self.log(f"Percentage of custom domains: {p_custom_domains:.2f}%")
