@@ -36,10 +36,11 @@ class AnalyzeEmails(Step):
     """
     A pipeline step performing various preprocessing steps with the given email address.
     The following columns will be added on successful processing:
-    - domain: The custom domain name/website if any
-    - email_valid: Boolean result of email check
-    - first_name_in_account: Boolean, True if the given first name is part of the email account name
-    - first_name_in_account: Boolean, True if the given last name is part of the email account name
+
+    - **domain**: The custom domain name/website if any
+    - **email_valid**: Boolean result of email check
+    - **first_name_in_account**: Boolean, True if the given first name is part of the email account name
+    - **last_name_in_account**: Boolean, True if the given last name is part of the email account name
     """
 
     name = "Analyze-Emails"
