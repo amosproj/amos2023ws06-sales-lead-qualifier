@@ -24,14 +24,25 @@ class GooglePlaces(Step):
 
     # fields that are expected as an output of the df.apply lambda function
     df_fields = [
+        "place_id",
         "business_status",
         "formatted_address",
         "name",
         "user_ratings_total",
+        "rating",
+        "price_level",
         "no_candidates",
     ]
     # fields that are accessed directly from the api
-    api_fields = ["business_status", "formatted_address", "name", "user_ratings_total"]
+    api_fields = [
+        "place_id",
+        "business_status",
+        "formatted_address",
+        "name",
+        "user_ratings_total",
+        "rating",
+        "price_level",
+    ]
 
     gmaps = None
 
