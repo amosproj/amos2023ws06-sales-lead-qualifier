@@ -17,9 +17,11 @@ services:
     build: .
     depends_on:
       - mongodb
-    volumes:
-      - .:opt/sumup_app
-    command: ./run_app.sh
+    env_file:
+      - .env
+    # volumes:
+    #   - .:opt/sumup_app
+    command: python src/main.py
     networks:
       - network_private
 

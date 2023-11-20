@@ -3,9 +3,13 @@
 
 import pymongo
 
+_client = None
+
 
 def mongo_connection(collection_name="default"):
-    client = pymongo.MongoClient("mongodb://root:example@localhost:27017/")
-    db = client["leads_enriched"]
+    global _client
+    if _client is None:
+        _client = pymongo.MongoClient("mongodb://root:example@mongodb:27017/")
+    db = _client["leads_enriched"]
     collection = db[collection_name]
     return collection
