@@ -1,18 +1,57 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Felix Zailskas <felixzailskas@gmail.com>
 
+import pickle
+from typing import List
+
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
 from database import get_database
-from database.models import LeadValue
+from database.models import Lead, LeadValue
+
+# TODO: create function to make a feature vector from a lead
+# TODO: maybe make the predictors their own class?
+# TODO: save fully pipelined csv under a different name
+# TODO: split into train/val/test
+# TODO: train a model and save it
+
+
+def create_feature_vector(leads: List[Lead]) -> np.ndarray:
+    pass
 
 
 class EstimatedValuePredictor:
-    def __init__(self) -> None:
-        self.probability_predictor = LinearRegression()
-        self.life_time_value_predictor = LinearRegression()
+    def __init__(
+        self,
+        model_type: str = "linear_regression",
+        prob_path: str = None,
+        val_path: str = None,
+    ) -> None:
+        # TODO: possibly two different models for probability and life time value
+        match model_type:
+            case "linear_regression":
+                try:
+                    self.probability_predictor = (
+                        LinearRegression()
+                        if prob_path is None
+                        else pickle.load(open(prob_path, "rb"))
+                    )
+                    self.life_time_value_predictor = (
+                        LinearRegression()
+                        if val_path is None
+                        else pickle.load(open(val_path, "rb"))
+                    )
+                except FileNotFoundError:
+                    print(
+                        f"Error: EVP could not find model at {prob_path} or {val_path}!"
+                    )
+            case default:
+                print(
+                    f"Error: EVP initialized with unsupported model type {model_type}!"
+                )
 
+    def train(self) -> None:
         all_leads = get_database().get_all_leads()
         self.dimension = len(all_leads)
         X = np.identity(self.dimension)
@@ -23,6 +62,13 @@ class EstimatedValuePredictor:
 
         self.probability_predictor.fit(X, y_probability)
         self.life_time_value_predictor.fit(X, y_value)
+
+    def save_models(self, prob_path: str = None, val_path: str = None) -> None:
+        try:
+            pickle.dump(self.probability_predictor, open(prob_path, "wb"))
+            pickle.dump(self.life_time_value_predictor, open(val_path, "wb"))
+        except Exception as e:
+            print(f"Error: EVP could not save model at {prob_path} or {val_path}! {e}")
 
     def estimate_value(self, lead_id) -> LeadValue:
         # make call to data base to retrieve relevant fields for this lead

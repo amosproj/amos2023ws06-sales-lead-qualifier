@@ -30,6 +30,12 @@ class ProductOfInterest(str, Enum):
     Other = "Other"
 
 
+class BusinessStatus(str, Enum):
+    Operational = "OPERATIONAL"
+    ClosedTemporarily = "CLOSED_TEMPORARILY"
+    ClosedPermanently = "CLOSED_PERMANENTLY"
+
+
 class LeadValue(BaseModel):
     life_time_value: float = Field(..., ge=0)
     customer_probability: float = Field(..., ge=0, le=1)
@@ -42,8 +48,13 @@ class Lead(BaseModel):
     lead_id: int  # could be expended to a UUID later
     first_name: str
     last_name: str
-    email_address: EmailStr
+    email_address: str
     phone_number: str
-    annual_income: AnnualIncome
-    product_of_interest: ProductOfInterest
+    annual_income: Optional[AnnualIncome]
+    product_of_interest: Optional[ProductOfInterest]
     lead_value: Optional[LeadValue]
+    domain: Optional[str]
+    number_valid: Optional[bool]
+    number_possible: Optional[bool]
+    google_places_business_status: Optional[BusinessStatus]
+    google_places_user_ratings_total: Optional[int]

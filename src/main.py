@@ -1,7 +1,14 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Felix Zailskas <felixzailskas@gmail.com>
 
+import os
+
+from database.parsers import LeadParser
 from demos import bdc_demo, db_demo, evp_demo, pipeline_demo
+
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+os.chdir(dname)
 
 if __name__ == "__main__":
     while True:
@@ -11,6 +18,7 @@ if __name__ == "__main__":
                 case 1:
                     bdc_demo()
                 case 2:
+                    # TODO: adjust demo with new way of training the models
                     evp_demo()
                 case 3:
                     db_demo()
