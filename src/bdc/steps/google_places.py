@@ -15,6 +15,7 @@ from tqdm import tqdm
 
 from bdc.steps.step import Step, StepError
 from config import GOOGLE_PLACES_API_KEY
+from database import mongo_connection
 
 
 class GooglePlaces(Step):
@@ -75,6 +76,10 @@ class GooglePlaces(Step):
 
         # Only look at the top result TODO: Check if we can cross check available values to rate results
         top_result = response["candidates"][0]
+
+        # database connection TODO: replace this connection to appropriate file
+        collection = mongo_connection("google_places")
+        collection.insert_one(top_result)
 
         results_list = [
             top_result[field] if field in top_result else None for field in self.fields
