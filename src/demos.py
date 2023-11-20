@@ -11,6 +11,7 @@ from bdc.pipeline import Pipeline
 from bdc.steps import (
     EnrichCustomDomains,
     GooglePlaces,
+    GPTExtractor,
     PreprocessPhonenumbers,
     ScrapeAddress,
 )
@@ -112,6 +113,16 @@ def pipeline_demo():
     except ValueError:
         print("Invalid Choice")
 
+    try:
+        choice = str(
+            input(
+                f"Run GPT Extractor openAI API? (will use token and generate cost!) (y/N)\n"
+            )
+        )
+        if choice == "y" or choice == "Y":
+            steps.append(GPTExtractor())
+    except ValueError:
+        print("Invalid Choice")
     limit = None
     try:
         choice = int(input(f"Set limit for data point to be processed\n"))
