@@ -1,6 +1,9 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Felix Zailskas <felixzailskas@gmail.com>
 
+import pickle
+from typing import List
+
 import numpy as np
 
 from database.models import Lead
