@@ -68,7 +68,7 @@ class GPTExtractor(Step):
             )
             phone = lead["Phone"] if lead["Phone"] else None
             email_addresss = lead["Email"] if lead["Email"] else None
-            self.log(f"Checking the company address for company {company_name}")
+            # self.log(f"Checking the company address for company {company_name}")
             # check first if the domain is None, yes -> then extract it
             if lead["google_places_formatted_address"] is not None:
                 return lead["google_places_formatted_address"]
@@ -91,7 +91,7 @@ class GPTExtractor(Step):
             # Check if the response contains the expected data
             if response.choices[0].message.content:
                 company_address = response.choices[0].message.content
-                self.log(f"Extracted company address: {company_address}")
+                # self.log(f"Extracted company address: {company_address}")
                 if company_address == self.no_answer:
                     return None
                 return company_address
@@ -129,8 +129,7 @@ class GPTExtractor(Step):
         Extract address using GPT for a given lead. Handles exceptions that mightarise from the API call.
         """
         try:
-            self.log(f"Checking the company name for lead {lead}")
-            # check first if the domain is None, yes -> then extract it
+            # self.log(f"Checking the company name for lead {lead}")
             last_name = lead["Last Name"] if lead["Last Name"] else None
             first_name = lead["First Name"] if lead["First Name"] else None
             company_name = (
@@ -163,7 +162,7 @@ class GPTExtractor(Step):
             # Check if the response contains the expected data
             if response.choices[0].message.content:
                 company = response.choices[0].message.content
-                self.log(f"Extracted company name: {company}")
+                # self.log(f"Extracted company name: {company}")
                 if company == self.no_answer:
                     return None
                 return company
@@ -223,7 +222,7 @@ class GPTExtractor(Step):
             # Check if the response contains the expected data
             if response.choices[0].message.content:
                 domain = response.choices[0].message.content
-                self.log(f"Extracted domain: {domain}")
+                # self.log(f"Extracted domain: {domain}")
                 if domain == self.no_answer:
                     return None
                 return domain
