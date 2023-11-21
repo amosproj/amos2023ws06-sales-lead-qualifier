@@ -11,7 +11,13 @@ from sklearn.metrics import mean_squared_error
 
 from bdc import DataCollector
 from bdc.pipeline import Pipeline
-from bdc.steps import AnalyzeEmails, GooglePlaces, PreprocessPhonenumbers, ScrapeAddress
+from bdc.steps import (
+    AnalyzeEmails,
+    FacebookGraphAPI,
+    GooglePlaces,
+    PreprocessPhonenumbers,
+    ScrapeAddress,
+)
 from bdc.steps.step import Step
 from database import get_database
 from database.parsers import LeadParser
