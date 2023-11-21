@@ -160,6 +160,7 @@ class GooglePlaces(Step):
             return None, 0
         try:
             response = self.gmaps.find_place(query, input_type, fields=self.api_fields)
+
             # Retrieve response
             # response = requests.get(self.URL + domain + "&key=" + GOOGLE_PLACES_API_KEY)
         except RequestException as e:
