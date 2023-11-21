@@ -20,7 +20,21 @@ from config import GOOGLE_PLACES_API_KEY
 class GooglePlaces(Step):
     name = "Google_Places"
     URL = "https://maps.googleapis.com/maps/api/place/textsearch/json?query="
-    fields = ["business_status", "formatted_address", "name", "user_ratings_total"]
+    api_fields = [
+        "business_status",
+        "formatted_address",
+        "name",
+        "user_ratings_total",
+        "place_id",
+    ]
+    named_fields = [
+        "business_status",
+        "formatted_address",
+        "name",
+        "user_ratings_total",
+        "place_id",
+        "website",
+    ]
     gmaps = None
 
     def load_data(self) -> None:
@@ -40,7 +54,7 @@ class GooglePlaces(Step):
     def run(self) -> None:
         tqdm.pandas(desc="Getting info from Places API")
         self.df[
-            [f"{self.name.lower()}_{field}" for field in self.fields]
+            [f"{self.name.lower()}_{field}" for field in self.named_fields]
         ] = self.df.progress_apply(
             lambda lead: self.get_data_from_google_api(lead), axis=1
         )
@@ -51,7 +65,7 @@ class GooglePlaces(Step):
 
     def get_data_from_google_api(self, lead_row):
         """Request Google Places Text Search API"""
-        error_return_value = pd.Series([None] * len(self.fields))
+        error_return_value = pd.Series([None] * len(self.api_fields))
 
         # Go through each email address entry and remove the domain name (can do this in preprocessing, this is for test)
         domain = lead_row["domain"]
@@ -59,7 +73,9 @@ class GooglePlaces(Step):
             return error_return_value
 
         try:
-            response = self.gmaps.find_place(domain, "textquery", fields=self.fields)
+            response = self.gmaps.find_place(
+                domain, "textquery", fields=self.api_fields
+            )
             # Retrieve response
             # response = requests.get(self.URL + domain + "&key=" + GOOGLE_PLACES_API_KEY)
         except RequestException as e:
@@ -77,7 +93,17 @@ class GooglePlaces(Step):
         top_result = response["candidates"][0]
 
         results_list = [
-            top_result[field] if field in top_result else None for field in self.fields
+            top_result[field] if field in top_result else None
+            for field in self.api_fields
         ]
+
+        # Call for the website using google place id, then append to results_list
+        website_response = self.gmaps.place(top_result["place_id"], fields=["website"])
+        website = (
+            website_response["result"]["website"]
+            if "website" in website_response["result"]
+            else None
+        )
+        results_list.append(website)
 
         return pd.Series(results_list)
