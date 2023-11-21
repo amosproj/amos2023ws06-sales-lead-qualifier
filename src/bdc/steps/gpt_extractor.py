@@ -5,6 +5,7 @@ from http import HTTPStatus
 
 import openai
 import requests
+from bs4 import BeautifulSoup
 from pandas import DataFrame
 from requests import RequestException
 from tqdm import tqdm
@@ -125,10 +126,15 @@ class GPTExtractor(Step):
 
             try:
                 # Use the detected encoding to decode the response content
-                response_text = response.content.decode(encoding)
+                soup = BeautifulSoup(response.content, "html.parser")
+
+                texts = []
+                for element in soup.find_all(["h1", "h2", "h3", "p", "li"]):
+                    texts.append(element.get_text(strip=True))
+                return " ".join(texts)
             except UnicodeDecodeError as e:
                 return None
 
             # Store the decoded HTML
-            return response_text
+            return None
         return None
