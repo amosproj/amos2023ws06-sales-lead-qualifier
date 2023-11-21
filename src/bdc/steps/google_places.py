@@ -11,6 +11,7 @@ from http import HTTPStatus
 
 import googlemaps
 import pandas as pd
+from googlemaps.exceptions import ApiError, HTTPError, Timeout, TransportError
 from requests import RequestException
 from tqdm import tqdm
 
@@ -31,7 +32,9 @@ class GooglePlaces(Step):
         "user_ratings_total",
         "rating",
         "price_level",
-        "no_candidates",
+        "candidate_count_mail",
+        "candidate_count_phone",
+        "place_id_matches_phone_search",
     ]
     # fields that are accessed directly from the api
     api_fields = [
@@ -59,6 +62,7 @@ class GooglePlaces(Step):
             and "domain" in self.df
             and "first_name_in_account" in self.df
             and "last_name_in_account" in self.df
+            and "number_formatted" in self.df
             and GOOGLE_PLACES_API_KEY is not None
         )
 
@@ -72,13 +76,30 @@ class GooglePlaces(Step):
         return self.df
 
     def finish(self) -> None:
-        pass
+        p_matches = (
+            self._df["google_places_place_id_matches_phone_search"].sum()
+            / len(self._df)
+            * 100
+        )
+        p_matches_rel = (
+            self._df["google_places_place_id_matches_phone_search"].notna().sum()
+            / len(self._df["google_places_place_id_matches_phone_search"].notna())
+            * 100
+        )
+        self.log(
+            f"Percentage of mail search matching phone search (of all): {p_matches:.2f}%"
+        )
+        self.log(
+            f"Percentage of mail search matching phone search (at least one result): {p_matches_rel:.2f}%"
+        )
 
     def get_data_from_google_api(self, lead_row):
         """Request Google Places Text Search API"""
         error_return_value = pd.Series([None] * len(self.df_fields))
 
         search_query = lead_row["domain"]
+
+        phone_number = lead_row["number_formatted"]
 
         if search_query is None and lead_row["email_valid"]:
             account_name = lead_row["Email"].split("@")[0]
@@ -88,39 +109,70 @@ class GooglePlaces(Step):
                 # use account name as search query and replace special characters with whitespace
                 search_query = re.sub(r"[^a-zA-Z0-9\n]", " ", account_name)
 
-        if search_query is None:
+        if search_query is None and phone_number is None:
             # if account name consists only of first and last name and no custom domain is available,
             # skip the search as no results are expected
             return error_return_value
 
-        try:
-            response = self.gmaps.find_place(
-                search_query, "textquery", fields=self.api_fields
+        response_by_mail, response_count_mail = self.get_first_place_candidate(
+            search_query, "textquery"
+        )
+
+        response_by_phone, response_count_phone = self.get_first_place_candidate(
+            phone_number, "phonenumber"
+        )
+
+        # compare the place_id, if it doesn't match just output results by email for now
+        if response_by_mail is not None and response_by_phone is not None:
+            place_id_matches_phone_search = (
+                response_by_phone["place_id"] == response_by_mail["place_id"]
             )
-            # Retrieve response
-            # response = requests.get(self.URL + domain + "&key=" + GOOGLE_PLACES_API_KEY)
-        except RequestException as e:
-            self.log(f"Error: {str(e)}")
+        else:
+            place_id_matches_phone_search = False
+
+        chosen_response = (
+            response_by_mail if response_by_mail is not None else response_by_phone
+        )
+
+        if chosen_response is None:
             return error_return_value
-
-        if not response["status"] == HTTPStatus.OK.name:
-            self.log(f"Failed to fetch data. Status code: {response['status']}")
-            return error_return_value
-
-        if "candidates" not in response or len(response["candidates"]) == 0:
-            return error_return_value
-
-        # Only look at the top result TODO: Check if we can cross check available values to rate results
-        top_result = response["candidates"][0]
-
-        no_candidates = len(response["candidates"])
 
         results_list = [
-            top_result[field] if field in top_result else None
+            chosen_response[field] if field in chosen_response else None
             for field in self.api_fields
         ]
 
         # add number of candidates, which is not a direct field in the api response but can be derived from it
-        results_list.append(no_candidates)
+        results_list.append(response_count_mail)
+        results_list.append(response_count_phone)
+
+        results_list.append(place_id_matches_phone_search)
 
         return pd.Series(results_list)
+
+    def get_first_place_candidate(self, query, input_type) -> (dict, int):
+        if query is None:
+            return None, 0
+        try:
+            response = self.gmaps.find_place(query, input_type, fields=self.api_fields)
+            # Retrieve response
+            # response = requests.get(self.URL + domain + "&key=" + GOOGLE_PLACES_API_KEY)
+        except RequestException as e:
+            self.log(f"Error: {str(e)}")
+            return None, 0
+        except (ApiError, HTTPError, Timeout, TransportError) as e:
+            self.log(f"Error: {str(e.message) if e.message is not None else str(e)}")
+            return None, 0
+
+        if not response["status"] == HTTPStatus.OK.name:
+            self.log(f"Failed to fetch data. Status code: {response['status']}")
+            return None, 0
+
+        if "candidates" not in response or len(response["candidates"]) == 0:
+            return None, 0
+
+        top_result = response["candidates"][0]
+
+        no_candidates = len(response["candidates"])
+
+        return top_result, no_candidates
