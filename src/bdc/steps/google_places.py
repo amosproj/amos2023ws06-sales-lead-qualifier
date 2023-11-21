@@ -35,6 +35,7 @@ class GooglePlaces(Step):
         "candidate_count_mail",
         "candidate_count_phone",
         "place_id_matches_phone_search",
+        "confidence",
     ]
     # fields that are accessed directly from the api
     api_fields = [
@@ -146,7 +147,11 @@ class GooglePlaces(Step):
         results_list.append(response_count_mail)
         results_list.append(response_count_phone)
 
+        # add boolean indicator whether search by phone result matches search by email
         results_list.append(place_id_matches_phone_search)
+
+        # calculate confidence score for google places results
+        results_list.append(self.calculate_confidence(results_list, lead_row))
 
         return pd.Series(results_list)
 
@@ -176,3 +181,41 @@ class GooglePlaces(Step):
         no_candidates = len(response["candidates"])
 
         return top_result, no_candidates
+
+    def calculate_confidence(self, results_list, lead) -> float | None:
+        """
+        Calculate some confidence score, representing how sure we are to have found the correct Google Place
+        (using super secret, patented AI algorithm :P)
+        :param results_list:
+        :return: confidence
+        """
+        if results_list[self.df_fields.index("place_id")] is None:
+            # no result -> no confidence
+            return None
+        if results_list[self.df_fields.index("place_id_matches_phone_search")]:
+            # phone search and email search returned same result -> this has to be it!
+            return 0.99
+        if (
+            results_list[self.df_fields.index("candidate_count_mail")] == 0
+            and results_list[self.df_fields.index("candidate_count_phone")] == 1
+        ):
+            # phone number is a pretty good identifier
+            return 0.8
+        if (
+            results_list[self.df_fields.index("candidate_count_mail")] == 1
+            and results_list[self.df_fields.index("candidate_count_phone")] == 0
+        ):
+            if lead["domain"] is not None:
+                # a custom domain is also a pretty good identifier
+                return 0.7
+            else:
+                # without a domain the account name is used for search which is often generic
+                return 0.4
+        if (
+            results_list[self.df_fields.index("candidate_count_mail")] == 1
+            and results_list[self.df_fields.index("candidate_count_phone")] == 1
+        ):
+            # only two results but different... what is that supposed to mean?
+            return 0.2
+        # we found more than 1 result for either search method -> low confidence
+        return 0.1
