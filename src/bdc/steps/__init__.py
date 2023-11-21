@@ -5,3 +5,4 @@ from .analyze_emails import AnalyzeEmails
 from .google_places import GooglePlaces
 from .preprocess_phonenumbers import PreprocessPhonenumbers
 from .scrape_address import ScrapeAddress
+from .social_media_api import FacebookGraphAPI

@@ -8,7 +8,7 @@
 
 from bdc import DataCollector
 from bdc.pipeline import Pipeline
-from bdc.steps import AnalyzeEmails, GooglePlaces, PreprocessPhonenumbers, ScrapeAddress
+from bdc.steps import AnalyzeEmails, GooglePlaces, PreprocessPhonenumbers, ScrapeAddress, FacebookGraphAPI
 from bdc.steps.step import Step
 from database import get_database
 from evp import EstimatedValuePredictor
@@ -78,6 +78,7 @@ def db_demo():
 
 
 def pipeline_demo():
+  
     steps: list[Step] = [AnalyzeEmails()]
     input_location = "./data/sumup_leads_email.csv"
     output_location = "./data/leads_enriched.csv"
@@ -85,6 +86,13 @@ def pipeline_demo():
         choice = str(input(f"Run Scrape Address step? (will take a long time) (y/N)\n"))
         if choice == "y" or choice == "Y":
             steps.append(ScrapeAddress())
+    except ValueError:
+        print("Invalid Choice")
+
+    try:
+        choice = str(input(f"Run Facebook Graph API step? (will use token) (y/N)\n"))
+        if choice == "y" or choice == "Y":
+            steps.append(FacebookGraphAPI())
     except ValueError:
         print("Invalid Choice")
 
