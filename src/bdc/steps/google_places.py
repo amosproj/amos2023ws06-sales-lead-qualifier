@@ -20,6 +20,8 @@ from config import GOOGLE_PLACES_API_KEY
 class GooglePlaces(Step):
     name = "Google_Places"
     URL = "https://maps.googleapis.com/maps/api/place/textsearch/json?query="
+
+    # TODO: api_fields and named_fields must be in the same order. This is poor design and should be fixed
     api_fields = [
         "business_status",
         "formatted_address",

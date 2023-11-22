@@ -18,14 +18,14 @@ class GPTExtractor(Step):
     name = "GPT-Extractor"
     model = "gpt-4"
     no_answer = "None"
-    # system and user messages to be used for extracting domains from by lead provided email address.
+
+    # system and user messages to be used for creating company summary for lead using website.
     system_message_for_website_summary = f"You are html summarizer, you being provided the companies' htmls and you answer with the summary of three to five sentences including all the necessary information which might be useful for salesperson. If no html then just answer with '{no_answer}'"
     user_message_for_website_summary = (
         "Give salesperson a summary using following html: {}"
     )
 
     extracted_col_name_website_summary = "sales_person_summary"
-
     client = None
 
     def load_data(self) -> None:
@@ -48,13 +48,18 @@ class GPTExtractor(Step):
 
     def summarize_the_company_website(self, website):
         """
-        Extract address using GPT for a given lead. Handles exceptions that mightarise from the API call.
+        Summarise client website using GPT. Handles exceptions that mightarise from the API call.
         """
+
         if website is None:
             return None
-        html_raw = self.extract_the_raw_html_from_url(website)
-        if html_raw is None:
-            return None
+
+        html_raw = (
+            self.extract_the_raw_html_from_url(website)
+            if self.extract_the_raw_html_from_url(website) is not None
+            else None
+        )
+
         try:
             response = self.client.chat.completions.create(
                 model=self.model,
@@ -72,41 +77,29 @@ class GPTExtractor(Step):
                 ],
                 temperature=0,
             )
+
             # Check if the response contains the expected data
             if response.choices[0].message.content:
-                company_address = response.choices[0].message.content
-                # self.log(f"Extracted company address: {company_address}")
-                if company_address == self.no_answer:
+                company_summary = response.choices[0].message.content
+
+                if company_summary == self.no_answer:
                     return None
-                return company_address
+
+                return company_summary
             else:
-                self.log("No company address data found in the response.")
+                self.log("No summary data found in the response.")
                 return None
-        except openai.APITimeoutError as e:
-            # Handle timeout error, e.g. retry or log
-            self.log(f"OpenAI API request timed out: {e}")
-            pass
-        except openai.APIConnectionError as e:
-            # Handle connection error, e.g. check network or log
-            self.log(f"OpenAI API request failed to connect: {e}")
-            pass
-        except openai.BadRequestError as e:
-            # Handle invalid request error, e.g. validate parameters or log
-            self.log(f"OpenAI API request was bad: {e}")
-            pass
-        except openai.AuthenticationError as e:
-            # Handle authentication error, e.g. check credentials or log
-            self.log(f"OpenAI API request was not authorized: {e}")
-            pass
-        except openai.PermissionDeniedError as e:
-            # Handle permission error, e.g. check scope or log
-            self.log(f"OpenAI API request was not permitted: {e}")
-            pass
-        except Exception as e:
+        except (
+            openai.APITimeoutError,
+            openai.APIConnectionError,
+            openai.BadRequestErroras,
+            openai.AuthenticationError,
+            openai.PermissionDeniedError,
+            Exception,
+        ) as e:
+            # Handle possible errors
             self.log(f"An error occurred during address extraction: {e}")
-            # Optionally, you might want to re-raise the exception
-            # or handle it differently depending on your use case.
-            return None
+            pass
 
     def extract_the_raw_html_from_url(self, url):
         try:
@@ -117,11 +110,7 @@ class GPTExtractor(Step):
 
         # If the request was successful
         if response.status_code == HTTPStatus.OK:
-            # Detect the correct encoding
-            # if 'charset' in response.headers.get('content-type', '').lower():
-            # encoding = response.apparent_encoding
-            # else:
-            #     encoding = response.encoding
+            # Select the encoding
             encoding = "utf-8"
 
             try:
@@ -135,6 +124,5 @@ class GPTExtractor(Step):
             except UnicodeDecodeError as e:
                 return None
 
-            # Store the decoded HTML
-            return None
+        # Otherwise, exit
         return None
