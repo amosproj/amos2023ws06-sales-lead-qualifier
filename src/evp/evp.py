@@ -2,47 +2,41 @@
 # SPDX-FileCopyrightText: 2023 Felix Zailskas <felixzailskas@gmail.com>
 
 import numpy as np
-from sklearn.linear_model import LinearRegression
 
-from database import get_database
-from database.models import LeadValue
+from database.models import Lead
+from database.parsers import LeadParser
+from evp.predictors import LinearRegressionPredictor, Predictors, RegressionPredictor
 
 
 class EstimatedValuePredictor:
-    def __init__(self) -> None:
-        self.probability_predictor = LinearRegression()
-        self.life_time_value_predictor = LinearRegression()
+    value_predictor: RegressionPredictor
 
-        all_leads = get_database().get_all_leads()
-        self.dimension = len(all_leads)
-        X = np.identity(self.dimension)
-        y_probability = np.array(
-            [lead.lead_value.customer_probability for lead in all_leads]
-        )
-        y_value = np.array([lead.lead_value.life_time_value for lead in all_leads])
+    def __init__(
+        self,
+        model_type: Predictors = Predictors.LinearRegression,
+        model_path: str = None,
+    ) -> None:
+        # TODO: should we go back to two models?
+        match model_type:
+            case Predictors.LinearRegression:
+                self.value_predictor = LinearRegressionPredictor(model_path=model_path)
+            case default:
+                print(
+                    f"Error: EVP initialized with unsupported model type {model_type}!"
+                )
 
-        self.probability_predictor.fit(X, y_probability)
-        self.life_time_value_predictor.fit(X, y_value)
+    def train(self, data_path: str) -> None:
+        leads = LeadParser.parse_leads_from_csv(data_path)
+        X = np.array([lead.to_one_hot_vector() for lead in leads])
+        y = np.array([lead.lead_value for lead in leads])
+        self.value_predictor.train(X, y)
 
-    def estimate_value(self, lead_id) -> LeadValue:
-        # make call to data base to retrieve relevant fields for this lead
-        lead = get_database().get_lead_by_id(lead_id)
+    def save_models(self, model_path: str = None) -> None:
+        self.value_predictor.save(path=model_path)
 
+    def estimate_value(self, lead: Lead) -> float:
         # preprocess lead_data to get feature vector for our ML model
-        feature_vector = np.zeros((1, self.dimension))
-        feature_vector[0][lead.lead_id - 1] = 1.0
-
+        feature_vector = lead.to_one_hot_vector()
         # use the models to predict required values
-        lead_value_pred = self.life_time_value_predictor.predict(feature_vector)
-        # manually applying sigmoid to ensure value in range 0, 1
-        cust_prob_pred = 1 / (
-            1 + np.exp(-self.probability_predictor.predict(feature_vector))
-        )
-
-        lead.lead_value = LeadValue(
-            life_time_value=lead_value_pred, customer_probability=cust_prob_pred
-        )
-        # get_database().update_lead(lead)
-
-        # might not need to return here if the database is updated by this function
-        return lead.lead_value
+        value_prediction = self.value_predictor.predict([feature_vector])
+        return value_prediction

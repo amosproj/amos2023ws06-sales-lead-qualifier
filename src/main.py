@@ -17,6 +17,7 @@ if __name__ == "__main__":
                 case 1:
                     bdc_demo()
                 case 2:
+                    # TODO: adjust demo with new way of training the models
                     evp_demo()
                 case 3:
                     db_demo()
