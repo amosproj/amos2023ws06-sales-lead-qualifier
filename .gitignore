@@ -55,5 +55,8 @@ bin/
 # Env files
 *.env
 
+# Report pdf
+report.pdf
+
 # trained models
 **/models/*
