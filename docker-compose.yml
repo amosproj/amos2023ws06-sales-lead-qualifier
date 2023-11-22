@@ -21,7 +21,7 @@ services:
       - .env
     # volumes:
     #   - .:opt/sumup_app
-    command: python src/main.py
+    command: python main.py
     networks:
       - network_private
 
