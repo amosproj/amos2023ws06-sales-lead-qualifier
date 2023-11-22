@@ -21,7 +21,7 @@ class PreprocessPhonenumbers(Step):
 
     def run(self):
         number_features = {
-            "number_number": [],
+            "number_formatted": [],
             "number_country": [],
             "number_area": [],
             "number_valid": [],
@@ -78,7 +78,7 @@ class PreprocessPhonenumbers(Step):
         is_possible_number = phonenumbers.is_possible_number(phone_number_object)
 
         result_dict = {
-            "number_number": international_number,
+            "number_formatted": international_number,
             "number_country": country,
             "number_area": location,
             "number_valid": is_valid_number,
