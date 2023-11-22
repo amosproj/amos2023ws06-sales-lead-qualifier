@@ -5,11 +5,6 @@ from database import mongo_connection
 from demos import bdc_demo, db_demo, evp_demo, pipeline_demo
 
 if __name__ == "__main__":
-    db = mongo_connection()
-    db.insert_one({"test": "test"})
-    items = db.find({})
-    for item in items:
-        print(item)
     while True:
         try:
             choice = int(input("(1) BDC\n(2) EVP\n(3) DB\n(4) Pipeline\n(5) Exit\n"))
