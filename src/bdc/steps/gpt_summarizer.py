@@ -1,9 +1,12 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Berkay Bozkurt <resitberkaybozkurt@gmail.com>
+# SPDX-FileCopyrightText: 2023 Sophie Heasman <sophieheasmann@gmail.com>
+
 
 from http import HTTPStatus
 
 import openai
+import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 from pandas import DataFrame
@@ -14,8 +17,8 @@ from bdc.steps.step import Step, StepError
 from config import OPEN_AI_API_KEY
 
 
-class GPTExtractor(Step):
-    name = "GPT-Extractor"
+class GPTSummarizer(Step):
+    name = "GPT-Summarizer"
     model = "gpt-4"
     no_answer = "None"
 
@@ -51,14 +54,13 @@ class GPTExtractor(Step):
         Summarise client website using GPT. Handles exceptions that mightarise from the API call.
         """
 
-        if website is None:
+        if website is None or pd.isna(website):
             return None
 
-        html_raw = (
-            self.extract_the_raw_html_from_url(website)
-            if self.extract_the_raw_html_from_url(website) is not None
-            else None
-        )
+        html = self.extract_the_raw_html_and_parse(website)
+
+        if html is None:
+            return None
 
         try:
             response = self.client.chat.completions.create(
@@ -70,9 +72,7 @@ class GPTExtractor(Step):
                     },
                     {
                         "role": "user",
-                        "content": self.user_message_for_website_summary.format(
-                            html_raw
-                        ),
+                        "content": self.user_message_for_website_summary.format(html),
                     },
                 ],
                 temperature=0,
@@ -98,31 +98,28 @@ class GPTExtractor(Step):
             Exception,
         ) as e:
             # Handle possible errors
-            self.log(f"An error occurred during address extraction: {e}")
+            self.log(f"An error occurred during summarizing the lead with GPT: {e}")
             pass
 
-    def extract_the_raw_html_from_url(self, url):
+    def extract_the_raw_html_and_parse(self, url):
         try:
             # Send a request to the URL
             response = requests.get(url)
         except RequestException as e:
+            self.log(f"An error occured during getting repsonse from url: {e}")
             return None
 
         # If the request was successful
-        if response.status_code == HTTPStatus.OK:
-            # Select the encoding
-            encoding = "utf-8"
+        if not response.status_code == HTTPStatus.OK:
+            self.log(f"Failed to fetch data. Status code: {response.status_code}")
+            return None
+        try:
+            # Use the detected encoding to decode the response content
+            soup = BeautifulSoup(response.content, "html.parser")
 
-            try:
-                # Use the detected encoding to decode the response content
-                soup = BeautifulSoup(response.content, "html.parser")
-
-                texts = []
-                for element in soup.find_all(["h1", "h2", "h3", "p", "li"]):
-                    texts.append(element.get_text(strip=True))
-                return " ".join(texts)
-            except UnicodeDecodeError as e:
-                return None
-
-        # Otherwise, exit
-        return None
+            texts = []
+            for element in soup.find_all(["h1", "h2", "h3", "p", "li"]):
+                texts.append(element.get_text(strip=True))
+            return " ".join(texts)
+        except UnicodeDecodeError as e:
+            return None

@@ -3,6 +3,6 @@
 
 from .enrich_custom_domains import EnrichCustomDomains
 from .google_places import GooglePlaces
-from .gpt_extractor import GPTExtractor
+from .gpt_summarizer import GPTSummarizer
 from .preprocess_phonenumbers import PreprocessPhonenumbers
 from .scrape_address import ScrapeAddress
