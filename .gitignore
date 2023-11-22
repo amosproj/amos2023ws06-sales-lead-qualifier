@@ -54,3 +54,6 @@ bin/
 
 # Env files
 *.env
+
+# trained models
+**/models/*

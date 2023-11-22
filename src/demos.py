@@ -6,12 +6,24 @@
 # SPDX-FileCopyrightText: 2023 Ruchita Nathani <Ruchita.nathani@fau.de>
 # SPDX-FileCopyrightText: 2023 Ahmed Sheta <ahmed.sheta@fau.de>
 
+import numpy as np
+from sklearn.metrics import mean_squared_error
+
 from bdc import DataCollector
 from bdc.pipeline import Pipeline
-from bdc.steps import AnalyzeEmails, GooglePlaces, PreprocessPhonenumbers, ScrapeAddress, FacebookGraphAPI
+from bdc.steps import (
+    AnalyzeEmails,
+    FacebookGraphAPI,
+    GooglePlaces,
+    PreprocessPhonenumbers,
+    ScrapeAddress,
+)
 from bdc.steps.step import Step
 from database import get_database
+from database.parsers import LeadParser
 from evp import EstimatedValuePredictor
+from evp.data_processing import split_dataset
+from evp.predictors import Predictors
 
 
 def bdc_demo():
@@ -32,33 +44,72 @@ def bdc_demo():
 
 
 def evp_demo():
-    amt_leads = get_database().get_cardinality()
-    try:
-        lead_id = int(
-            input(f"Chose a lead_id in range [1, {amt_leads}] to predict for it\n")
-        )
-    except ValueError:
-        print("Invalid Choice")
-        return
-
-    if lead_id < 1 or lead_id > amt_leads:
-        print("Invalid Choice")
-        return
-
-    lead = get_database().get_lead_by_id(lead_id)
-
-    evp = EstimatedValuePredictor()
-    lead_value = evp.estimate_value(lead_id)
-    print(
-        f"""
-        Dummy prediction for lead#{lead.lead_id}:
-
-        This lead has a predicted probability of {lead_value.customer_probability:.2f} to become a customer.
-        This lead has a predicted life time value of {lead_value.life_time_value:.2f}.
-
-        This results in a total lead value of {lead_value.get_lead_value():.2f}.
-    """
+    choice = str(input("Load model from file? (y/N)\n"))
+    if choice == "y" or choice == "Y":
+        model_path = str(input("Provide model path\n"))
+    else:
+        model_path = None
+    print(f"Creating EVP from model {model_path}")
+    evp = EstimatedValuePredictor(
+        model_type=Predictors.LinearRegression, model_path=model_path
     )
+    choice = str(input("Split dataset (y/N)\n"))
+    if choice == "y" or choice == "Y":
+        choice = str(input("Add dummy labels (the lead value) (y/N)\n"))
+        add_labels = False
+        if choice == "y" or choice == "Y":
+            add_labels = True
+        split_dataset(
+            "data/save_leads_enriched.csv",
+            "data/leads",
+            0.8,
+            0.1,
+            0.1,
+            add_labels=add_labels,
+        )
+    while True:
+        try:
+            choice = int(
+                input(
+                    "(1) Train\n(2) Test\n(3) Predict on single lead\n(4) Save model\n(5) Exit\n"
+                )
+            )
+            match choice:
+                case 1:
+                    evp.train("data/leads_train.csv")
+                case 2:
+                    leads = LeadParser.parse_leads_from_csv("data/leads_test.csv")
+                    predictions = np.array([evp.estimate_value(lead) for lead in leads])
+                    true_labels = np.array([lead.lead_value for lead in leads])
+                    mean_sq_error = mean_squared_error(true_labels, predictions)
+                    print(
+                        f"EVP has a mean squared error of {mean_sq_error} on the test set."
+                    )
+                case 3:
+                    leads = LeadParser.parse_leads_from_csv("data/leads_test.csv")
+                    try:
+                        lead_id = int(
+                            input(
+                                f"Chose a lead_id in range [0, {len(leads) - 1}] to predict for it\n"
+                            )
+                        )
+                        if lead_id < 0 or lead_id > len(leads) - 1:
+                            print("Invalid Choice")
+                            continue
+                    except ValueError:
+                        print("Invalid Choice")
+                        continue
+                    prediction = evp.estimate_value(leads[lead_id])
+                    print(
+                        f"Lead has predicted value of {prediction} and true value of {leads[lead_id].lead_value}"
+                    )
+                case 4:
+                    model_path = str(input("Provide model path\n"))
+                    evp.save_models(model_path)
+                case 5:
+                    break
+        except ValueError:
+            print("Invalid choice")
 
 
 def db_demo():
@@ -78,7 +129,6 @@ def db_demo():
 
 
 def pipeline_demo():
-  
     steps: list[Step] = [AnalyzeEmails()]
     input_location = "./data/sumup_leads_email.csv"
     output_location = "./data/leads_enriched.csv"
