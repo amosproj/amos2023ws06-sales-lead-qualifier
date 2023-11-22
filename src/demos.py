@@ -60,7 +60,7 @@ def evp_demo():
         if choice == "y" or choice == "Y":
             add_labels = True
         split_dataset(
-            "data/save_leads_enriched.csv",
+            "data/leads_enriched.csv",
             "data/leads",
             0.8,
             0.1,
