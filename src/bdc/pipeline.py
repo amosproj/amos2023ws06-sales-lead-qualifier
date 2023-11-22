@@ -47,6 +47,8 @@ class Pipeline:
             step.finish()
 
         print(f"[PIPELINE] - Finished running {len(self.steps)} steps!")
-        print(self.df.head())
-
-        self.df.to_csv(self.output_location)
+        try:
+            print(self.df.head())
+            self.df.to_csv(self.output_location)
+        except AttributeError as e:
+            print(f"No datas to show/save! Error: {e}")

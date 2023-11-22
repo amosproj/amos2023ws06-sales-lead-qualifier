@@ -9,7 +9,7 @@ from database.parsers import LeadParser
 
 
 class DatabaseDummy:
-    def __init__(self, input_file: str = "src/data/collected_data.json") -> None:
+    def __init__(self, input_file: str = "data/collected_data.json") -> None:
         try:
             with open(input_file) as f:
                 json_data = json.load(f)

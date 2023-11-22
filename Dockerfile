@@ -9,7 +9,7 @@ ADD Pipfile .
 RUN pip install pipenv
 RUN pipenv install
 
-ADD src src/
+ADD src .
 
 ENTRYPOINT [ "pipenv", "run" ]
-CMD [ "python", "src/main.py" ]
+CMD [ "python", "main.py" ]
