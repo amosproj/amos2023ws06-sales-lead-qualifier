@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Felix Zailskas <felixzailskas@gmail.com>
 
-from database import mongo_connection
 from demos import bdc_demo, db_demo, evp_demo, pipeline_demo
 
 if __name__ == "__main__":
