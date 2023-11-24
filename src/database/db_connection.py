@@ -3,13 +3,15 @@
 
 import pymongo
 
+from config import DB_CONNECTION
+
 _client = None
 
 
 def mongo_connection(collection_name="default"):
     global _client
     if _client is None:
-        _client = pymongo.MongoClient("mongodb://root:example@mongodb:27017/")
+        _client = pymongo.MongoClient(DB_CONNECTION)
     db = _client["leads_enriched"]
     collection = db[collection_name]
     return collection
