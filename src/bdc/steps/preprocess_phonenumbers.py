@@ -6,6 +6,7 @@ from typing import Optional
 import pandas as pd
 import phonenumbers
 from phonenumbers import geocoder
+from tqdm import tqdm
 
 from bdc.steps.step import Step
 from logger import get_logger
@@ -30,24 +31,18 @@ class PreprocessPhonenumbers(Step):
         return "Phone" in self._df
 
     def run(self):
-        number_features = {col: [] for col in self.added_cols}
-
-        # Define a lambda function for each row of the df
-        process_row = lambda row: self.check_number("+" + str(row["Phone"])) or {
-            key: False if "valid" in key or "possible" in key else ""
-            for key in number_features
-        }
-
-        # Apply the lambda function and save the resulting dictionaries in a pd.series
-        sr_features = self.df.apply(process_row, axis=1)
-
-        # Apply on the pd.Series the pd.Series to create a df with new columns for each key
-        df_features = sr_features.apply(pd.Series)
-
-        # Concatenate the original DataFrame with the new DataFrame
-        self.df = pd.concat([self.df, df_features], axis=1)
+        tqdm.pandas(desc="Preprocessing Phone numbers")
+        self.df[self.added_cols] = self.df.progress_apply(
+            lambda lead: pd.Series(self.process_row(lead)), axis=1
+        )
 
         return self.df
+
+    def process_row(self, row):
+        return self.check_number("+" + str(row["Phone"])) or {
+            key: False if "valid" in key or "possible" in key else ""
+            for key in self.added_cols
+        }
 
     def finish(self):
         p_phone_numbers = self._df["number_valid"].sum() / len(self._df) * 100
