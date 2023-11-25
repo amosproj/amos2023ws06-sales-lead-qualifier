@@ -15,6 +15,7 @@ from bdc.steps import (
     AnalyzeEmails,
     FacebookGraphAPI,
     GooglePlaces,
+    GPTReviewSentimentAnalyzer,
     PreprocessPhonenumbers,
     ScrapeAddress,
 )
@@ -171,7 +172,7 @@ def pipeline_demo():
             input(f"Run open API step? (will use token and generate cost!) (y/N)\n")
         )
         if choice == "y" or choice == "Y":
-            steps.append(GooglePlaces())
+            steps.append(GPTReviewSentimentAnalyzer())
     except ValueError:
         print("Invalid Choice")
 
