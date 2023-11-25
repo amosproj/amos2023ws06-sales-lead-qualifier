@@ -166,6 +166,15 @@ def pipeline_demo():
     except ValueError:
         print("Invalid Choice")
 
+    try:
+        choice = str(
+            input(f"Run open API step? (will use token and generate cost!) (y/N)\n")
+        )
+        if choice == "y" or choice == "Y":
+            steps.append(GooglePlaces())
+    except ValueError:
+        print("Invalid Choice")
+
     limit = None
     try:
         choice = int(input(f"Set limit for data point to be processed\n"))
