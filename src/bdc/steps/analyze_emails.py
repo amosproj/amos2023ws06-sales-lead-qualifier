@@ -5,6 +5,9 @@ import pandas as pd
 from email_validator import EmailNotValidError, validate_email
 
 from bdc.steps.step import Step
+from logger import get_logger
+
+log = get_logger()
 
 
 def extract_custom_domain(email: str) -> pd.Series:
@@ -119,4 +122,4 @@ class AnalyzeEmails(Step):
 
     def finish(self):
         p_custom_domains = self._df["domain"].notna().sum() / len(self._df) * 100
-        self.log(f"Percentage of custom domains: {p_custom_domains:.2f}%")
+        log.info(f"Percentage of custom domains: {p_custom_domains:.2f}%")

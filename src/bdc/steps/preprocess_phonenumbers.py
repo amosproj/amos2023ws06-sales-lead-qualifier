@@ -8,6 +8,9 @@ import phonenumbers
 from phonenumbers import geocoder
 
 from bdc.steps.step import Step
+from logger import get_logger
+
+log = get_logger()
 
 
 class PreprocessPhonenumbers(Step):
@@ -48,13 +51,13 @@ class PreprocessPhonenumbers(Step):
 
     def finish(self):
         p_phone_numbers = self._df["number_valid"].sum() / len(self._df) * 100
-        self.log(f"Percentage of valid numbers: {p_phone_numbers:.2f}%")
+        log.info(f"Percentage of valid numbers: {p_phone_numbers}%")
 
     def check_number(self, phone_number: str) -> Optional[str]:
         try:
             phone_number_object = phonenumbers.parse(phone_number, None)
         except Exception as e:
-            self.log(e)
+            log.error(str(e))
             return None
 
         country_code = phonenumbers.format_number(

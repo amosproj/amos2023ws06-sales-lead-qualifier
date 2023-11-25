@@ -26,6 +26,9 @@ from database.parsers import LeadParser
 from evp import EstimatedValuePredictor
 from evp.data_processing import split_dataset
 from evp.predictors import Predictors
+from logger import get_logger
+
+log = get_logger()
 
 
 def bdc_demo():
@@ -51,7 +54,7 @@ def evp_demo():
         model_path = str(input("Provide model path\n"))
     else:
         model_path = None
-    print(f"Creating EVP from model {model_path}")
+    log.info(f"Creating EVP from model {model_path}")
     evp = EstimatedValuePredictor(
         model_type=Predictors.LinearRegression, model_path=model_path
     )
@@ -145,7 +148,7 @@ def pipeline_demo():
                 input(f"Do you want to force execution if the data is present? (y/N)\n")
             )
             force_execution = choice == "y" or choice == "Y"
-            steps.append(ScrapeAddress(force_execution=force_execution))
+            steps.append(ScrapeAddress(force_refresh=force_execution))
     except ValueError:
         print("Invalid Choice")
 
@@ -156,7 +159,7 @@ def pipeline_demo():
                 input(f"Do you want to force execution if the data is present? (y/N)\n")
             )
             force_execution = choice == "y" or choice == "Y"
-            steps.append(FacebookGraphAPI(force_execution=force_execution))
+            steps.append(FacebookGraphAPI(force_refresh=force_execution))
     except ValueError:
         print("Invalid Choice")
 
@@ -171,7 +174,7 @@ def pipeline_demo():
                 input(f"Do you want to force execution if the data is present? (y/N)\n")
             )
             force_execution = choice == "y" or choice == "Y"
-            steps.append(PreprocessPhonenumbers(force_execution=force_execution))
+            steps.append(PreprocessPhonenumbers(force_refresh=force_execution))
     except ValueError:
         print("Invalid Choice")
 
@@ -184,7 +187,7 @@ def pipeline_demo():
                 input(f"Do you want to force execution if the data is present? (y/N)\n")
             )
             force_execution = choice == "y" or choice == "Y"
-            steps.append(GooglePlaces(force_execution=force_execution))
+            steps.append(GooglePlaces(force_refresh=force_execution))
     except ValueError:
         print("Invalid Choice")
 
@@ -198,7 +201,7 @@ def pipeline_demo():
     except ValueError:
         print("Invalid Choice, no limit set")
 
-    print(f"Running Pipeline with {steps=}, {input_location=}, {output_location=}")
+    log.info(f"Running Pipeline with {steps=}, {input_location=}, {output_location=}")
     pipeline = Pipeline(
         steps=steps,
         input_location=input_location,

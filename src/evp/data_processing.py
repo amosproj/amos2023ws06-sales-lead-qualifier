@@ -5,6 +5,10 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
+from logger import get_logger
+
+log = get_logger()
+
 
 def split_dataset(
     in_path: str,
@@ -14,9 +18,12 @@ def split_dataset(
     test_size: float,
     add_labels: bool = False,
 ):
-    assert (
-        train_size + val_size + test_size == 1
-    ), "train test and validation set must add up to 1"
+    valid_sizes = train_size + val_size + test_size == 1
+    if not valid_sizes:
+        log.error(
+            "Invalid size combination. Training, validation and test size must add to 1"
+        )
+        return None
     try:
         full_df = pd.read_csv(in_path, index_col=0)
         if add_labels:
@@ -24,7 +31,7 @@ def split_dataset(
                 low=1000, high=1000000, size=len(full_df)
             )
     except FileNotFoundError:
-        print(f"Error: could not find {in_path} splitting data")
+        log.error(f"Could not find {in_path} splitting data")
         return
     relative_val_size = val_size / (1 - test_size)
     train_val_df, test_df = train_test_split(

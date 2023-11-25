@@ -11,6 +11,9 @@ from requests import RequestException
 from tqdm import tqdm
 
 from bdc.steps.step import Step
+from logger import get_logger
+
+log = get_logger()
 
 
 class ScrapeAddress(Step):
@@ -39,7 +42,7 @@ class ScrapeAddress(Step):
 
     def finish(self):
         p_address = self._df["address_ver_1"].notna().sum() / len(self._df) * 100
-        self.log(f"Percentage of addresses scraped: {p_address:.2f}%")
+        log.info(f"Percentage of addresses scraped: {p_address:.2f}%")
 
 
 def scrape_for_address(domain):

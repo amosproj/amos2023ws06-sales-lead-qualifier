@@ -12,6 +12,7 @@ import sys
 class StdOutFormatter(logging.Formatter):
     grey = "\x1b[38;20m"
     yellow = "\x1b[33;20m"
+    blue = "\033[34m"
     red = "\x1b[31;20m"
     bold_red = "\x1b[31;1m"
     reset = "\x1b[0m"
@@ -19,7 +20,7 @@ class StdOutFormatter(logging.Formatter):
 
     FORMATS = {
         logging.DEBUG: grey + fmt + reset,
-        logging.INFO: grey + fmt + reset,
+        logging.INFO: blue + fmt + reset,
         logging.WARNING: yellow + fmt + reset,
         logging.ERROR: red + fmt + reset,
         logging.CRITICAL: bold_red + fmt + reset,

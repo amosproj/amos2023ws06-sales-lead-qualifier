@@ -7,6 +7,10 @@ from typing import Any
 
 from messenger import Message, MessageType, create_data_message
 
+from logger import get_logger
+
+log = get_logger()
+
 
 class ControllerMeta(type):
 
@@ -62,17 +66,17 @@ class Controller(metaclass=ControllerMeta):
                     # Get a message from the message queue and process it‚
                     msg = self._message_queue.get()
                     # Simulate processing of the message
-                    print(f"Processing on {msg}")
+                    log.debug(f"Processing on {msg}")
                     self._enqueue_routing(msg)
                     # Simulate completion of processing
-                    print(f"Processed {msg}")
+                    log.debug(f"Processed {msg}")
                 # Handle any errors during message processing
                 except Exception as e:
-                    print(f"Error while processing message: {e}")
+                    log.error(f"Error while processing message: {e}")
                 finally:
                     # Mark the task as done in the processing queue
                     self._message_queue.task_done()
-        print(f"Message queue processor thread exited.")
+        log.debug(f"Message queue processor thread exited.")
 
     def _routing_queue_processor(self):
         while True:
@@ -83,21 +87,21 @@ class Controller(metaclass=ControllerMeta):
                 try:
                     # Mark the task as done in the processing queue
                     msg = self._routing_queue.get()
-                    print(f"Routing {msg}")
+                    log.debug(f"Routing {msg}")
                     if msg.data_type == MessageType.DATA:
                         self._route_to_EVP(msg)
                     elif msg.data_type == MessageType.PREDICTION:
                         self._route_to_BDC(msg)
                     else:
-                        print(f"Unknown message type: {msg.data_type}")
-                    print(f"Routed {msg}")
+                        log.warning(f"Unknown message type: {msg.data_type}")
+                    log.debug(f"Routed {msg}")
                 # Handle any errors during message routing
                 except Exception as e:
-                    print(f"Error while routing message: {e}")
+                    log.error(f"Error while routing message: {e}")
                 finally:
                     # Mark the task as done in the processing queue
                     self._routing_queue.task_done()
-        print(f"Routing queue processor thread exited.")
+        log.debug(f"Routing queue processor thread exited.")
 
     # Start the message processing thread
     def _start_message_queue_processing_thread(self):
@@ -145,7 +149,7 @@ class Controller(metaclass=ControllerMeta):
         if not self._finish_flag:
             self._enqueue_message(msg)
         else:
-            print(f"Controller finished can not send messages... ")
+            log.debug(f"Controller finished can not send messages... ")
 
     def finish(self):
         """
@@ -154,30 +158,32 @@ class Controller(metaclass=ControllerMeta):
 
         # wait till queues are empty.
         while not self._message_queue.empty() or not self._routing_queue.empty():
-            print(f"Waiting for message and routing threads to finish their jobs... ")
+            log.debug(
+                f"Waiting for message and routing threads to finish their jobs... "
+            )
 
         with self._finish_flag_lock:
             # Set the finish flag to signal threads to stop
             self._finish_flag = True
 
-        print(f"Finishing threads... ")
+        log.debug(f"Finishing threads... ")
 
         # Wait for the message queue processing thread to finish
         if (
             self._message_queue_processor_thread
             and self._message_queue_processor_thread.is_alive()
         ):
-            print(f"Finishing message queue processor thread...")
+            log.debug(f"Finishing message queue processor thread...")
             self._message_queue_processor_thread.join()
         # Wait for the routing queue processing thread to finish
         if (
             self._routing_queue_processor_thread
             and self._routing_queue_processor_thread.is_alive()
         ):
-            print(f"Finishing routing queue processor thread...")
+            log.debug(f"Finishing routing queue processor thread...")
             self._routing_queue_processor_thread.join()
 
         # check if there are any elements in queues, if not, all cool!
-        print(f"Threads finished... ")
-        print(f"routing queue size... {self._routing_queue.unfinished_tasks}")
-        print(f"message queue size... {self._message_queue.unfinished_tasks}")
+        log.debug(f"Threads finished... ")
+        log.debug(f"routing queue size... {self._routing_queue.unfinished_tasks}")
+        log.debug(f"message queue size... {self._message_queue.unfinished_tasks}")

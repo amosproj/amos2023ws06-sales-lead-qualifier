@@ -4,6 +4,9 @@
 import pandas as pd
 
 from bdc.steps.step import Step, StepError
+from logger import get_logger
+
+log = get_logger()
 
 
 class Pipeline:
@@ -25,7 +28,7 @@ class Pipeline:
             if limit is not None:
                 self.df = self.df[:limit]
         except FileNotFoundError:
-            print("Error: Could not find input file for Pipeline.")
+            log.error("Error: Could not find input file for Pipeline.")
             self.df = None
         self.output_location = (
             input_location if output_location is None else output_location
@@ -33,12 +36,13 @@ class Pipeline:
 
     def run(self):
         if self.df is None:
-            print(
+            log.error(
                 "Error: DataFrame of pipeline has not been initialized, aborting pipeline run!"
             )
             return
         # helper to pass the dataframe and/or input location from previous step to next step
         for step in self.steps:
+            log.info(f"Processing step {step.name}")
             # load dataframe and/or input location for this step
             if step.df is None:
                 step.df = self.df.copy()
@@ -46,18 +50,17 @@ class Pipeline:
             try:
                 step.load_data()
                 if step.verify() and not step.check_data_presence():
-                    print(f"running step {step.name}")
                     step_df = step.run()
                     self.df = step_df
             except StepError as e:
-                print(f"Step {step.name} failed! {e}")
+                log.error(f"Step {step.name} failed! {e}")
 
             # cleanup
             step.finish()
 
-        print(f"[PIPELINE] - Finished running {len(self.steps)} steps!")
+        log.info(f"Pipeline finished running {len(self.steps)} steps!")
         try:
-            print(self.df.head())
+            log.debug(self.df.head())
             self.df.to_csv(self.output_location)
         except AttributeError as e:
-            print(f"No datas to show/save! Error: {e}")
+            log.error(f"No datas to show/save! Error: {e}")
