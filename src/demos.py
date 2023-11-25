@@ -18,6 +18,7 @@ from bdc.steps import (
     FacebookGraphAPI,
     GooglePlaces,
     PreprocessPhonenumbers,
+    RegionalAtlas,
     ScrapeAddress,
 )
 from bdc.steps.step import Step
@@ -134,7 +135,7 @@ def db_demo():
 
 
 def pipeline_demo():
-    steps: list[Step] = [AnalyzeEmails()]
+    steps: list[Step] = [AnalyzeEmails(force_refresh=True)]
     input_location = "./data/leads_enriched.csv"
     index_col = 0
     if not os.path.exists(input_location):
@@ -202,6 +203,7 @@ def pipeline_demo():
         print("Invalid Choice, no limit set")
 
     log.info(f"Running Pipeline with {steps=}, {input_location=}, {output_location=}")
+    steps.append(RegionalAtlas(force_refresh=True))
     pipeline = Pipeline(
         steps=steps,
         input_location=input_location,
