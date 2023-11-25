@@ -8,8 +8,6 @@ from http import HTTPStatus
 import googlemaps
 import openai
 import pandas as pd
-import requests
-from bs4 import BeautifulSoup
 from googlemaps.exceptions import ApiError, HTTPError, Timeout, TransportError
 from pandas import DataFrame
 from requests import RequestException
@@ -69,10 +67,61 @@ class GPTReviewSentimentAnalyzer(Step):
             return None
         reviews = self.fetch_reviews(place_id)
         review_texts = self.extract_text_from_reviews(reviews)
+        if len(review_texts) == 0:
+            return None
         review_ratings = [review.get("rating", None) for review in reviews]
         self.log(f"Formatted review texts {review_texts}")
 
         review_batches = self.batch_reviews(review_texts)
+        scores = 0
+        for review_batch in review_batches:
+            sentiment_score = self.gpt_sentiment_analyze_review(review_batch)
+            print(f"Calculated sentiment score is {sentiment_score}")
+            scores += sentiment_score or 0
+
+        return scores / len(review_batches)
+
+    def gpt_sentiment_analyze_review(self, review_list):
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": self.system_message_for_sentiment_analysis,
+                    },
+                    {
+                        "role": "user",
+                        "content": self.user_message_for_sentiment_analysis.format(
+                            review_list
+                        ),
+                    },
+                ],
+                temperature=0,
+            )
+
+            # Extract and return the sentiment score
+            sentiment_score = response.choices[0].message.content
+            self.log(f"GPT response {sentiment_score}")
+            if sentiment_score and sentiment_score != self.no_answer:
+                return float(sentiment_score)
+            else:
+                self.log("No valid sentiment score found in the response.")
+                return None
+
+        except (
+            openai.APITimeoutError,
+            openai.APIConnectionError,
+            openai.BadRequestError,
+            openai.AuthenticationError,
+            openai.PermissionDeniedError,
+        ) as e:
+            self.log(f"An error occurred with GPT API: {e}")
+        except Exception as e:
+            self.log(f"An unexpected error occurred: {e}")
+
+        # Return None if any exception occurred
+        return None
 
     def extract_text_from_reviews(self, reviews_list):
         reviews_texts = [review.get("text", None) for review in reviews_list]
