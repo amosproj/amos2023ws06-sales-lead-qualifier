@@ -13,6 +13,7 @@ from bdc.steps.step import Step
 
 class DummyStepOne(Step):
     name = "Dummy_Step_One"
+    added_cols = ["TestCol"]
 
     def load_data(self) -> None:
         pass
