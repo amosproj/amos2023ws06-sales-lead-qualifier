@@ -3,17 +3,25 @@
 
 import pandas as pd
 
-from bdc.steps.step import StepError
+from bdc.steps.step import Step, StepError
 
 
 class Pipeline:
     def __init__(
-        self, steps, input_location: str, output_location: str = None, limit: int = None
+        self,
+        steps,
+        input_location: str,
+        output_location: str = None,
+        limit: int = None,
+        index_col: int = None,
     ):
-        self.steps = steps
-        self.limit = limit
+        self.steps: list[Step] = steps
+        self.limit: int = limit
         try:
-            self.df = pd.read_csv(input_location)
+            if index_col is not None:
+                self.df = pd.read_csv(input_location, index_col=index_col)
+            else:
+                self.df = pd.read_csv(input_location)
             if limit is not None:
                 self.df = self.df[:limit]
         except FileNotFoundError:
@@ -37,7 +45,8 @@ class Pipeline:
 
             try:
                 step.load_data()
-                if step.verify():
+                if step.verify() and not step.check_data_presence():
+                    print(f"running step {step.name}")
                     step_df = step.run()
                     self.df = step_df
             except StepError as e:

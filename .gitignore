@@ -57,3 +57,6 @@ bin/
 
 # trained models
 **/models/*
+
+# logs
+**/logs/*

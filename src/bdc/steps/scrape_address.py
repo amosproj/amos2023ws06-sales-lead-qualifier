@@ -19,6 +19,7 @@ class ScrapeAddress(Step):
     """
 
     name = "Scrape-Address"
+    added_cols = ["address_ver_1"]
 
     def load_data(self):
         # nothing to be done, we expect self.df to be set

@@ -44,6 +44,12 @@ class AnalyzeEmails(Step):
     """
 
     name = "Analyze-Emails"
+    added_cols = [
+        "domain",
+        "email_valid",
+        "first_name_in_account",
+        "last_name_in_account",
+    ]
 
     def load_data(self):
         pass

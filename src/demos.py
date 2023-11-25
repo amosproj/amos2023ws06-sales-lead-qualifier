@@ -6,6 +6,8 @@
 # SPDX-FileCopyrightText: 2023 Ruchita Nathani <Ruchita.nathani@fau.de>
 # SPDX-FileCopyrightText: 2023 Ahmed Sheta <ahmed.sheta@fau.de>
 
+import os
+
 import numpy as np
 from sklearn.metrics import mean_squared_error
 
@@ -130,19 +132,31 @@ def db_demo():
 
 def pipeline_demo():
     steps: list[Step] = [AnalyzeEmails()]
-    input_location = "./data/sumup_leads_email.csv"
+    input_location = "./data/leads_enriched.csv"
+    index_col = 0
+    if not os.path.exists(input_location):
+        input_location = "./data/sumup_leads_email.csv"
+        index_col = None
     output_location = "./data/leads_enriched.csv"
     try:
         choice = str(input(f"Run Scrape Address step? (will take a long time) (y/N)\n"))
         if choice == "y" or choice == "Y":
-            steps.append(ScrapeAddress())
+            choice = str(
+                input(f"Do you want to force execution if the data is present? (y/N)\n")
+            )
+            force_execution = choice == "y" or choice == "Y"
+            steps.append(ScrapeAddress(force_execution=force_execution))
     except ValueError:
         print("Invalid Choice")
 
     try:
         choice = str(input(f"Run Facebook Graph API step? (will use token) (y/N)\n"))
         if choice == "y" or choice == "Y":
-            steps.append(FacebookGraphAPI())
+            choice = str(
+                input(f"Do you want to force execution if the data is present? (y/N)\n")
+            )
+            force_execution = choice == "y" or choice == "Y"
+            steps.append(FacebookGraphAPI(force_execution=force_execution))
     except ValueError:
         print("Invalid Choice")
 
@@ -153,7 +167,11 @@ def pipeline_demo():
             )
         )
         if choice == "y" or choice == "Y":
-            steps.append(PreprocessPhonenumbers())
+            choice = str(
+                input(f"Do you want to force execution if the data is present? (y/N)\n")
+            )
+            force_execution = choice == "y" or choice == "Y"
+            steps.append(PreprocessPhonenumbers(force_execution=force_execution))
     except ValueError:
         print("Invalid Choice")
 
@@ -162,7 +180,11 @@ def pipeline_demo():
             input(f"Run Google API step? (will use token and generate cost!) (y/N)\n")
         )
         if choice == "y" or choice == "Y":
-            steps.append(GooglePlaces())
+            choice = str(
+                input(f"Do you want to force execution if the data is present? (y/N)\n")
+            )
+            force_execution = choice == "y" or choice == "Y"
+            steps.append(GooglePlaces(force_execution=force_execution))
     except ValueError:
         print("Invalid Choice")
 
@@ -182,5 +204,6 @@ def pipeline_demo():
         input_location=input_location,
         output_location=output_location,
         limit=limit,
+        index_col=index_col,
     )
     pipeline.run()

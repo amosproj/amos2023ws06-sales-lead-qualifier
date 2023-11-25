@@ -12,6 +12,13 @@ from bdc.steps.step import Step
 
 class PreprocessPhonenumbers(Step):
     name = "Preprocess-Phonenumbers"
+    added_cols = [
+        "number_formatted",
+        "number_country",
+        "number_area",
+        "number_valid",
+        "number_possible",
+    ]
 
     def load_data(self):
         pass
@@ -20,13 +27,7 @@ class PreprocessPhonenumbers(Step):
         return "Phone" in self._df
 
     def run(self):
-        number_features = {
-            "number_formatted": [],
-            "number_country": [],
-            "number_area": [],
-            "number_valid": [],
-            "number_possible": [],
-        }
+        number_features = {col: [] for col in self.added_cols}
 
         # Define a lambda function for each row of the df
         process_row = lambda row: self.check_number("+" + str(row["Phone"])) or {
@@ -77,12 +78,14 @@ class PreprocessPhonenumbers(Step):
         # Possible number (e.g., it has the right number of digits)
         is_possible_number = phonenumbers.is_possible_number(phone_number_object)
 
-        result_dict = {
-            "number_formatted": international_number,
-            "number_country": country,
-            "number_area": location,
-            "number_valid": is_valid_number,
-            "number_possible": is_possible_number,
-        }
+        results = [
+            international_number,
+            country,
+            location,
+            is_valid_number,
+            is_possible_number,
+        ]
+
+        result_dict = {col: val for (col, val) in zip(self.added_cols, results)}
 
         return result_dict

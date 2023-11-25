@@ -1,6 +1,21 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Lucca Baumgärtner <lucca.baumgaertner@fau.de>
+# SPDX-FileCopyrightText: 2023 Felix Zailskas <felixzailskas@gmail.com>
+
+from enum import Enum
+
 from pandas import DataFrame
+
+RED = "\033[91m"
+BLUE = "\033[34m"
+YELLOW = "\033[93m"
+RESET = "\033[0m"
+
+
+class LogLevel(Enum):
+    info = "info"
+    warning = "warning"
+    error = "error"
 
 
 class StepError(Exception):
@@ -8,10 +23,12 @@ class StepError(Exception):
 
 
 class Step:
-    name = None
+    name: str = None
+    added_cols: list[str] = []
 
-    def __init__(self) -> None:
+    def __init__(self, force_execution: bool = False) -> None:
         self._df = None
+        self._force_execution = force_execution
 
     @property
     def df(self) -> DataFrame:
@@ -34,6 +51,26 @@ class Step:
         """
         raise NotImplementedError
 
+    def check_data_presence(self) -> bool:
+        """
+        Check whether the data this step collects is already present in the df.
+        Can be forced to return False if self._force_execution is set to True.
+        """
+        if len(self.added_cols) == 0:
+            self.log(
+                "Warning trying to check for data presence without setting self.added_cols!",
+                level=LogLevel.warning,
+            )
+        if self._force_execution:
+            self.log("Fetching data was forced")
+            return False
+        data_present = all([col in self._df for col in self.added_cols])
+        if data_present:
+            self.log(f"Data is present. Not running step.")
+        else:
+            self.log(f"Data is not present. Fetching through step logic...")
+        return all([col in self._df for col in self.added_cols])
+
     def run(self) -> DataFrame:
         """
         Perform the actual processing step.
@@ -48,5 +85,10 @@ class Step:
         """
         raise NotImplementedError
 
-    def log(self, message) -> None:
-        print(f"[STEP-{self.name.upper()}] - {message}")
+    def log(self, message, level=LogLevel.info) -> None:
+        if level == LogLevel.info:
+            print(f"[STEP-{self.name.upper()}] - " + BLUE + f"{message}" + RESET)
+        if level == LogLevel.warning:
+            print(f"[STEP-{self.name.upper()}] - " + YELLOW + f"{message}" + RESET)
+        if level == LogLevel.error:
+            print(f"[STEP-{self.name.upper()}] - " + RED + f"{message}" + RESET)

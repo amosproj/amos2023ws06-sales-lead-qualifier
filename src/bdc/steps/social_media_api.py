@@ -14,6 +14,7 @@ from config import FACEBOOK_APP_ID, FACEBOOK_APP_SECRET
 
 class FacebookGraphAPI(Step):
     name = "Facebook_Graph"
+    added_cols = ["Full Name", "email"]
 
     def load_data(self) -> None:
         pass
@@ -25,11 +26,8 @@ class FacebookGraphAPI(Step):
 
     def run(self):
         self.df["Full Name"] = self.df["First Name"] + " " + self.df["Last Name"]
-        self.desired_fields = "email"
-        self.desired_fields_list = [
-            field.strip() for field in self.desired_fields.split(",")
-        ]
-        for field in self.desired_fields_list:
+        self.desired_fields = ["email"]
+        for field in self.desired_fields:
             self.df[field] = None
         tqdm.pandas(desc="Searching Facebook Graph API")
         try:

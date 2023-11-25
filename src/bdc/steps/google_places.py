@@ -37,6 +37,13 @@ class GooglePlaces(Step):
         "place_id_matches_phone_search",
         "confidence",
     ]
+    # Weirdly the expression [f"{name}_{field}" for field in df_fields] gives an error as name is not in the scope of the iterator
+    added_cols = [
+        name + field
+        for (name, field) in zip(
+            [f"{name.lower()}_"] * len(df_fields), [f"{field}" for field in df_fields]
+        )
+    ]
     # fields that are accessed directly from the api
     api_fields = [
         "place_id",
@@ -171,7 +178,10 @@ class GooglePlaces(Step):
             return None, 0
 
         if not response["status"] == HTTPStatus.OK.name:
-            self.log(f"Failed to fetch data. Status code: {response['status']}")
+            self.log(
+                f"Failed to fetch data. Status code: {response['status']}",
+                level=LogLever.warning,
+            )
             return None, 0
 
         if "candidates" not in response or len(response["candidates"]) == 0:
