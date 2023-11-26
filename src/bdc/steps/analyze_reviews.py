@@ -6,11 +6,15 @@
 from http import HTTPStatus
 
 import googlemaps
+import nltk
 import openai
 import pandas as pd
 from googlemaps.exceptions import ApiError, HTTPError, Timeout, TransportError
+from nltk.tokenize import word_tokenize
 from pandas import DataFrame
 from requests import RequestException
+
+nltk.download("punkt")
 from tqdm import tqdm
 
 from bdc.steps.step import Step, StepError
@@ -138,7 +142,7 @@ class GPTReviewSentimentAnalyzer(Step):
 
     def tokenize(self, text):
         # Rough estimation of token count
-        return len(text) // 4
+        return len(word_tokenize(text))
 
     def batch_reviews(self, reviews, max_tokens=4096):
         """
