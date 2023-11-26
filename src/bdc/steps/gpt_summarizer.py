@@ -92,7 +92,7 @@ class GPTSummarizer(Step):
         except (
             openai.APITimeoutError,
             openai.APIConnectionError,
-            openai.BadRequestErroras,
+            openai.BadRequestError,
             openai.AuthenticationError,
             openai.PermissionDeniedError,
             Exception,

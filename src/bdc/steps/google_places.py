@@ -17,7 +17,6 @@ from tqdm import tqdm
 
 from bdc.steps.step import Step, StepError
 from config import GOOGLE_PLACES_API_KEY
-from database import mongo_connection
 
 
 class GooglePlaces(Step):
@@ -39,7 +38,7 @@ class GooglePlaces(Step):
         "confidence",
     ]
 
-    detailed_df_fields = ["website" "reviews"]
+    detailed_df_fields = ["website", "reviews", "type"]
 
     # fields that are accessed directly from the api
     api_fields = [
@@ -52,7 +51,10 @@ class GooglePlaces(Step):
         "price_level",
     ]
 
-    detailed_api_fields = ["website" "reviews"]
+    detailed_api_fields = ["website", "reviews", "type"]
+
+    # Output fields are not necessarily the same as input fields
+    detailed_api_fields_output = ["website", "reviews", "types"]
 
     gmaps = None
 
@@ -202,7 +204,7 @@ class GooglePlaces(Step):
 
         results_list = [
             response["result"][field] if field in response["result"] else None
-            for field in self.detailed_api_fields
+            for field in self.detailed_api_fields_output
         ]
 
         return pd.Series(results_list)
