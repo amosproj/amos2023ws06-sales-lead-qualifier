@@ -169,7 +169,9 @@ def pipeline_demo():
 
     try:
         choice = str(
-            input(f"Run open API step? (will use token and generate cost!) (y/N)\n")
+            input(
+                f"Run open API Sentiment Analyzer ? (will use token and generate cost!) (y/N)\n"
+            )
         )
         if choice == "y" or choice == "Y":
             steps.append(GPTReviewSentimentAnalyzer())

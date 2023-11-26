@@ -20,6 +20,7 @@ from config import GOOGLE_PLACES_API_KEY, OPEN_AI_API_KEY
 class GPTReviewSentimentAnalyzer(Step):
     name = "GPT-Review-Sentiment-Analyzer"
     model = "gpt-4"
+    MAX_PROMPT_TOKENS = 4096
     no_answer = "None"
     gpt_required_fields = {"places_id": "google_places_place_id"}
     # system and user messages to be used for creating company summary for lead using website.
@@ -70,18 +71,20 @@ class GPTReviewSentimentAnalyzer(Step):
         if len(review_texts) == 0:
             return None
         review_ratings = [review.get("rating", None) for review in reviews]
-        self.log(f"Formatted review texts {review_texts}")
-
-        review_batches = self.batch_reviews(review_texts)
+        # batch reviews so that we do not exceed the token limit of gpt4
+        review_batches = self.batch_reviews(review_texts, self.MAX_PROMPT_TOKENS)
         scores = 0
+        # iterate over each batch and calculate average sentiment score
         for review_batch in review_batches:
             sentiment_score = self.gpt_sentiment_analyze_review(review_batch)
-            print(f"Calculated sentiment score is {sentiment_score}")
             scores += sentiment_score or 0
 
         return scores / len(review_batches)
 
     def gpt_sentiment_analyze_review(self, review_list):
+        """
+        GPT calculates the sentiment score considering the reviews
+        """
         try:
             response = self.client.chat.completions.create(
                 model=self.model,
@@ -124,6 +127,9 @@ class GPTReviewSentimentAnalyzer(Step):
         return None
 
     def extract_text_from_reviews(self, reviews_list):
+        """
+        extracts text from reviews and removes line characters.
+        """
         reviews_texts = [review.get("text", None) for review in reviews_list]
         review_texts_formatted = [
             review.strip().replace("\n", " ") for review in reviews_texts if review
@@ -135,6 +141,9 @@ class GPTReviewSentimentAnalyzer(Step):
         return len(text) // 4
 
     def batch_reviews(self, reviews, max_tokens=4096):
+        """
+        Batchs reviews into batches so that every batch has the size less than max_tokens
+        """
         batches = []
         current_batch = []
         current_count = self.tokenize(self.user_message_for_sentiment_analysis)
