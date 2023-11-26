@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: 2023 Felix Zailskas <felixzailskas@gmail.com>
 
 from .database_dummy import DatabaseDummy
+from .db_connection import mongo_connection
 
 _database = None
 
