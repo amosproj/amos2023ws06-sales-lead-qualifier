@@ -11,7 +11,7 @@
 from bdc import DataCollector
 from bdc.pipeline import Pipeline
 from bdc.steps import (
-    EnrichCustomDomains,
+    AnalyzeEmails,
     GooglePlaces,
     GPTSummarizer,
     PreprocessPhonenumbers,
@@ -85,7 +85,7 @@ def db_demo():
 
 
 def pipeline_demo():
-    steps = [EnrichCustomDomains()]
+    steps = [AnalyzeEmails()]
     input_location = "./data/sumup_leads_email.csv"
     output_location = "./data/leads_enriched.csv"
     try:
