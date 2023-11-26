@@ -1,7 +1,7 @@
 {
   "_meta": {
     "hash": {
-      "sha256": "a48c27753b56fae846107b7d0eb81c3ed48d8c5d36747eac25af2d30364e4546"
+      "sha256": "22919134e59a052d09045e45190a7d40eeeaa5a861ecdde508cc738da7b1b76a"
     },
     "pipfile-spec": 6,
     "requires": {
@@ -161,14 +161,6 @@
       "index": "pypi",
       "markers": "python_version >= '3.8'",
       "version": "==2.1.0.post1"
-    },
-    "facebook-sdk": {
-      "hashes": [
-        "sha256:2e987b3e0f466a6f4ee77b935eb023dba1384134f004a2af21f1cfff7fe0806e",
-        "sha256:cabcd2e69ea3d9f042919c99b353df7aa1e2be86d040121f6e9f5e63c1cf0f8d"
-      ],
-      "index": "pypi",
-      "version": "==3.1.0"
     },
     "googlemaps": {
       "hashes": [
