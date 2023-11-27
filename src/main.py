@@ -4,10 +4,13 @@
 import os
 
 from demos import bdc_demo, db_demo, evp_demo, pipeline_demo
+from logger import get_logger
 
 abspath = os.path.abspath(__file__)
 dname = os.path.dirname(abspath)
 os.chdir(dname)
+
+log = get_logger()
 
 if __name__ == "__main__":
     while True:

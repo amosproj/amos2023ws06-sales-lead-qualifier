@@ -6,6 +6,9 @@ import numpy as np
 from database.models import Lead
 from database.parsers import LeadParser
 from evp.predictors import LinearRegressionPredictor, Predictors, RegressionPredictor
+from logger import get_logger
+
+log = get_logger()
 
 
 class EstimatedValuePredictor:
@@ -21,7 +24,7 @@ class EstimatedValuePredictor:
             case Predictors.LinearRegression:
                 self.value_predictor = LinearRegressionPredictor(model_path=model_path)
             case default:
-                print(
+                log.error(
                     f"Error: EVP initialized with unsupported model type {model_type}!"
                 )
 
