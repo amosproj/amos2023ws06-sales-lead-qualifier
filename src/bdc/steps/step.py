@@ -59,7 +59,7 @@ class Step:
             log.info(f"Data is present. Not running step.")
         else:
             log.info(f"Data is not present. Fetching through step logic...")
-        return all([col in self._df for col in self.added_cols])
+        return data_present
 
     def run(self) -> DataFrame:
         """

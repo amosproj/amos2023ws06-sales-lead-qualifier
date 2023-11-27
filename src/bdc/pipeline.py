@@ -49,7 +49,9 @@ class Pipeline:
 
             try:
                 step.load_data()
-                if step.verify() and not step.check_data_presence():
+                verified = step.verify()
+                data_present = step.check_data_presence()
+                if verified and not data_present:
                     step_df = step.run()
                     self.df = step_df
             except StepError as e:
