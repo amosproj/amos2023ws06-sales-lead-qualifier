@@ -1,0 +1,13 @@
+,Last Name,First Name,Company / Account,Phone,Email,domain,address_ver_1,number_number,number_country,number_area,number_valid,number_possible,google_places_business_status,google_places_formatted_address,google_places_name,google_places_user_ratings_total,lead_value
+0,Musterpants,Manu,Mock,4949145448578,test@mock.de,mock.de,,+49 491 45448578,Germany,Leer Ostfriesland,True,True,OPERATIONAL,"Teststraat 23, 9711 SV Groningen, Netherlands",Test Name,0.0,522989.4668281875
+1,Musterpants,Manu,Mock,491785576875,test@mock.de,,,+49 178 555555,Germany,,True,True,,,,,159544.4836191093
+2,Musterpants,Manu,Mock,41782265496,test@mock.de,,,+41 78 555555,Switzerland,,True,True,,,,,618743.9763257486
+3,Musterpants,Manu,Mock,31653931727,test@mock.de,mock.nl,,+31 6 555555,Netherlands,,True,True,OPERATIONAL,"Teststraat 23, 9711 SV Groningen, Netherlands",Hello Mate,167.0,918439.5664347995
+4,Musterpants,Manu,Mock,436769295836,test@mock.de,mock.net,,+43 676 555555,Austria,,True,True,OPERATIONAL,"Teststraat 23, 9711 SV Groningen, Netherlands",Oh really?,723.0,187176.15100482764
+5,Musterpants,Manu,Mock,31652333777,test@mock.de,,,+31 6 555555,Netherlands,,True,True,,,,,358815.120229044
+6,Musterpants,Manu,Mock,436603451555,test@mock.de,,,+43 660 555555,Austria,,True,True,,,,,877054.591501824
+7,Musterpants,Manu,Mock,31640998174,test@mock.de,,,+31 6 555555,Netherlands,,True,True,,,,,91523.85616413924
+8,Musterpants,Manu,Mock,4986415969135,test@mock.de,,,+49 8641 555555,Germany,Grassau Kreis Traunstein,True,True,,,,,180108.56467265336
+9,Musterpants,Manu,Mock,4917681209342,test@mock.de,,,+49 176 555555,Germany,,True,True,,,,,184195.61239178776
+10,Musterpants,Manu,Mock,31653563449,test@mock.de,mock.nl,,+31 6 555555,Netherlands,,True,True,OPERATIONAL,"Teststraat 23, 9711 SV Groningen, Netherlands",Reisen mit Weisen,20.0,946290.9476926599
+11,Musterpants,Manu,Mock,4915756294719,test@mock.de,,,+49 1575 555555,Germany,,True,True,,,,,777932.1065818113

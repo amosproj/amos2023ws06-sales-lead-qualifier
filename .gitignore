@@ -38,7 +38,6 @@ out/
 # Eclipse IDE
 .project
 bin/
-
 # MacOS
 .DS_Store
 .AppleDouble
@@ -51,6 +50,17 @@ bin/
 **/data/*.csv
 **/data/*.json
 **/data/*.env
+**/data/*.geojson
 
 # Env files
 *.env
+
+# trained models
+**/models/*
+
+# # logs
+**/logs/*
+
+**/cache/*
+
+!.gitkeep
