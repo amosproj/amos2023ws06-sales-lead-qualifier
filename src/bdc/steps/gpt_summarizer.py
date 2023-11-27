@@ -15,6 +15,9 @@ from tqdm import tqdm
 
 from bdc.steps.step import Step, StepError
 from config import OPEN_AI_API_KEY
+from logger import get_logger
+
+log = get_logger()
 
 
 class GPTSummarizer(Step):
@@ -29,6 +32,9 @@ class GPTSummarizer(Step):
     )
 
     extracted_col_name_website_summary = "sales_person_summary"
+
+    added_cols = [extracted_col_name_website_summary]
+
     client = None
 
     def load_data(self) -> None:
@@ -87,7 +93,7 @@ class GPTSummarizer(Step):
 
                 return company_summary
             else:
-                self.log("No summary data found in the response.")
+                log.info("No summary data found in the response.")
                 return None
         except (
             openai.APITimeoutError,
@@ -98,7 +104,7 @@ class GPTSummarizer(Step):
             Exception,
         ) as e:
             # Handle possible errors
-            self.log(f"An error occurred during summarizing the lead with GPT: {e}")
+            log.warning(f"An error occurred during summarizing the lead with GPT: {e}")
             pass
 
     def extract_the_raw_html_and_parse(self, url):
@@ -106,12 +112,12 @@ class GPTSummarizer(Step):
             # Send a request to the URL
             response = requests.get(url)
         except RequestException as e:
-            self.log(f"An error occured during getting repsonse from url: {e}")
+            log.warning(f"An error occured during getting repsonse from url: {e}")
             return None
 
         # If the request was successful
         if not response.status_code == HTTPStatus.OK:
-            self.log(f"Failed to fetch data. Status code: {response.status_code}")
+            log.warning(f"Failed to fetch data. Status code: {response.status_code}")
             return None
         try:
             # Use the detected encoding to decode the response content
