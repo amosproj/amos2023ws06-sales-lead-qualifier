@@ -9,6 +9,9 @@ import random
 import requests
 
 from database.models import AnnualIncome, ProductOfInterest
+from logger import get_logger
+
+log = get_logger()
 
 
 class DataCollector:
@@ -37,9 +40,9 @@ class DataCollector:
                     }
 
                     self.data.append(data_dict)
-            print(f"Successfully read data from {file_path}")
+            log.info(f"Successfully read data from {file_path}")
         except FileNotFoundError as e:
-            print(f"Error: Input file {file_path} for BDC not found.")
+            log.error(f"Error: Input file {file_path} for BDC not found.")
 
         return self.data
 
@@ -49,7 +52,7 @@ class DataCollector:
         try:
             response = requests.get(api_url)
         except Exception as e:
-            print("Error when fetching dummies")
+            log.error("Error when fetching dummies")
             return None
 
         if response.status_code == 200:
@@ -81,10 +84,12 @@ class DataCollector:
                     user_data.append(data_dict)
 
                 json.dump(user_data, json_file, indent=4)
-            print(f"Successfully fetched data from {api_url} and stored at {file_path}")
+            log.info(
+                f"Successfully fetched data from {api_url} and stored at {file_path}"
+            )
             return random.choice(user_data)
         else:
-            print(
+            log.warning(
                 f"Failed to fetch data from {api_url}. Status code: {response.status_code}"
             )
             return None

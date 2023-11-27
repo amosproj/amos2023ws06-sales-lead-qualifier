@@ -10,4 +10,4 @@ from database import DatabaseDummy
 
 
 def get_database_mock():
-    return DatabaseDummy("tests/test_data/database_dummies.json")
+    return DatabaseDummy("tests/test_data/database_dummies.csv")
