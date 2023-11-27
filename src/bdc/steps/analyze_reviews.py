@@ -6,24 +6,25 @@
 from http import HTTPStatus
 
 import googlemaps
-import nltk
 import openai
 import pandas as pd
+import tiktoken
 from googlemaps.exceptions import ApiError, HTTPError, Timeout, TransportError
-from nltk.tokenize import word_tokenize
 from pandas import DataFrame
 from requests import RequestException
-
-nltk.download("punkt")
 from tqdm import tqdm
 
 from bdc.steps.step import Step, StepError
 from config import GOOGLE_PLACES_API_KEY, OPEN_AI_API_KEY
+from logger import get_logger
+
+log = get_logger()
 
 
 class GPTReviewSentimentAnalyzer(Step):
     name = "GPT-Review-Sentiment-Analyzer"
     model = "gpt-4"
+    model_encoding_name = "cl100k_base"
     MAX_PROMPT_TOKENS = 4096
     no_answer = "None"
     gpt_required_fields = {"places_id": "google_places_place_id"}
@@ -32,6 +33,7 @@ class GPTReviewSentimentAnalyzer(Step):
     user_message_for_sentiment_analysis = "Sentiment analyze the reviews  and provide me a score between range [-1, 1]  : {}"
 
     extracted_col_name = "reviews_sentiment_score"
+    added_cols = [extracted_col_name]
     gpt = None
     gmaps = None
 
@@ -109,11 +111,11 @@ class GPTReviewSentimentAnalyzer(Step):
 
             # Extract and return the sentiment score
             sentiment_score = response.choices[0].message.content
-            self.log(f"GPT response {sentiment_score}")
+            log.debug(f"GPT response {sentiment_score}")
             if sentiment_score and sentiment_score != self.no_answer:
                 return float(sentiment_score)
             else:
-                self.log("No valid sentiment score found in the response.")
+                log.info("No valid sentiment score found in the response.")
                 return None
 
         except (
@@ -123,9 +125,9 @@ class GPTReviewSentimentAnalyzer(Step):
             openai.AuthenticationError,
             openai.PermissionDeniedError,
         ) as e:
-            self.log(f"An error occurred with GPT API: {e}")
+            log.error(f"An error occurred with GPT API: {e}")
         except Exception as e:
-            self.log(f"An unexpected error occurred: {e}")
+            log.error(f"An unexpected error occurred: {e}")
 
         # Return None if any exception occurred
         return None
@@ -140,9 +142,11 @@ class GPTReviewSentimentAnalyzer(Step):
         ]
         return review_texts_formatted
 
-    def tokenize(self, text):
-        # Rough estimation of token count
-        return len(word_tokenize(text))
+    def num_tokens_from_string(self, text: str):
+        """Returns the number of tokens in a text string."""
+        encoding = tiktoken.get_encoding(self.model_encoding_name)
+        num_tokens = len(encoding.encode(text))
+        return num_tokens
 
     def batch_reviews(self, reviews, max_tokens=4096):
         """
@@ -150,10 +154,12 @@ class GPTReviewSentimentAnalyzer(Step):
         """
         batches = []
         current_batch = []
-        current_count = self.tokenize(self.user_message_for_sentiment_analysis)
+        current_count = self.num_tokens_from_string(
+            self.user_message_for_sentiment_analysis
+        )
 
         for review in reviews:
-            token_count = self.tokenize(review)
+            token_count = self.num_tokens_from_string(review)
             if current_count + token_count > max_tokens:
                 batches.append(current_batch)
                 current_batch = [review]
@@ -174,14 +180,16 @@ class GPTReviewSentimentAnalyzer(Step):
 
             # Check response status
             if response.get("status") != HTTPStatus.OK.name:
-                self.log(f"Failed to fetch data. Status code: {response.get('status')}")
+                log.warning(
+                    f"Failed to fetch data. Status code: {response.get('status')}"
+                )
                 return None
 
             # Extract reviews
             return response.get("result", None).get("reviews", [])
 
         except RequestException as e:
-            self.log(f"Error: {str(e)}")
+            log.error(f"Error: {str(e)}")
 
         except (ApiError, HTTPError, Timeout, TransportError) as e:
             error_message = (
@@ -189,7 +197,7 @@ class GPTReviewSentimentAnalyzer(Step):
                 if hasattr(e, "message") and e.message is not None
                 else str(e)
             )
-            self.log(f"Error: {error_message}")
+            log.error(f"Error: {error_message}")
 
         # Return empty list if any exception occurred or status is not OK
         return []
@@ -200,7 +208,7 @@ class GPTReviewSentimentAnalyzer(Step):
 
             # Check response status
             if website_response.get("status") != HTTPStatus.OK.name:
-                self.log(
+                log.info(
                     f"Failed to fetch data. Status code: {website_response.get('status')}"
                 )
                 return None
@@ -209,7 +217,7 @@ class GPTReviewSentimentAnalyzer(Step):
             return website_response.get("result", None).get("website")
 
         except RequestException as e:
-            self.log(f"Error: {str(e)}")
+            log.error(f"Error: {str(e)}")
 
         except (ApiError, HTTPError, Timeout, TransportError) as e:
             error_message = (
@@ -217,7 +225,7 @@ class GPTReviewSentimentAnalyzer(Step):
                 if hasattr(e, "message") and e.message is not None
                 else str(e)
             )
-            self.log(f"Error: {error_message}")
+            log.error(f"Error: {error_message}")
 
         # Return None if any exception occurred or status is not OK
         return None

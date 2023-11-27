@@ -199,7 +199,11 @@ def pipeline_demo():
             )
         )
         if choice == "y" or choice == "Y":
-            steps.append(GPTReviewSentimentAnalyzer())
+            choice = str(
+                input(f"Do you want to force execution if the data is present? (y/N)\n")
+            )
+            force_execution = choice == "y" or choice == "Y"
+            steps.append(GPTReviewSentimentAnalyzer(force_refresh=force_execution))
     except ValueError:
         print("Invalid Choice")
 
