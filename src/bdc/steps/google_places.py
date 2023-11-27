@@ -232,11 +232,6 @@ class GooglePlaces(Step):
             return None, 0
 
         top_result = response["candidates"][0]
-
-        # database connection TODO: replace this connection to appropriate file
-        # collection = mongo_connection("google_places")
-        # collection.insert_one(top_result)
-
         no_candidates = len(response["candidates"])
 
         return top_result, no_candidates
