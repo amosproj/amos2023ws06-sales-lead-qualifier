@@ -12,15 +12,17 @@ from tqdm import tqdm
 
 from bdc.steps.step import Step
 from logger import get_logger
+from shapely.geometry import shape
+from geopandas.tools import sjoin
 
 log = get_logger()
 
 
 class RegionalAtlas(Step):
     name: str = "Regional-Atlas"
-    added_cols: list[str] = ["gdp"]
     reagionalatlas_feature_keys = {"gdp": "ai1701"}
-    germany_gdf = osmnx.geocode_to_gdf("Germany")
+    df_fields: list[str] = reagionalatlas_feature_keys.keys()
+    #germany_gdf = osmnx.geocode_to_gdf("Germany")
 
     def __init__(self, force_refresh: bool = False) -> None:
         self._df = None
@@ -51,39 +53,78 @@ class RegionalAtlas(Step):
         google_location = str(row["google_places_formatted_address"]).split(",")[-2:]
         google_location = [name.strip() for name in google_location]
 
-        row_gdf = osmnx.geocode_to_gdf(",".join(google_location))
+        # CHECK THE PHONENUMBER AS 2nd CRITERIUM FOR COUNTRY / CITY
 
-        # if not self.germany_gdf.contains(row_gdf):
+        country = google_location[-1].lower()
+
+        # the 'regionalatlas' data is specific to germany
+        if country not in ['deutschland','germany','allemagne','tyskland','germania']:
+            return pd.Series([None])
+        
+        # Alternative to the if 'if country not in ...'
+        # if not self.germany_gdf.intersects(row_gdf):
         #     return pd.Series([None])
 
-        all_gdfs = {"gdp": gpd.read_file("data/gdp.geojson")}
+        # Get the polygon of the city, to find the corresponding region
+        try:
+            search_gdf = osmnx.geocode_to_gdf(",".join(google_location))            
+        except:
+            log.info('Google location not found!')
+            return pd.Series([None])
+        
+        # Load the data file
+        try:
+            regions_gdfs = {"gdp": gpd.read_file("data/gdp.geojson")}
+        except:            
+            log.info("File does not exist!")
+            return pd.Series([None])
+                
+        # WGS 84 (used by osmnx)
+        epsg_code_ll = 4326
+
+        #ETRS89 / UTM zone 32N (used by regionalatlas)
+        epsg_code_etrs = 25832
+
+        search_gdf.crs = {"init": "epsg:{}".format(epsg_code_ll)}
+        search_gdf_reprojected = search_gdf.to_crs(epsg_code_etrs)      
 
         area_key = None
 
         return_values = []
-        for col in self.added_cols:
-            curr_gdf = all_gdfs[col]
-            for idx, feature in curr_gdf.iterrows():
+        # For every feature we want to add ...
+        # AS A PREPROCESS STEP. PUT ALL GEOJSON TOGETHER BY LEFT JOINING THEM ON THE BASE AND THEN JUST USE THIS FILE (NO NEED TO LOOP THROUGH ALL COLUMNS)
+        # CREATE FUNCTION JOIN FOR GEOJSON (geojson,[list_geojson],key=[...,...]) [create as standard keys the ones we use]
+
+        for col in self.df_fields:
+            regions_gdf = regions_gdfs[col]
+
+            # go through all regions of germany ...
+            for idx, region in regions_gdf.iterrows():
+
                 if area_key is not None:
-                    if feature["schluessel"] != area_key:
+                    if region["schluessel"] != area_key:
                         continue
                     else:
                         return_values.append(
-                            feature[self.reagionalatlas_feature_keys[col]]
+                            region[self.reagionalatlas_feature_keys[col]]
                         )
                         break
-                else:
-                    # coordinates = feature["coordinates"]
-                    # geometry = [Point(coodinate[0], coodinate[1]) for coodinate in coordinates]
-                    # gdf = gpd.GeoDataFrame(geometry=[feature["geometry"]])
-                    gdf = osmnx.geocode_to_gdf(feature["gen"])
-                    intersection = gpd.sjoin(gdf, row_gdf, how="inner", op="intersects")
-                    if not intersection.empty:
-                        # if gdf.contains(row_gdf):
+                else:                    
+
+                    #search_polygon = search_gdf_reprojected["geometry"].item()
+                    #b_intersect = search_polygon.intersects(region["geometry"])
+
+                    # Use the centroid of the city, to check if a region 
+                    search_centroid = search_gdf_reprojected.centroid                    
+                    region_polygon = region["geometry"]
+                    b_contains = region_polygon.contains(search_centroid).item()
+
+                    if b_contains:
+                        area_key = region["schluessel"]
                         return_values.append(
-                            feature[self.reagionalatlas_feature_keys[col]]
+                            region[self.reagionalatlas_feature_keys[col]]
                         )
-                        area_key = feature["schluessel"]
                         break
+
 
         return pd.Series(return_values)
