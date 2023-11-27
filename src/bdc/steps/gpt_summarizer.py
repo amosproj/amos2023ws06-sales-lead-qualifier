@@ -47,9 +47,12 @@ class GPTSummarizer(Step):
 
     def run(self) -> DataFrame:
         tqdm.pandas(desc="Summarizing the website of leads")
-        self.df[self.extracted_col_name_website_summary] = self.df[
-            "google_places_website"
-        ].progress_apply(lambda lead: self.summarize_the_company_website(lead))
+        self.df[self.extracted_col_name_website_summary] = self.df.progress_apply(
+            lambda lead: self.summarize_the_company_website(
+                lead["google_places_website"]
+            ),
+            axis=1,
+        )
         return self.df
 
     def finish(self) -> None:
@@ -104,7 +107,7 @@ class GPTSummarizer(Step):
             Exception,
         ) as e:
             # Handle possible errors
-            log.warning(f"An error occurred during summarizing the lead with GPT: {e}")
+            log.error(f"An error occurred during summarizing the lead with GPT: {e}")
             pass
 
     def extract_the_raw_html_and_parse(self, url):
@@ -112,12 +115,12 @@ class GPTSummarizer(Step):
             # Send a request to the URL
             response = requests.get(url)
         except RequestException as e:
-            log.warning(f"An error occured during getting repsonse from url: {e}")
+            log.error(f"An error occured during getting repsonse from url: {e}")
             return None
 
         # If the request was successful
         if not response.status_code == HTTPStatus.OK:
-            log.warning(f"Failed to fetch data. Status code: {response.status_code}")
+            log.error(f"Failed to fetch data. Status code: {response.status_code}")
             return None
         try:
             # Use the detected encoding to decode the response content

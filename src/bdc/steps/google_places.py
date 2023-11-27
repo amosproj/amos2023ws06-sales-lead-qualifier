@@ -200,11 +200,13 @@ class GooglePlaces(Step):
 
             # Check response status
             if response.get("status") != HTTPStatus.OK.name:
-                self.log(f"Failed to fetch data. Status code: {response.get('status')}")
+                log.warning(
+                    f"Failed to fetch data. Status code: {response.get('status')}"
+                )
                 return error_return_value
 
         except RequestException as e:
-            self.log(f"Error: {str(e)}")
+            log.error(f"Error: {str(e)}")
 
         except (ApiError, HTTPError, Timeout, TransportError) as e:
             error_message = (
@@ -212,7 +214,7 @@ class GooglePlaces(Step):
                 if hasattr(e, "message") and e.message is not None
                 else str(e)
             )
-            self.log(f"Error: {error_message}")
+            log.warning(f"Error: {error_message}")
 
         results_list = [
             response["result"][field] if field in response["result"] else None
