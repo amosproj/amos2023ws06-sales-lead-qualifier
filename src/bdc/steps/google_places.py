@@ -42,13 +42,17 @@ class GooglePlaces(Step):
         "confidence",
     ]
 
-    detailed_df_fields = ["website", "reviews", "type"]
+    detailed_df_fields = ["website", "type"]
 
     # Weirdly the expression [f"{name}_{field}" for field in df_fields] gives an error as name is not in the scope of the iterator
     added_cols = [
         name + field
         for (name, field) in zip(
-            [f"{name.lower()}_"] * len(df_fields), [f"{field}" for field in df_fields]
+            [f"{name.lower()}_"] * (len(df_fields) + len(detailed_df_fields)),
+            (
+                [f"{field}" for field in df_fields]
+                + [f"{detailed_field}" for detailed_field in detailed_df_fields]
+            ),
         )
     ]
 
@@ -63,10 +67,10 @@ class GooglePlaces(Step):
         "price_level",
     ]
 
-    detailed_api_fields = ["website", "reviews", "type"]
+    detailed_api_fields = ["website", "type"]
 
     # Output fields are not necessarily the same as input fields
-    detailed_api_fields_output = ["website", "reviews", "types"]
+    detailed_api_fields_output = ["website", "types"]
 
     gmaps = None
 
