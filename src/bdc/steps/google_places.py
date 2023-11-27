@@ -18,6 +18,10 @@ from tqdm import tqdm
 from bdc.steps.step import Step, StepError
 from config import GOOGLE_PLACES_API_KEY
 from database import mongo_connection
+from logger import get_logger
+
+log = get_logger()
+
 
 
 class GooglePlaces(Step):
@@ -37,6 +41,13 @@ class GooglePlaces(Step):
         "candidate_count_phone",
         "place_id_matches_phone_search",
         "confidence",
+    ]
+    # Weirdly the expression [f"{name}_{field}" for field in df_fields] gives an error as name is not in the scope of the iterator
+    added_cols = [
+        name + field
+        for (name, field) in zip(
+            [f"{name.lower()}_"] * len(df_fields), [f"{field}" for field in df_fields]
+        )
     ]
     # fields that are accessed directly from the api
     api_fields = [
@@ -88,10 +99,10 @@ class GooglePlaces(Step):
             / len(self._df["google_places_place_id_matches_phone_search"].notna())
             * 100
         )
-        self.log(
+        log.info(
             f"Percentage of mail search matching phone search (of all): {p_matches:.2f}%"
         )
-        self.log(
+        log.info(
             f"Percentage of mail search matching phone search (at least one result): {p_matches_rel:.2f}%"
         )
 
@@ -165,14 +176,16 @@ class GooglePlaces(Step):
             # Retrieve response
             # response = requests.get(self.URL + domain + "&key=" + GOOGLE_PLACES_API_KEY)
         except RequestException as e:
-            self.log(f"Error: {str(e)}")
+            log.error(f"Error: {str(e)}")
             return None, 0
         except (ApiError, HTTPError, Timeout, TransportError) as e:
-            self.log(f"Error: {str(e.message) if e.message is not None else str(e)}")
+            log.error(f"Error: {str(e.message) if e.message is not None else str(e)}")
             return None, 0
 
         if not response["status"] == HTTPStatus.OK.name:
-            self.log(f"Failed to fetch data. Status code: {response['status']}")
+            log.warning(
+                f"Failed to fetch data. Status code: {response['status']}",
+            )
             return None, 0
 
         if "candidates" not in response or len(response["candidates"]) == 0:
