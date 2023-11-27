@@ -17,9 +17,9 @@ from bdc.steps import (
     AnalyzeEmails,
     FacebookGraphAPI,
     GooglePlaces,
-    GPTReviewSentimentAnalyzer,
     PreprocessPhonenumbers,
     ScrapeAddress,
+    SmartReviewInsightsEnhancer,
 )
 from bdc.steps.step import Step
 from database import get_database
@@ -195,7 +195,7 @@ def pipeline_demo():
     try:
         choice = str(
             input(
-                f"Run open API Sentiment Analyzer ? (will use token and generate cost!) (y/N)\n"
+                f"Run Smart Review Insights Enhancer ? (will use token and generate cost!) (y/N)\n"
             )
         )
         if choice == "y" or choice == "Y":
@@ -203,7 +203,7 @@ def pipeline_demo():
                 input(f"Do you want to force execution if the data is present? (y/N)\n")
             )
             force_execution = choice == "y" or choice == "Y"
-            steps.append(GPTReviewSentimentAnalyzer(force_refresh=force_execution))
+            steps.append(SmartReviewInsightsEnhancer(force_refresh=force_execution))
     except ValueError:
         print("Invalid Choice")
 
