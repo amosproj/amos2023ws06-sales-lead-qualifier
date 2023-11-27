@@ -23,7 +23,6 @@ from logger import get_logger
 log = get_logger()
 
 
-
 class GooglePlaces(Step):
     name = "Google_Places"
     URL = "https://maps.googleapis.com/maps/api/place/textsearch/json?query="
@@ -42,13 +41,21 @@ class GooglePlaces(Step):
         "place_id_matches_phone_search",
         "confidence",
     ]
+
+    detailed_df_fields = ["website", "type"]
+
     # Weirdly the expression [f"{name}_{field}" for field in df_fields] gives an error as name is not in the scope of the iterator
     added_cols = [
         name + field
         for (name, field) in zip(
-            [f"{name.lower()}_"] * len(df_fields), [f"{field}" for field in df_fields]
+            [f"{name.lower()}_"] * (len(df_fields) + len(detailed_df_fields)),
+            (
+                [f"{field}" for field in df_fields]
+                + [f"{detailed_field}" for detailed_field in detailed_df_fields]
+            ),
         )
     ]
+
     # fields that are accessed directly from the api
     api_fields = [
         "place_id",
@@ -59,6 +66,11 @@ class GooglePlaces(Step):
         "rating",
         "price_level",
     ]
+
+    detailed_api_fields = ["website", "type"]
+
+    # Output fields are not necessarily the same as input fields
+    detailed_api_fields_output = ["website", "types"]
 
     gmaps = None
 
@@ -80,12 +92,22 @@ class GooglePlaces(Step):
         )
 
     def run(self) -> pd.DataFrame:
-        tqdm.pandas(desc="Getting info from Places API")
+        # Call find_places API
+        tqdm.pandas(desc="Getting info from Find Places API")
         self.df[
             [f"{self.name.lower()}_{field}" for field in self.df_fields]
         ] = self.df.progress_apply(
             lambda lead: self.get_data_from_google_api(lead), axis=1
         )
+
+        # Call places API
+        tqdm.pandas(desc="Getting info from Places API")
+        self.df[
+            [f"{self.name.lower()}_{field}" for field in self.detailed_df_fields]
+        ] = self.df.progress_apply(
+            lambda lead: self.get_data_from_detailed_google_api(lead), axis=1
+        )
+
         return self.df
 
     def finish(self) -> None:
@@ -99,6 +121,7 @@ class GooglePlaces(Step):
             / len(self._df["google_places_place_id_matches_phone_search"].notna())
             * 100
         )
+
         log.info(
             f"Percentage of mail search matching phone search (of all): {p_matches:.2f}%"
         )
@@ -111,7 +134,6 @@ class GooglePlaces(Step):
         error_return_value = pd.Series([None] * len(self.df_fields))
 
         search_query = lead_row["domain"]
-
         phone_number = lead_row["number_formatted"]
 
         if search_query is None and lead_row["email_valid"]:
@@ -167,6 +189,44 @@ class GooglePlaces(Step):
 
         return pd.Series(results_list)
 
+    def get_data_from_detailed_google_api(self, lead_row):
+        error_return_value = pd.Series([None] * len(self.detailed_df_fields))
+
+        place_id = lead_row["google_places_place_id"]
+
+        if place_id is None or pd.isna(place_id):
+            return error_return_value
+
+        # Call for the detailed API using specified fields
+        try:
+            # Fetch place details including reviews
+            response = self.gmaps.place(place_id, fields=self.detailed_api_fields)
+
+            # Check response status
+            if response.get("status") != HTTPStatus.OK.name:
+                log.warning(
+                    f"Failed to fetch data. Status code: {response.get('status')}"
+                )
+                return error_return_value
+
+        except RequestException as e:
+            log.error(f"Error: {str(e)}")
+
+        except (ApiError, HTTPError, Timeout, TransportError) as e:
+            error_message = (
+                str(e.message)
+                if hasattr(e, "message") and e.message is not None
+                else str(e)
+            )
+            log.warning(f"Error: {error_message}")
+
+        results_list = [
+            response["result"][field] if field in response["result"] else None
+            for field in self.detailed_api_fields_output
+        ]
+
+        return pd.Series(results_list)
+
     def get_first_place_candidate(self, query, input_type) -> (dict, int):
         if query is None:
             return None, 0
@@ -192,11 +252,6 @@ class GooglePlaces(Step):
             return None, 0
 
         top_result = response["candidates"][0]
-
-        # database connection TODO: replace this connection to appropriate file
-        # collection = mongo_connection("google_places")
-        # collection.insert_one(top_result)
-
         no_candidates = len(response["candidates"])
 
         return top_result, no_candidates

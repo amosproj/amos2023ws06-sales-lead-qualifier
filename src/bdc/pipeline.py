@@ -60,6 +60,11 @@ class Pipeline:
             # cleanup
             step.finish()
 
+        # database connection TODO: replace this connection to appropriate file
+        # collection = mongo_connection("google_places")
+        # collection.insert_one(top_result)
+
+        self.df.to_csv(self.output_location)
         log.info(f"Pipeline finished running {len(self.steps)} steps!")
         try:
             log.debug(self.df.head())
