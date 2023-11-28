@@ -186,31 +186,3 @@ class GPTReviewSentimentAnalyzer(Step):
             log.warning(f"Error loading reviews from path {full_path}.")
             # Return empty list if any exception occurred or status is not OK
             return []
-
-    def fetch_website(self, place_id):
-        try:
-            website_response = self.gmaps.place(place_id, fields=["website"])
-
-            # Check response status
-            if website_response.get("status") != HTTPStatus.OK.name:
-                log.info(
-                    f"Failed to fetch data. Status code: {website_response.get('status')}"
-                )
-                return None
-
-            # Extract website URL
-            return website_response.get("result", None).get("website")
-
-        except RequestException as e:
-            log.error(f"Error: {str(e)}")
-
-        except (ApiError, HTTPError, Timeout, TransportError) as e:
-            error_message = (
-                str(e.message)
-                if hasattr(e, "message") and e.message is not None
-                else str(e)
-            )
-            log.error(f"Error: {error_message}")
-
-        # Return None if any exception occurred or status is not OK
-        return None
