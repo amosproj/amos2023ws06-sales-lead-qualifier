@@ -69,10 +69,10 @@ class SmartReviewInsightsEnhancer(Step):
         if api_key is None:
             raise StepError(f"An API key for {api_name} is needed to run this step!")
 
-    def _enhance_review_insights(self, place_id):
-        if not self._is_valid_place_id(place_id):
+    def _enhance_review_insights(self, reviews_path):
+        if not self._is_valid_place_id(reviews_path):
             return None
-        reviews = self._fetch_reviews(place_id)
+        reviews = self._fetch_reviews(reviews_path)
 
         reviews_langs = [
             {
@@ -171,17 +171,18 @@ class SmartReviewInsightsEnhancer(Step):
             log.error(f"An error occurred in grammatical_errors: {e}")
             return 0
 
-    def _fetch_reviews(self, place_id):
+    def _fetch_reviews(self, reviews_path):
         try:
-            response = self.gmaps.place(place_id, fields=["name", "reviews"])
-            if response.get("status") != HTTPStatus.OK.name:
-                log.warning(
-                    f"Failed to fetch data. Status code: {response.get('status')}"
-                )
-                return []
-            return response.get("result", {}).get("reviews", [])
-        except (ApiError, HTTPError, Timeout, TransportError, RequestException) as e:
-            log.error(f"Error occurred while fetching reviews: {e}")
+            # reviews_path always starts with "./data/.."
+            full_path = os.path.abspath(
+                os.path.join(os.path.dirname(__file__), "../../" + reviews_path)
+            )
+            with open(full_path, "r", encoding="utf-8") as reviews_json:
+                reviews = json.load(reviews_json)
+                return reviews
+        except:
+            log.warning(f"Error loading reviews from path {full_path}.")
+            # Return empty list if any exception occurred or status is not OK
             return []
 
     def _is_valid_place_id(self, place_id):
