@@ -230,8 +230,7 @@ class GooglePlaces(Step):
 
         if google_place_id is None:
             top_result["reviews"] = []
-            print("place is not found")
-
+            self.log("place is not found")
         try:
             # response = self.gmaps.place(google_place_id, session_token=None, fields='reviews')
             response = requests.get(
@@ -243,19 +242,17 @@ class GooglePlaces(Step):
                 top_result["reviews"] = reviews
                 # for review in reviews:
                 #     print(f"Author: {review['author_name']}, Rating: {review['rating']}, Text: {review['text']}")
+                # Write the data to a JSON file
+                file_name = google_place_id + "_reviews.json"
+                json_file_path = "./data/reviews/" + file_name
+                with open(json_file_path, "w", encoding="utf-8") as json_file:
+                    json.dump(top_result, json_file, ensure_ascii=False, indent=4)
             else:
-                top_result["reviews"] = []
                 print("No reviews found.")
+                self.log("No reviews found")
         except RequestException as e:
             self.log(f"Error: {str(e)}")
             return None, 0
         except (ApiError, HTTPError, Timeout, TransportError) as e:
             self.log(f"Error: {str(e.message) if e.message is not None else str(e)}")
             return None, 0
-
-        # Write the data to a JSON file
-        json_file_path = "./data/reviews.json"
-        # df = pd.DataFrame(top_result)
-        # df.to_json(json_file_path, orient='records', lines=True)
-        with open(json_file_path, "w", encoding="utf-8") as json_file:
-            json.dump(top_result, json_file, ensure_ascii=False, indent=4)
