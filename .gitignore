@@ -55,6 +55,9 @@ bin/
 # Env files
 *.env
 
+# AWS credentials
+**/.aws/credentials
+
 # trained models
 **/models/*
 
