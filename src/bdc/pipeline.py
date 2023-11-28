@@ -1,12 +1,14 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Lucca Baumgärtner <lucca.baumgaertner@fau.de>
 
+import boto3
 import pandas as pd
 
 from bdc.steps.step import Step, StepError
 from logger import get_logger
 
 log = get_logger()
+s3 = boto3.resource("s3")
 
 
 class Pipeline:
@@ -71,3 +73,8 @@ class Pipeline:
             self.df.to_csv(self.output_location)
         except AttributeError as e:
             log.error(f"No datas to show/save! Error: {e}")
+
+
+if __name__ == "__main__":
+    for bucket in s3.buckets.all():
+        print(bucket.name)
