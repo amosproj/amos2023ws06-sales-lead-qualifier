@@ -1,17 +1,20 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Berkay Bozkurt <resitberkaybozkurt@gmail.com>
 # SPDX-FileCopyrightText: 2023 Sophie Heasman <sophieheasmann@gmail.com>
-
+import json
+import os.path
 from collections import Counter
 from http import HTTPStatus
 
 import googlemaps
 import language_tool_python as ltp
+import numpy as np
 import openai
 import pandas as pd
 from googlemaps.exceptions import ApiError, HTTPError, Timeout, TransportError
 from pandas import DataFrame
 from requests import RequestException
+from sklearn.linear_model import LinearRegression
 from tqdm import tqdm
 
 from bdc.steps.step import Step, StepError
@@ -36,8 +39,17 @@ class SmartReviewInsightsEnhancer(Step):
     USER_MESSAGE_FOR_SENTIMENT_ANALYSIS = (
         "Sentiment analyze the reviews and provide me a score between range [-1, 1]: {}"
     )
-    EXTRACTED_COL_NAMES = {"g_sco": "reviews_grammatical_score"}
-    ADDED_COLS = list(EXTRACTED_COL_NAMES.values())
+    EXTRACTED_COL_NAMES = {
+        "g_sco": "reviews_grammatical_score",
+    }
+    added_cols = [
+        "avg_grammatical_score",
+        "polarization_type",
+        "polarization_score",
+        "highest_rating_ratio",
+        "lowest_rating_ratio",
+        "rating_trend",
+    ]
     MIN_RATINGS_COUNT = 10
     RATING_DOMINANCE_THRESHOLD = (
         0.8  # Threshold for high or low rating dominance in decimal
@@ -57,9 +69,16 @@ class SmartReviewInsightsEnhancer(Step):
 
     def run(self) -> DataFrame:
         tqdm.pandas(desc="Running reviews insights enhancement")
-        self.df[self.EXTRACTED_COL_NAMES["g_sco"]] = self.df[
-            self.REQUIRED_FIELDS["reviews_path"]
-        ].progress_apply(self._enhance_review_insights)
+
+        # Apply the enhancement function
+        enhancements = self.df[self.REQUIRED_FIELDS["reviews_path"]].progress_apply(
+            self._enhance_review_insights
+        )
+
+        # Convert the enhancements into a DataFrame and join it with self.df
+        enhancements_df = pd.DataFrame(enhancements.tolist(), index=self.df.index)
+        self.df = self.df.join(enhancements_df)
+
         return self.df
 
     def finish(self) -> None:
@@ -71,7 +90,7 @@ class SmartReviewInsightsEnhancer(Step):
 
     def _enhance_review_insights(self, reviews_path):
         if not self._is_valid_place_id(reviews_path):
-            return None
+            return pd.Series({f"review_{col}": None for col in self.added_cols})
         reviews = self._fetch_reviews(reviews_path)
 
         reviews_langs = [
@@ -94,6 +113,57 @@ class SmartReviewInsightsEnhancer(Step):
             highest_rating_ratio,
             lowest_rating_ratio,
         ) = self._quantify_polarization(ratings)
+
+        rating_time = [
+            {
+                "time": review.get("time"),
+                "rating": review.get("rating"),
+            }
+            for review in reviews
+        ]
+        rating_trend = self._analyze_rating_trend(rating_time)
+
+        extracted_features = {
+            "avg_gram_sco": avg_gram_sco,
+            "polarization_type": polarization_type,
+            "polarization_score": polarization_score,
+            "highest_rating_ratio": highest_rating_ratio,
+            "lowest_rating_ratio": lowest_rating_ratio,
+            "rating_trend": rating_trend,
+        }
+        log.debug(f"Extracted feats : {extracted_features}")
+        return pd.Series(
+            {f"review_{col}": extracted_features[col] for col in self.added_cols}
+        )
+
+    def _analyze_rating_trend(self, rating_time):
+        """
+        Analyzes the general trend of ratings over time.
+
+        :param reviews: List of review data, each a dict with 'time' (Unix timestamp) and 'rating'.
+        :return: A value between -1 and 1 indicating the trend of ratings.
+            - A value close to 1 indicates a strong increasing trend.
+            - A value close to -1 indicates a strong decreasing trend.
+            - A value around 0 indicates no significant trend (stable ratings).
+        """
+        # Convert to DataFrame
+        df = pd.DataFrame(rating_time)
+
+        # Convert Unix timestamp to numerical value (e.g., days since the first review)
+        df["date"] = pd.to_datetime(df["time"], unit="s")
+        df["days_since_start"] = (df["date"] - df["date"].min()).dt.days
+
+        # Linear regression
+        model = LinearRegression()
+        model.fit(df[["days_since_start"]], df["rating"])
+
+        # Slope of the regression line
+        slope = model.coef_[0]
+
+        # Normalize the slope to be within the range [-1, 1]
+        slope_normalized = np.clip(slope, -1, 1)
+
+        return slope_normalized
 
     def _quantify_polarization(self, ratings: list):
         """
