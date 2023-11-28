@@ -51,6 +51,7 @@ bin/
 **/data/*.json
 **/data/*.env
 **/data/*.geojson
+!**/data/merged_geo.geojson
 
 # Env files
 *.env
