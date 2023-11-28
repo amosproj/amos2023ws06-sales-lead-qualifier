@@ -27,7 +27,8 @@ class SmartReviewInsightsEnhancer(Step):
     MODEL_ENCODING_NAME = "cl100k_base"
     MAX_PROMPT_TOKENS = 4096
     NO_ANSWER = "None"
-    REQUIRED_FIELDS = {"places_id": "google_places_place_id"}
+    REQUIRED_FIELDS = {"reviews_path": "google_places_detailed_reviews_path"}
+
     SYSTEM_MESSAGE_FOR_SENTIMENT_ANALYSIS = (
         "You are a review sentiment analyzer. You are being provided reviews of companies. "
         "Analyze the reviews and come up with a score between the range [-1, 1]. If there are no reviews, answer with '{}'."
@@ -57,7 +58,7 @@ class SmartReviewInsightsEnhancer(Step):
     def run(self) -> DataFrame:
         tqdm.pandas(desc="Running reviews insights enhancement")
         self.df[self.EXTRACTED_COL_NAMES["g_sco"]] = self.df[
-            self.REQUIRED_FIELDS["places_id"]
+            self.REQUIRED_FIELDS["reviews_path"]
         ].progress_apply(self._enhance_review_insights)
         return self.df
 
