@@ -3,6 +3,7 @@
 
 from .analyze_emails import AnalyzeEmails
 from .google_places import GooglePlaces
+from .google_places_detailed import GooglePlacesDetailed
 from .gpt_summarizer import GPTSummarizer
 from .preprocess_phonenumbers import PreprocessPhonenumbers
 from .scrape_address import ScrapeAddress

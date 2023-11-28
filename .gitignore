@@ -51,6 +51,7 @@ bin/
 **/data/*.json
 **/data/*.env
 **/data/*.geojson
+**/data/reviews/*.json
 
 # Env files
 *.env
@@ -60,7 +61,6 @@ bin/
 
 # # logs
 **/logs/*
-
 **/cache/*
 
 !.gitkeep

@@ -19,6 +19,7 @@ from bdc.steps import (
     AnalyzeEmails,
     FacebookGraphAPI,
     GooglePlaces,
+    GooglePlacesDetailed,
     GPTSummarizer,
     PreprocessPhonenumbers,
     ScrapeAddress,
@@ -191,6 +192,7 @@ def pipeline_demo():
             )
             force_execution = choice == "y" or choice == "Y"
             steps.append(GooglePlaces(force_refresh=force_execution))
+            steps.append(GooglePlacesDetailed(force_refresh=force_execution))
     except ValueError:
         print("Invalid Choice")
 

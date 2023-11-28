@@ -257,8 +257,6 @@ class GooglePlaces(Step):
         top_result = response["candidates"][0]
         no_candidates = len(response["candidates"])
 
-        self.get_reviews_from_google_place_api(top_result)
-
         return top_result, no_candidates
 
     def calculate_confidence(self, results_list, lead) -> float | None:
@@ -298,35 +296,3 @@ class GooglePlaces(Step):
             return 0.2
         # we found more than 1 result for either search method -> low confidence
         return 0.1
-
-    def get_reviews_from_google_place_api(self, top_result):
-        google_place_id = top_result["place_id"]
-
-        if google_place_id is None:
-            top_result["reviews"] = []
-            self.log("place is not found")
-        try:
-            # response = self.gmaps.place(google_place_id, session_token=None, fields='reviews')
-            response = requests.get(
-                self.URLreview + google_place_id + "&key=" + GOOGLE_PLACES_API_KEY
-            )
-            place_details = response.json()
-            if "result" in place_details and "reviews" in place_details["result"]:
-                reviews = place_details["result"]["reviews"]
-                top_result["reviews"] = reviews
-                # for review in reviews:
-                #     print(f"Author: {review['author_name']}, Rating: {review['rating']}, Text: {review['text']}")
-                # Write the data to a JSON file
-                file_name = google_place_id + "_reviews.json"
-                json_file_path = "./data/reviews/" + file_name
-                with open(json_file_path, "w", encoding="utf-8") as json_file:
-                    json.dump(top_result, json_file, ensure_ascii=False, indent=4)
-            else:
-                print("No reviews found.")
-                self.log("No reviews found")
-        except RequestException as e:
-            self.log(f"Error: {str(e)}")
-            return None, 0
-        except (ApiError, HTTPError, Timeout, TransportError) as e:
-            self.log(f"Error: {str(e.message) if e.message is not None else str(e)}")
-            return None, 0
