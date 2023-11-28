@@ -50,7 +50,9 @@ class Pipeline:
 
             try:
                 step.load_data()
-                if step.verify() and not step.check_data_presence():
+                verified = step.verify()
+                data_present = step.check_data_presence()
+                if verified and not data_present:
                     step_df = step.run()
                     self.df = step_df
             except StepError as e:
@@ -61,6 +63,11 @@ class Pipeline:
             # cleanup
             step.finish()
 
+        # database connection TODO: replace this connection to appropriate file
+        # collection = mongo_connection("google_places")
+        # collection.insert_one(top_result)
+
+        self.df.to_csv(self.output_location)
         log.info(f"Pipeline finished running {len(self.steps)} steps!")
         try:
             log.debug(self.df.head())

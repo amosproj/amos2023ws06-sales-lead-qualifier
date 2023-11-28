@@ -5,6 +5,8 @@
 # SPDX-FileCopyrightText: 2023 Fabian-Paul Utech  <f.utech@gmx.net>
 # SPDX-FileCopyrightText: 2023 Ruchita Nathani <Ruchita.nathani@fau.de>
 # SPDX-FileCopyrightText: 2023 Ahmed Sheta <ahmed.sheta@fau.de>
+# SPDX-FileCopyrightText: 2023 Berkay Bozkurt <resitberkaybozkurt@gmail.de>
+
 
 import os
 
@@ -17,6 +19,7 @@ from bdc.steps import (
     AnalyzeEmails,
     FacebookGraphAPI,
     GooglePlaces,
+    GPTSummarizer,
     PreprocessPhonenumbers,
     RegionalAtlas,
     ScrapeAddress,
@@ -192,6 +195,16 @@ def pipeline_demo():
     except ValueError:
         print("Invalid Choice")
 
+    try:
+        choice = str(
+            input(
+                f"Run GPT Summarizer openAI API? (will use token and generate cost!) (y/N)\n"
+            )
+        )
+        if choice == "y" or choice == "Y":
+            steps.append(GPTSummarizer())
+    except ValueError:
+        print("Invalid Choice")
     limit = None
     try:
         choice = int(input(f"Set limit for data point to be processed\n"))
