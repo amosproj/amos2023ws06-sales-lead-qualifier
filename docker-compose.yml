@@ -1,0 +1,30 @@
+# SPDX-License-Identifier: MIT
+# SPDX-FileCopyrightText: 2023 Ruchita Nathani <ruchita.nathani@fau.de>
+
+version: "3"
+services:
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - network_private
+
+  sumup_app:
+    build: .
+    depends_on:
+      - mongodb
+    env_file:
+      - .env
+    # volumes:
+    #   - .:opt/sumup_app
+    command: python main.py
+    networks:
+      - network_private
+
+networks:
+  network_private:
+    driver: bridge

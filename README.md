@@ -66,6 +66,19 @@ To run the application interactively run
 ```[bash]
 ./run_app.sh
 ```
+## Database Connection
+
+To build the Docker containers
+
+```[bash]
+docker-compose build
+```
+
+To run the Docker containers
+
+```[bash]
+docker-compose run sumup_app
+```
 
 ### License
 

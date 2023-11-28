@@ -13,6 +13,9 @@ from database.models import (
     ProductOfInterest,
     UserRatingsTotal,
 )
+from logger import get_logger
+
+log = get_logger()
 
 
 class LeadParser:
@@ -21,7 +24,7 @@ class LeadParser:
         try:
             data_df = pd.read_csv(path)
         except FileNotFoundError:
-            print(f"Error: could not find {path} while parsing leads")
+            log.error(f"Could not find {path} while parsing leads")
         leads = data_df.apply(
             lambda row: Lead(
                 lead_id=row.name,
