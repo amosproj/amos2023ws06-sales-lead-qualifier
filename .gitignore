@@ -21,7 +21,6 @@ pids
 # Python
 *.pyc
 __pycache__/
-# Pipfile.lock
 
 # Jupyter Notebook
 .ipynb_checkpoints

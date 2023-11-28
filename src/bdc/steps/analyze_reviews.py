@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Berkay Bozkurt <resitberkaybozkurt@gmail.com>
 # SPDX-FileCopyrightText: 2023 Sophie Heasman <sophieheasmann@gmail.com>
-
-
+import json
+import os.path
 from http import HTTPStatus
 
 import googlemaps
@@ -27,7 +27,7 @@ class GPTReviewSentimentAnalyzer(Step):
     model_encoding_name = "cl100k_base"
     MAX_PROMPT_TOKENS = 4096
     no_answer = "None"
-    gpt_required_fields = {"places_id": "google_places_place_id"}
+    gpt_required_fields = {"reviews_path": "google_places_detailed_reviews_path"}
     # system and user messages to be used for creating company summary for lead using website.
     system_message_for_sentiment_analysis = f"You are review sentiment analyzer, you being provided reviews of the companies. You analyze the review and come up with the score between range [-1, 1], if no reviews then just answer with '{no_answer}'"
     user_message_for_sentiment_analysis = "Sentiment analyze the reviews  and provide me a score between range [-1, 1]  : {}"
@@ -52,8 +52,8 @@ class GPTReviewSentimentAnalyzer(Step):
     def run(self) -> DataFrame:
         tqdm.pandas(desc="Running sentiment analysis on reviews")
         self.df[self.extracted_col_name] = self.df[
-            self.gpt_required_fields["places_id"]
-        ].progress_apply(lambda place_id: self.run_sentiment_analysis(place_id))
+            self.gpt_required_fields["reviews_path"]
+        ].progress_apply(lambda reviews_path: self.run_sentiment_analysis(reviews_path))
         return self.df
 
     def finish(self) -> None:
@@ -63,16 +63,16 @@ class GPTReviewSentimentAnalyzer(Step):
         if api_key is None:
             raise StepError(f"An API key for {api_name} is needed to run this step!")
 
-    def run_sentiment_analysis(self, place_id):
+    def run_sentiment_analysis(self, reviews_path):
         """
         Runs sentiment analysis on reviews of lead extracted from company's website
 
         """
 
-        # if there is no place_id, then return without API call.
-        if place_id is None or pd.isna(place_id):
+        # if there is no reviews_path, then return without API call.
+        if reviews_path is None or pd.isna(reviews_path):
             return None
-        reviews = self.fetch_reviews(place_id)
+        reviews = self.fetch_reviews(reviews_path)
         review_texts = self.extract_text_from_reviews(reviews)
         if len(review_texts) == 0:
             return None
@@ -173,34 +173,19 @@ class GPTReviewSentimentAnalyzer(Step):
 
         return batches
 
-    def fetch_reviews(self, place_id):
+    def fetch_reviews(self, reviews_path):
         try:
-            # Fetch place details including reviews
-            response = self.gmaps.place(place_id, fields=["name", "reviews"])
-
-            # Check response status
-            if response.get("status") != HTTPStatus.OK.name:
-                log.warning(
-                    f"Failed to fetch data. Status code: {response.get('status')}"
-                )
-                return None
-
-            # Extract reviews
-            return response.get("result", None).get("reviews", [])
-
-        except RequestException as e:
-            log.error(f"Error: {str(e)}")
-
-        except (ApiError, HTTPError, Timeout, TransportError) as e:
-            error_message = (
-                str(e.message)
-                if hasattr(e, "message") and e.message is not None
-                else str(e)
+            # reviews_path always starts with "./data/.."
+            full_path = os.path.abspath(
+                os.path.join(os.path.dirname(__file__), "../../" + reviews_path)
             )
-            log.error(f"Error: {error_message}")
-
-        # Return empty list if any exception occurred or status is not OK
-        return []
+            with open(full_path, "r", encoding="utf-8") as reviews_json:
+                reviews = json.load(reviews_json)
+                return reviews
+        except:
+            log.warning(f"Error loading reviews from path {full_path}.")
+            # Return empty list if any exception occurred or status is not OK
+            return []
 
     def fetch_website(self, place_id):
         try:

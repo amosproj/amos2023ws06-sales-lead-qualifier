@@ -6,7 +6,6 @@
 
 import json
 import os
-import re
 from http import HTTPStatus
 
 import googlemaps
@@ -17,7 +16,6 @@ from tqdm import tqdm
 
 from bdc.steps.step import Step, StepError
 from config import GOOGLE_PLACES_API_KEY
-from database import mongo_connection
 from logger import get_logger
 
 log = get_logger()
@@ -122,14 +120,15 @@ class GooglePlacesDetailed(Step):
             # Write the data to a JSON file
             file_name = place_id + "_reviews.json"
             json_file_path = "./data/reviews/" + file_name
+            abs_path = os.path.abspath(
+                os.path.join(os.path.dirname(__file__), "../../" + json_file_path)
+            )
 
-            if os.path.join(
-                os.path.abspath(os.path.dirname(__file__)), "../" + json_file_path
-            ):
+            if os.path.exists(abs_path):
                 log.info(f"Reviews for {place_id} already exist")
                 return json_file_path
 
-            with open(json_file_path, "w", encoding="utf-8") as json_file:
+            with open(abs_path, "w", encoding="utf-8") as json_file:
                 json.dump(reviews, json_file, ensure_ascii=False, indent=4)
 
             return json_file_path
