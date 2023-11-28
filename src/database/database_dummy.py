@@ -7,6 +7,9 @@ import pandas as pd
 
 from database.models import Lead
 from database.parsers import LeadParser
+from logger import get_logger
+
+log = get_logger()
 
 
 class DatabaseDummy:
@@ -24,5 +27,5 @@ class DatabaseDummy:
         return len(self.leads)
 
     def update_lead(self, lead: Lead):
-        print(f"Updating database entry for lead#{lead.lead_id}")
-        print(f"Update values: {lead}")
+        log.debug(f"Updating database entry for lead#{lead.lead_id}")
+        log.debug(f"Update values: {lead}")

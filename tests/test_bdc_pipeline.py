@@ -13,12 +13,36 @@ from bdc.steps.step import Step
 
 class DummyStepOne(Step):
     name = "Dummy_Step_One"
+    added_cols = ["TestCol"]
 
     def load_data(self) -> None:
         pass
 
     def verify(self) -> bool:
         return True
+
+    def check_data_presence(self) -> bool:
+        return False
+
+    def run(self) -> DataFrame:
+        return pd.DataFrame()
+
+    def finish(self) -> None:
+        pass
+
+
+class DummyStepTwo(Step):
+    name = "Dummy_Step_Two"
+    added_cols = ["TestCol"]
+
+    def load_data(self) -> None:
+        self.df = pd.DataFrame(columns=["TestCol"])
+
+    def verify(self) -> bool:
+        return True
+
+    def check_data_presence(self) -> bool:
+        return super().check_data_presence()
 
     def run(self) -> DataFrame:
         return pd.DataFrame()
@@ -28,26 +52,42 @@ class DummyStepOne(Step):
 
 
 class TestPipelineFramework(unittest.TestCase):
-    p: Pipeline
+    p_one: Pipeline
+    p_two: Pipeline
     dummy_step_one: Step
+    dummy_step_two: Step
+    dummy_step_three: Step
 
     def setUp(self):
         self.dummy_step_one = DummyStepOne()
+        self.dummy_step_two = DummyStepTwo()
+        self.dummy_step_three = DummyStepTwo(force_refresh=True)
         # create pipeline without actually reading from a csv file
         with mock.patch("pandas.read_csv") as read_csv_mock:
-            self.p = Pipeline([self.dummy_step_one], "./not_valid.csv")
+            self.p_one = Pipeline([self.dummy_step_one], "./not_valid.csv")
+            self.p_two = Pipeline(
+                [self.dummy_step_two, self.dummy_step_three], "./not_valid.csv"
+            )
             read_csv_mock.assert_called_with("./not_valid.csv")
 
     def test_verify(self):
         with (
             mock.patch.object(self.dummy_step_one, "load_data") as load_data_mock,
             mock.patch.object(self.dummy_step_one, "verify") as verify_mock,
+            mock.patch.object(
+                self.dummy_step_one, "check_data_presence"
+            ) as check_data_presence_mock,
             mock.patch.object(self.dummy_step_one, "run") as run_mock,
             mock.patch.object(self.dummy_step_one, "finish") as finish_mock,
         ):
-            self.p.run()
+            check_data_presence_mock.return_value = False
+            verify_mock.return_value = True
+
+            self.p_one.run()
+
             load_data_mock.assert_called_once()
             verify_mock.assert_called_once()
+            check_data_presence_mock.assert_called_once()
             run_mock.assert_called_once()
             finish_mock.assert_called_once()
 
@@ -55,6 +95,9 @@ class TestPipelineFramework(unittest.TestCase):
         with (
             mock.patch.object(self.dummy_step_one, "load_data") as load_data_mock,
             mock.patch.object(self.dummy_step_one, "verify") as verify_mock,
+            mock.patch.object(
+                self.dummy_step_one, "check_data_presence"
+            ) as check_data_presence_mock,
             mock.patch.object(self.dummy_step_one, "run") as run_mock,
             mock.patch.object(self.dummy_step_one, "finish") as finish_mock,
         ):
@@ -62,13 +105,37 @@ class TestPipelineFramework(unittest.TestCase):
             verify_mock.return_value = False
 
             # run pipeline
-            self.p.run()
+            self.p_one.run()
 
-            # assert that all methods were run except for run()
+            # assert that all methods were run except for run() and check_data_presence()
             load_data_mock.assert_called_once()
             verify_mock.assert_called_once()
+            check_data_presence_mock.assert_called_once()
             run_mock.assert_not_called()
             finish_mock.assert_called_once()
+
+    def test_data_presence(self):
+        with (
+            mock.patch.object(self.dummy_step_two, "verify") as verify_mock_two,
+            mock.patch.object(self.dummy_step_two, "run") as run_mock_two,
+            mock.patch.object(self.dummy_step_two, "finish") as finish_mock_two,
+            mock.patch.object(self.dummy_step_three, "verify") as verify_mock_three,
+            mock.patch.object(self.dummy_step_three, "run") as run_mock_three,
+            mock.patch.object(self.dummy_step_three, "finish") as finish_mock_three,
+        ):
+            verify_mock_two.return_value = True
+            verify_mock_three.return_value = True
+
+            self.p_two.run()
+
+            verify_mock_two.assert_called_once()
+            verify_mock_three.assert_called_once()
+
+            run_mock_two.assert_not_called()
+            run_mock_three.assert_called_once()
+
+            finish_mock_two.assert_called_once()
+            finish_mock_three.assert_called_once()
 
 
 if __name__ == "__main__":
