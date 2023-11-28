@@ -4,11 +4,14 @@
 import boto3
 import pandas as pd
 
+from bdc.steps import AnalyzeEmails, GooglePlaces, PreprocessPhonenumbers
 from bdc.steps.step import Step, StepError
 from logger import get_logger
 
 log = get_logger()
-s3 = boto3.resource("s3")
+s3 = boto3.client("s3")
+
+S3_BUCKET = "amos--data--events"
 
 
 class Pipeline:
@@ -22,16 +25,30 @@ class Pipeline:
     ):
         self.steps: list[Step] = steps
         self.limit: int = limit
+
+        # try to read most current dataset from S3 first
+        remote_dataset = fetch_remote_data()
+
+        # fallback if remote access was not possible
+        if remote_dataset is None or "Body" not in remote_dataset:
+            log.info(
+                f"Couldn't find dataset in S3 bucket {S3_BUCKET}, falling back to local."
+            )
+            source = input_location
+        else:
+            source = remote_dataset["Body"]
+
         try:
             if index_col is not None:
-                self.df = pd.read_csv(input_location, index_col=index_col)
+                self.df = pd.read_csv(source, index_col=index_col)
             else:
-                self.df = pd.read_csv(input_location)
+                self.df = pd.read_csv(source)
             if limit is not None:
                 self.df = self.df[:limit]
         except FileNotFoundError:
             log.error("Error: Could not find input file for Pipeline.")
             self.df = None
+
         self.output_location = (
             input_location if output_location is None else output_location
         )
@@ -75,6 +92,24 @@ class Pipeline:
             log.error(f"No datas to show/save! Error: {e}")
 
 
+def fetch_remote_data():
+    object_key = "leads/enriched.csv"
+    obj = None
+    try:
+        obj = s3.get_object(Bucket=S3_BUCKET, Key=object_key)
+    except (s3.exceptions.NoSuchKey, s3.exceptions.InvalidObjectState) as e:
+        log.warning(e)
+    return obj
+
+
 if __name__ == "__main__":
-    for bucket in s3.buckets.all():
-        print(bucket.name)
+    res = fetch_remote_data()
+    print(res)
+
+    p = Pipeline(
+        steps=[AnalyzeEmails(), PreprocessPhonenumbers(), GooglePlaces()],
+        input_location="s3",
+        limit=20,
+    )
+
+    p.run()
