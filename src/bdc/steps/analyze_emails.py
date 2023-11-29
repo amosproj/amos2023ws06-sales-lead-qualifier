@@ -47,6 +47,7 @@ class AnalyzeEmails(Step):
     """
 
     name = "Analyze-Emails"
+
     added_cols = [
         "domain",
         "email_valid",
