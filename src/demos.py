@@ -19,6 +19,7 @@ from bdc.steps import (
     GooglePlaces,
     GPTSummarizer,
     PreprocessPhonenumbers,
+    RegionalAtlas,
     ScrapeAddress,
 )
 from bdc.steps.step import Step
@@ -137,8 +138,9 @@ def db_demo():
 
 
 def pipeline_demo():
-    steps: list[Step] = [AnalyzeEmails()]
+    steps: list[Step] = [AnalyzeEmails(force_refresh=True)]
     input_location = f"s3://{S3_BUCKET}/leads/enriched.csv"
+    
     index_col = 0
     output_location_local = "./data/leads_enriched.csv"
     output_location_remote = None
@@ -202,7 +204,21 @@ def pipeline_demo():
             steps.append(GPTSummarizer())
     except ValueError:
         print("Invalid Choice")
+
+
+    try:
+        choice = str(
+            input(
+                f"Use the Regionalatlas? (y/N)\n"
+            )
+        )
+        if choice == "y" or choice == "Y":
+            steps.append(RegionalAtlas(force_refresh=True))
+    except ValueError:
+        print("Invalid Choice")    
+
     limit = None
+
     try:
         choice = int(input(f"Set limit for data point to be processed\n"))
         if choice > 0:
@@ -227,6 +243,7 @@ def pipeline_demo():
     log.info(
         f"Running Pipeline with {steps=}, {input_location=}, {output_location_local=}, {output_location_remote=}"
     )
+
     pipeline = Pipeline(
         steps=steps,
         input_location=input_location,

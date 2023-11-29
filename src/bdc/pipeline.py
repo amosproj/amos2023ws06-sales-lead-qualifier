@@ -5,6 +5,7 @@ from datetime import datetime
 from io import StringIO
 
 import boto3
+import numpy as np
 import pandas as pd
 
 from bdc.steps.step import Step, StepError
@@ -97,6 +98,8 @@ class Pipeline:
                     self.df = step_df
             except StepError as e:
                 log.error(f"Step {step.name} failed! {e}")
+
+            self.df = self.df.replace(np.nan, None)
 
             # cleanup
             step.finish()

@@ -51,12 +51,13 @@ bin/
 **/data/*.json
 **/data/*.env
 **/data/*.geojson
+!**/data/merged_geo.geojson
 
 # Env files
 *.env
 
-# AWS credentials
-**/.aws/credentials
+# Report pdf
+report.pdf
 
 # trained models
 **/models/*
