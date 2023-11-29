@@ -68,10 +68,10 @@ class SmartReviewInsightsEnhancer(Step):
 
     def _enhance_review_insights(self, reviews_path):
         if not self._is_valid_place_id(reviews_path):
-            return pd.Series({f"review_{col}": None for col in self.added_cols})
+            return pd.Series({f"{col}": None for col in self.added_cols})
         reviews = self._fetch_reviews(reviews_path)
         if not reviews:
-            return pd.Series({f"review_{col}": None for col in self.added_cols})
+            return pd.Series({f"{col}": None for col in self.added_cols})
         log.debug(f"FETCHED REVIEWS : {reviews}")
         reviews_langs = [
             {
