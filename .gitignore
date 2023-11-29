@@ -50,10 +50,14 @@ bin/
 **/data/*.json
 **/data/*.env
 **/data/*.geojson
+!**/data/merged_geo.geojson
 **/data/reviews/*.json
 
 # Env files
 *.env
+
+# Report pdf
+report.pdf
 
 # trained models
 **/models/*

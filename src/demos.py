@@ -20,6 +20,7 @@ from bdc.steps import (
     GooglePlacesDetailed,
     GPTReviewSentimentAnalyzer,
     PreprocessPhonenumbers,
+    RegionalAtlas,
     ScrapeAddress,
 )
 from bdc.steps.step import Step
@@ -136,7 +137,7 @@ def db_demo():
 
 
 def pipeline_demo():
-    steps: list[Step] = [AnalyzeEmails()]
+    steps: list[Step] = [AnalyzeEmails(force_refresh=True)]
     input_location = "./data/leads_enriched.csv"
     index_col = 0
     if not os.path.exists(input_location):
@@ -209,7 +210,20 @@ def pipeline_demo():
     except ValueError:
         print("Invalid Choice")
 
+    try:
+        choice = str(
+            input(
+                f"Use the Regionalatlas? (y/N)\n"
+            )
+        )
+        if choice == "y" or choice == "Y":
+            steps.append(RegionalAtlas(force_refresh=True))
+    except ValueError:
+        print("Invalid Choice")    
+
+
     limit = None
+
     try:
         choice = int(input(f"Set limit for data point to be processed\n"))
         if choice > 0:
@@ -219,7 +233,8 @@ def pipeline_demo():
     except ValueError:
         print("Invalid Choice, no limit set")
 
-    log.info(f"Running Pipeline with {steps=}, {input_location=}, {output_location=}")
+    log.info(f"Running Pipeline with {steps=}, {input_location=}, {output_location=}")    
+
     pipeline = Pipeline(
         steps=steps,
         input_location=input_location,
