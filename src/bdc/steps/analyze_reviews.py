@@ -26,45 +26,26 @@ log = get_logger()
 
 class SmartReviewInsightsEnhancer(Step):
     NAME = "Smart-Review-Insights-Enhancer"
-    MODEL = "gpt-4"
-    MODEL_ENCODING_NAME = "cl100k_base"
-    MAX_PROMPT_TOKENS = 4096
-    NO_ANSWER = "None"
+
     REQUIRED_FIELDS = {"reviews_path": "google_places_detailed_reviews_path"}
 
-    SYSTEM_MESSAGE_FOR_SENTIMENT_ANALYSIS = (
-        "You are a review sentiment analyzer. You are being provided reviews of companies. "
-        "Analyze the reviews and come up with a score between the range [-1, 1]. If there are no reviews, answer with '{}'."
-    ).format(NO_ANSWER)
-    USER_MESSAGE_FOR_SENTIMENT_ANALYSIS = (
-        "Sentiment analyze the reviews and provide me a score between range [-1, 1]: {}"
-    )
-    EXTRACTED_COL_NAMES = {
-        "g_sco": "reviews_grammatical_score",
-    }
     added_cols = [
-        "avg_grammatical_score",
-        "polarization_type",
-        "polarization_score",
-        "highest_rating_ratio",
-        "lowest_rating_ratio",
-        "rating_trend",
+        "review_avg_grammatical_score",
+        "review_polarization_type",
+        "review_polarization_score",
+        "review_highest_rating_ratio",
+        "review_lowest_rating_ratio",
+        "rreview_ating_trend",
     ]
     MIN_RATINGS_COUNT = 10
     RATING_DOMINANCE_THRESHOLD = (
         0.8  # Threshold for high or low rating dominance in decimal
     )
 
-    gpt = None
-    gmaps = None
-
     def load_data(self) -> None:
-        self.gpt = openai.OpenAI(api_key=OPEN_AI_API_KEY)
-        self.gmaps = googlemaps.Client(key=GOOGLE_PLACES_API_KEY)
+        pass
 
     def verify(self) -> bool:
-        self._check_api_key(OPEN_AI_API_KEY, "OpenAI")
-        self._check_api_key(GOOGLE_PLACES_API_KEY, "Google Places")
         return self._is_dataframe_valid()
 
     def run(self) -> DataFrame:
@@ -145,9 +126,7 @@ class SmartReviewInsightsEnhancer(Step):
             "rating_trend": rating_trend,
         }
         log.debug(f"Extracted feats : {extracted_features}")
-        return pd.Series(
-            {f"review_{col}": extracted_features[col] for col in self.added_cols}
-        )
+        return pd.Series({f"{col}": extracted_features[col] for col in self.added_cols})
 
     def _analyze_rating_trend(self, rating_time):
         """
