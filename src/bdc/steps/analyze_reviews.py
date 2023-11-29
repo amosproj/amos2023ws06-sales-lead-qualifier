@@ -92,7 +92,9 @@ class SmartReviewInsightsEnhancer(Step):
         if not self._is_valid_place_id(reviews_path):
             return pd.Series({f"review_{col}": None for col in self.added_cols})
         reviews = self._fetch_reviews(reviews_path)
-
+        if reviews is []:
+            return pd.Series({f"review_{col}": None for col in self.added_cols})
+        log.debug(f"FETCHED REVIEWS : {reviews}")
         reviews_langs = [
             {
                 "text": review.get("text", ""),
@@ -100,20 +102,27 @@ class SmartReviewInsightsEnhancer(Step):
             }
             for review in reviews
         ]
+        log.debug(f"EXTRACTED REVIEW AND LANG : {reviews_langs}")
+
         avg_gram_sco = self._calculate_average_grammatical_score(reviews_langs)
+        log.debug(f"AVG GRAM SCORE : {avg_gram_sco}")
 
         ratings = [
             review["rating"]
             for review in reviews
             if "rating" in review and review["rating"] is not None
         ]
+        log.debug(f"EXTRACTED RATINGS : {ratings}")
+
         (
             polarization_type,
             polarization_score,
             highest_rating_ratio,
             lowest_rating_ratio,
         ) = self._quantify_polarization(ratings)
-
+        log.debug(
+            f"POLARIZATION VALUES : type: {polarization_type}, score: {polarization_score}, high_ratio: {highest_rating_ratio}, low_ratio:{lowest_rating_ratio}"
+        )
         rating_time = [
             {
                 "time": review.get("time"),
@@ -121,7 +130,11 @@ class SmartReviewInsightsEnhancer(Step):
             }
             for review in reviews
         ]
+        log.debug(f"EXTRACTED RATINGS AND TIMES: {rating_time}")
+
         rating_trend = self._analyze_rating_trend(rating_time)
+
+        log.debug(f"ANALYZED RATINGS AND TIMES: {rating_trend}")
 
         extracted_features = {
             "avg_gram_sco": avg_gram_sco,
