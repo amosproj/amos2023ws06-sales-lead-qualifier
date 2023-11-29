@@ -4,14 +4,10 @@
 import json
 import os.path
 from collections import Counter
-from http import HTTPStatus
 
-import googlemaps
 import language_tool_python as ltp
 import numpy as np
-import openai
 import pandas as pd
-from googlemaps.exceptions import ApiError, HTTPError, Timeout, TransportError
 from pandas import DataFrame
 from requests import RequestException
 from sklearn.linear_model import LinearRegression
@@ -35,7 +31,7 @@ class SmartReviewInsightsEnhancer(Step):
         "review_polarization_score",
         "review_highest_rating_ratio",
         "review_lowest_rating_ratio",
-        "rreview_ating_trend",
+        "review_rating_trend",
     ]
     MIN_RATINGS_COUNT = 10
     RATING_DOMINANCE_THRESHOLD = (
@@ -55,6 +51,7 @@ class SmartReviewInsightsEnhancer(Step):
         enhancements = self.df[self.REQUIRED_FIELDS["reviews_path"]].progress_apply(
             self._enhance_review_insights
         )
+        log.debug(f"EXTRACTED DATA FRAME {enhancements}")
 
         # Convert the enhancements into a DataFrame and join it with self.df
         enhancements_df = pd.DataFrame(enhancements.tolist(), index=self.df.index)
@@ -73,7 +70,7 @@ class SmartReviewInsightsEnhancer(Step):
         if not self._is_valid_place_id(reviews_path):
             return pd.Series({f"review_{col}": None for col in self.added_cols})
         reviews = self._fetch_reviews(reviews_path)
-        if reviews is []:
+        if not reviews:
             return pd.Series({f"review_{col}": None for col in self.added_cols})
         log.debug(f"FETCHED REVIEWS : {reviews}")
         reviews_langs = [
@@ -118,12 +115,12 @@ class SmartReviewInsightsEnhancer(Step):
         log.debug(f"ANALYZED RATINGS AND TIMES: {rating_trend}")
 
         extracted_features = {
-            "avg_gram_sco": avg_gram_sco,
-            "polarization_type": polarization_type,
-            "polarization_score": polarization_score,
-            "highest_rating_ratio": highest_rating_ratio,
-            "lowest_rating_ratio": lowest_rating_ratio,
-            "rating_trend": rating_trend,
+            "review_avg_grammatical_score": avg_gram_sco,
+            "review_polarization_type": polarization_type,
+            "review_polarization_score": polarization_score,
+            "review_highest_rating_ratio": highest_rating_ratio,
+            "review_lowest_rating_ratio": lowest_rating_ratio,
+            "review_rating_trend": rating_trend,
         }
         log.debug(f"Extracted feats : {extracted_features}")
         return pd.Series({f"{col}": extracted_features[col] for col in self.added_cols})
@@ -169,7 +166,8 @@ class SmartReviewInsightsEnhancer(Step):
 
         total_ratings = len(ratings)
         if total_ratings <= self.MIN_RATINGS_COUNT:
-            return "Insufficient data", None, None, None, {}, total_ratings
+            log.info(f"There is no sufficient data to identify polarization")
+            return "Insufficient data", None, None, None
 
         rating_counts = Counter(ratings)
         high_low_count = rating_counts.get(5, 0) + rating_counts.get(1, 0)
@@ -200,11 +198,11 @@ class SmartReviewInsightsEnhancer(Step):
         Determines the type of polarization based on rating ratios and a threshold.
         """
         if polarization_score > 0:
+            if highest_rating_ratio > threshold:
+                return "High Rating Dominance"
+            elif lowest_rating_ratio > threshold:
+                return "Low Rating Dominance"
             return "High-Low Polarization"
-        if highest_rating_ratio > threshold:
-            return "High Rating Dominance"
-        if lowest_rating_ratio > threshold:
-            return "Low Rating Dominance"
         return "Balanced"
 
     def _calculate_average_grammatical_score(self, reviews):
