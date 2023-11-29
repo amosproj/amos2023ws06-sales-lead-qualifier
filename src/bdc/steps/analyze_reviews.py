@@ -3,19 +3,16 @@
 # SPDX-FileCopyrightText: 2023 Sophie Heasman <sophieheasmann@gmail.com>
 import json
 import os.path
-from http import HTTPStatus
+import time
 
-import googlemaps
 import openai
 import pandas as pd
 import tiktoken
-from googlemaps.exceptions import ApiError, HTTPError, Timeout, TransportError
 from pandas import DataFrame
-from requests import RequestException
 from tqdm import tqdm
 
 from bdc.steps.step import Step, StepError
-from config import GOOGLE_PLACES_API_KEY, OPEN_AI_API_KEY
+from config import OPEN_AI_API_KEY
 from logger import get_logger
 
 log = get_logger()
@@ -35,15 +32,12 @@ class GPTReviewSentimentAnalyzer(Step):
     extracted_col_name = "reviews_sentiment_score"
     added_cols = [extracted_col_name]
     gpt = None
-    gmaps = None
 
     def load_data(self) -> None:
-        self.client = openai.OpenAI(api_key=OPEN_AI_API_KEY)
-        self.gmaps = googlemaps.Client(key=GOOGLE_PLACES_API_KEY)
+        self.gpt = openai.OpenAI(api_key=OPEN_AI_API_KEY)
 
     def verify(self) -> bool:
         self.check_api_key(OPEN_AI_API_KEY, "OpenAI")
-        self.check_api_key(GOOGLE_PLACES_API_KEY, "Google Places")
 
         return self.df is not None and all(
             column in self.df for column in self.gpt_required_fields.values()
@@ -84,52 +78,66 @@ class GPTReviewSentimentAnalyzer(Step):
         for review_batch in review_batches:
             sentiment_score = self.gpt_sentiment_analyze_review(review_batch)
             scores += sentiment_score or 0
-
+        scores
         return scores / len(review_batches)
 
     def gpt_sentiment_analyze_review(self, review_list):
         """
         GPT calculates the sentiment score considering the reviews
         """
-        try:
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": self.system_message_for_sentiment_analysis,
-                    },
-                    {
-                        "role": "user",
-                        "content": self.user_message_for_sentiment_analysis.format(
-                            review_list
-                        ),
-                    },
-                ],
-                temperature=0,
-            )
+        max_retries = 5  # Maximum number of retries
+        retry_delay = 5  # Initial delay in seconds (5 seconds)
 
-            # Extract and return the sentiment score
-            sentiment_score = response.choices[0].message.content
-            log.debug(f"GPT response {sentiment_score}")
-            if sentiment_score and sentiment_score != self.no_answer:
-                return float(sentiment_score)
-            else:
-                log.info("No valid sentiment score found in the response.")
-                return None
+        for attempt in range(max_retries):
+            try:
+                response = self.gpt.chat.completions.create(
+                    model=self.model,
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": self.system_message_for_sentiment_analysis,
+                        },
+                        {
+                            "role": "user",
+                            "content": self.user_message_for_sentiment_analysis.format(
+                                review_list
+                            ),
+                        },
+                    ],
+                    temperature=0,
+                )
+                # Extract and return the sentiment score
+                sentiment_score = response.choices[0].message.content
+                log.debug(f"GPT response {sentiment_score}")
+                if sentiment_score and sentiment_score != self.no_answer:
+                    return float(sentiment_score)
+                else:
+                    log.info("No valid sentiment score found in the response.")
+                    return None
+            except openai.RateLimitError as e:
+                if attempt < max_retries - 1:
+                    log.warning(
+                        f"Rate limit exceeded, retrying in {retry_delay} seconds..."
+                    )
+                    time.sleep(retry_delay)
+                    retry_delay *= 2  # Exponential backoff
+                else:
+                    log.error("Max retries reached. Unable to complete the request.")
+                    break
+            except (
+                openai.APITimeoutError,
+                openai.APIConnectionError,
+                openai.BadRequestError,
+                openai.AuthenticationError,
+                openai.PermissionDeniedError,
+            ) as e:
+                log.error(f"An error occurred with GPT API: {e}")
+                break
+            except Exception as e:
+                log.error(f"An unexpected error occurred: {e}")
+                break
 
-        except (
-            openai.APITimeoutError,
-            openai.APIConnectionError,
-            openai.BadRequestError,
-            openai.AuthenticationError,
-            openai.PermissionDeniedError,
-        ) as e:
-            log.error(f"An error occurred with GPT API: {e}")
-        except Exception as e:
-            log.error(f"An unexpected error occurred: {e}")
-
-        # Return None if any exception occurred
+        # Return None if the request could not be completed successfully
         return None
 
     def extract_text_from_reviews(self, reviews_list):
