@@ -44,6 +44,7 @@ class Pipeline:
         if input_location.startswith("s3://"):
             remote_dataset = None
             bucket = None
+            obj_key = None
             try:
                 bucket, obj_key = decode_s3_url(input_location)
                 remote_dataset = fetch_remote_data(bucket, obj_key)
@@ -53,7 +54,9 @@ class Pipeline:
                 )
 
             if remote_dataset is None or "Body" not in remote_dataset:
-                log.error(f"Couldn't find dataset in S3 bucket {bucket}")
+                log.error(
+                    f"Couldn't find dataset in S3 bucket {bucket} and key {obj_key}"
+                )
                 return
             else:
                 source = remote_dataset["Body"]
@@ -161,5 +164,5 @@ def backup_remote_data(bucket="amos--data--events", object_key="leads/enriched.c
 def decode_s3_url(url):
     obj_identifier = url.split("//")[1].split("/")
     bucket = obj_identifier[0]
-    obj_key = obj_identifier[1].join("/")
+    obj_key = "/".join(obj_identifier[1:])
     return bucket, obj_key
