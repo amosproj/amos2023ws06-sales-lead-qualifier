@@ -205,7 +205,21 @@ def pipeline_demo():
             steps.append(GPTSummarizer())
     except ValueError:
         print("Invalid Choice")
+
+
+    try:
+        choice = str(
+            input(
+                f"Use the Regionalatlas? (y/N)\n"
+            )
+        )
+        if choice == "y" or choice == "Y":
+            steps.append(RegionalAtlas(force_refresh=True))
+    except ValueError:
+        print("Invalid Choice")    
+
     limit = None
+
     try:
         choice = int(input(f"Set limit for data point to be processed\n"))
         if choice > 0:
@@ -215,8 +229,8 @@ def pipeline_demo():
     except ValueError:
         print("Invalid Choice, no limit set")
 
-    log.info(f"Running Pipeline with {steps=}, {input_location=}, {output_location=}")
-    steps.append(RegionalAtlas(force_refresh=True))
+    log.info(f"Running Pipeline with {steps=}, {input_location=}, {output_location=}")    
+
     pipeline = Pipeline(
         steps=steps,
         input_location=input_location,
