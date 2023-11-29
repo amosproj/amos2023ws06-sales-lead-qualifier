@@ -21,9 +21,11 @@ log = get_logger()
 
 
 class SmartReviewInsightsEnhancer(Step):
-    NAME = "Smart-Review-Insights-Enhancer"
-
-    REQUIRED_FIELDS = {"reviews_path": "google_places_detailed_reviews_path"}
+    name = "Smart-Review-Insights-Enhancer"
+    MIN_RATINGS_COUNT = 10
+    RATING_DOMINANCE_THRESHOLD = (
+        0.8  # Threshold for high or low rating dominance in decimal
+    )
 
     added_cols = [
         "review_avg_grammatical_score",
@@ -33,10 +35,6 @@ class SmartReviewInsightsEnhancer(Step):
         "review_lowest_rating_ratio",
         "review_rating_trend",
     ]
-    MIN_RATINGS_COUNT = 10
-    RATING_DOMINANCE_THRESHOLD = (
-        0.8  # Threshold for high or low rating dominance in decimal
-    )
 
     def load_data(self) -> None:
         pass
@@ -48,14 +46,9 @@ class SmartReviewInsightsEnhancer(Step):
         tqdm.pandas(desc="Running reviews insights enhancement")
 
         # Apply the enhancement function
-        enhancements = self.df[self.REQUIRED_FIELDS["reviews_path"]].progress_apply(
-            self._enhance_review_insights
+        self.df[self.added_cols].progress_apply(
+            lambda lead: pd.Series(self._enhance_review_insights(lead)), axis=1
         )
-        log.debug(f"EXTRACTED DATA FRAME {enhancements}")
-
-        # Convert the enhancements into a DataFrame and join it with self.df
-        enhancements_df = pd.DataFrame(enhancements.tolist(), index=self.df.index)
-        self.df = self.df.join(enhancements_df)
 
         return self.df
 
@@ -66,7 +59,8 @@ class SmartReviewInsightsEnhancer(Step):
         if api_key is None:
             raise StepError(f"An API key for {api_name} is needed to run this step!")
 
-    def _enhance_review_insights(self, reviews_path):
+    def _enhance_review_insights(self, lead):
+        reviews_path = lead["google_places_detailed_reviews_path"]
         if not self._is_valid_place_id(reviews_path):
             return pd.Series({f"{col}": None for col in self.added_cols})
         reviews = self._fetch_reviews(reviews_path)
@@ -115,15 +109,16 @@ class SmartReviewInsightsEnhancer(Step):
         log.debug(f"ANALYZED RATINGS AND TIMES: {rating_trend}")
 
         extracted_features = {
-            "review_avg_grammatical_score": avg_gram_sco,
-            "review_polarization_type": polarization_type,
-            "review_polarization_score": polarization_score,
-            "review_highest_rating_ratio": highest_rating_ratio,
-            "review_lowest_rating_ratio": lowest_rating_ratio,
-            "review_rating_trend": rating_trend,
+            avg_gram_sco,
+            polarization_type,
+            polarization_score,
+            highest_rating_ratio,
+            lowest_rating_ratio,
+            rating_trend,
         }
+
         log.debug(f"Extracted feats : {extracted_features}")
-        return pd.Series({f"{col}": extracted_features[col] for col in self.added_cols})
+        return pd.Series(extracted_features)
 
     def _analyze_rating_trend(self, rating_time):
         """
@@ -261,6 +256,4 @@ class SmartReviewInsightsEnhancer(Step):
         """
         Validates if the DataFrame has the required fields.
         """
-        return self.df is not None and all(
-            column in self.df for column in self.REQUIRED_FIELDS.values()
-        )
+        return self.df is not None and "google_places_detailed_reviews_path" in self.df
