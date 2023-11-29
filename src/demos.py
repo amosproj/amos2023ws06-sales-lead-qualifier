@@ -5,8 +5,6 @@
 # SPDX-FileCopyrightText: 2023 Fabian-Paul Utech  <f.utech@gmx.net>
 # SPDX-FileCopyrightText: 2023 Ruchita Nathani <Ruchita.nathani@fau.de>
 # SPDX-FileCopyrightText: 2023 Ahmed Sheta <ahmed.sheta@fau.de>
-# SPDX-FileCopyrightText: 2023 Berkay Bozkurt <resitberkaybozkurt@gmail.de>
-
 
 import os
 
@@ -19,7 +17,8 @@ from bdc.steps import (
     AnalyzeEmails,
     FacebookGraphAPI,
     GooglePlaces,
-    GPTSummarizer,
+    GooglePlacesDetailed,
+    GPTReviewSentimentAnalyzer,
     PreprocessPhonenumbers,
     RegionalAtlas,
     ScrapeAddress,
@@ -192,20 +191,24 @@ def pipeline_demo():
             )
             force_execution = choice == "y" or choice == "Y"
             steps.append(GooglePlaces(force_refresh=force_execution))
+            steps.append(GooglePlacesDetailed(force_refresh=force_execution))
     except ValueError:
         print("Invalid Choice")
 
     try:
         choice = str(
             input(
-                f"Run GPT Summarizer openAI API? (will use token and generate cost!) (y/N)\n"
+                f"Run open API Sentiment Analyzer ? (will use token and generate cost!) (y/N)\n"
             )
         )
         if choice == "y" or choice == "Y":
-            steps.append(GPTSummarizer())
+            choice = str(
+                input(f"Do you want to force execution if the data is present? (y/N)\n")
+            )
+            force_execution = choice == "y" or choice == "Y"
+            steps.append(GPTReviewSentimentAnalyzer(force_refresh=force_execution))
     except ValueError:
         print("Invalid Choice")
-
 
     try:
         choice = str(
@@ -217,6 +220,7 @@ def pipeline_demo():
             steps.append(RegionalAtlas(force_refresh=True))
     except ValueError:
         print("Invalid Choice")    
+
 
     limit = None
 

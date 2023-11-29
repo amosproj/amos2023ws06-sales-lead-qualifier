@@ -21,7 +21,6 @@ pids
 # Python
 *.pyc
 __pycache__/
-# Pipfile.lock
 
 # Jupyter Notebook
 .ipynb_checkpoints
@@ -52,6 +51,7 @@ bin/
 **/data/*.env
 **/data/*.geojson
 !**/data/merged_geo.geojson
+**/data/reviews/*.json
 
 # Env files
 *.env
@@ -64,7 +64,6 @@ report.pdf
 
 # # logs
 **/logs/*
-
 **/cache/*
 
 !.gitkeep
