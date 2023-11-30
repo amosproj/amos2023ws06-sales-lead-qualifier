@@ -92,19 +92,20 @@ class Pipeline:
             try:
                 step.load_data()
                 verified = step.verify()
+                log.info(f"Verification for step {step.name}: {verified}")
                 data_present = step.check_data_presence()
                 if verified and not data_present:
                     step_df = step.run()
                     self.df = step_df
+
+                    # cleanup
+                    step.finish()
             except StepError as e:
                 log.error(f"Step {step.name} failed! {e}")
 
             self.df = self.df.replace(np.nan, None)
 
-            # cleanup
-            step.finish()
-
-        self.df.to_csv(self.output_location_local)
+        self.df.to_csv(self.output_location_local, index=False)
         log.info(f"Saved enriched data locally to {self.output_location_local}")
 
         if self.output_location_remote is not None:
@@ -149,7 +150,7 @@ def save_remote(enriched_leads, bucket, object_key="leads/enriched.csv"):
     """
 
     csv_buffer = StringIO()
-    enriched_leads.to_csv(csv_buffer)
+    enriched_leads.to_csv(csv_buffer, index=False)
     s3.put_object(Bucket=bucket, Key=object_key, Body=csv_buffer.getvalue())
     log.info(f"Successfully saved enriched leads to s3://{bucket}/{object_key}")
 

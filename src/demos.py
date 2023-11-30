@@ -139,8 +139,8 @@ def db_demo():
 def pipeline_demo():
     steps: list[Step] = [AnalyzeEmails(force_refresh=True)]
     input_location = f"s3://{S3_BUCKET}/leads/enriched.csv"
-    
-    index_col = 0
+
+    index_col = None
     output_location_local = "./data/leads_enriched.csv"
     output_location_remote = None
     try:
@@ -210,16 +210,11 @@ def pipeline_demo():
         print("Invalid Choice")
 
     try:
-        choice = str(
-            input(
-                f"Use the Regionalatlas? (y/N)\n"
-            )
-        )
+        choice = str(input(f"Use the Regionalatlas? (y/N)\n"))
         if choice == "y" or choice == "Y":
             steps.append(RegionalAtlas(force_refresh=True))
     except ValueError:
-        print("Invalid Choice")    
-
+        print("Invalid Choice")
 
     limit = None
 
@@ -240,7 +235,7 @@ def pipeline_demo():
                 )
             )
             if choice == "y" or choice == "Y":
-                output_location_remote = input_location
+                output_location_remote = f"s3://{S3_BUCKET}/leads/enriched.csv"
         except ValueError:
             print("Invalid Choice")
 
