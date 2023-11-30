@@ -6,11 +6,13 @@
 # SPDX-FileCopyrightText: 2023 Ruchita Nathani <Ruchita.nathani@fau.de>
 # SPDX-FileCopyrightText: 2023 Ahmed Sheta <ahmed.sheta@fau.de>
 
+import json
 import re
 from http import HTTPStatus
 
 import googlemaps
 import pandas as pd
+import requests
 from googlemaps.exceptions import ApiError, HTTPError, Timeout, TransportError
 from requests import RequestException
 from tqdm import tqdm
@@ -25,7 +27,6 @@ log = get_logger()
 
 class GooglePlaces(Step):
     name = "Google_Places"
-    URL = "https://maps.googleapis.com/maps/api/place/textsearch/json?query="
 
     # fields that are expected as an output of the df.apply lambda function
     df_fields = [
@@ -42,17 +43,12 @@ class GooglePlaces(Step):
         "confidence",
     ]
 
-    detailed_df_fields = ["website", "type"]
-
     # Weirdly the expression [f"{name}_{field}" for field in df_fields] gives an error as name is not in the scope of the iterator
     added_cols = [
         name + field
         for (name, field) in zip(
-            [f"{name.lower()}_"] * (len(df_fields) + len(detailed_df_fields)),
-            (
-                [f"{field}" for field in df_fields]
-                + [f"{detailed_field}" for detailed_field in detailed_df_fields]
-            ),
+            [f"{name.lower()}_"] * (len(df_fields)),
+            ([f"{field}" for field in df_fields]),
         )
     ]
 
@@ -66,11 +62,6 @@ class GooglePlaces(Step):
         "rating",
         "price_level",
     ]
-
-    detailed_api_fields = ["website", "type"]
-
-    # Output fields are not necessarily the same as input fields
-    detailed_api_fields_output = ["website", "types"]
 
     gmaps = None
 
@@ -98,14 +89,6 @@ class GooglePlaces(Step):
             [f"{self.name.lower()}_{field}" for field in self.df_fields]
         ] = self.df.progress_apply(
             lambda lead: self.get_data_from_google_api(lead), axis=1
-        )
-
-        # Call places API
-        tqdm.pandas(desc="Getting info from Places API")
-        self.df[
-            [f"{self.name.lower()}_{field}" for field in self.detailed_df_fields]
-        ] = self.df.progress_apply(
-            lambda lead: self.get_data_from_detailed_google_api(lead), axis=1
         )
 
         return self.df
@@ -186,44 +169,6 @@ class GooglePlaces(Step):
 
         # calculate confidence score for google places results
         results_list.append(self.calculate_confidence(results_list, lead_row))
-
-        return pd.Series(results_list)
-
-    def get_data_from_detailed_google_api(self, lead_row):
-        error_return_value = pd.Series([None] * len(self.detailed_df_fields))
-
-        place_id = lead_row["google_places_place_id"]
-
-        if place_id is None or pd.isna(place_id):
-            return error_return_value
-
-        # Call for the detailed API using specified fields
-        try:
-            # Fetch place details including reviews
-            response = self.gmaps.place(place_id, fields=self.detailed_api_fields)
-
-            # Check response status
-            if response.get("status") != HTTPStatus.OK.name:
-                log.warning(
-                    f"Failed to fetch data. Status code: {response.get('status')}"
-                )
-                return error_return_value
-
-        except RequestException as e:
-            log.error(f"Error: {str(e)}")
-
-        except (ApiError, HTTPError, Timeout, TransportError) as e:
-            error_message = (
-                str(e.message)
-                if hasattr(e, "message") and e.message is not None
-                else str(e)
-            )
-            log.warning(f"Error: {error_message}")
-
-        results_list = [
-            response["result"][field] if field in response["result"] else None
-            for field in self.detailed_api_fields_output
-        ]
 
         return pd.Series(results_list)
 
