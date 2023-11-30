@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Berkay Bozkurt <resitberkaybozkurt@gmail.com>
 # SPDX-FileCopyrightText: 2023 Sophie Heasman <sophieheasmann@gmail.com>
+
 import json
 import os.path
 import time
@@ -159,7 +160,6 @@ class GPTReviewSentimentAnalyzer(Step):
                 )
                 # Extract and return the sentiment score
                 sentiment_score = response.choices[0].message.content
-                log.debug(f"GPT response {sentiment_score}")
                 if sentiment_score and sentiment_score != self.no_answer:
                     return float(sentiment_score)
                 else:
@@ -235,9 +235,9 @@ class GPTReviewSentimentAnalyzer(Step):
 
 class SmartReviewInsightsEnhancer(Step):
     name = "Smart-Review-Insights-Enhancer"
-    MIN_RATINGS_COUNT = 10
+    MIN_RATINGS_COUNT = 1
     RATING_DOMINANCE_THRESHOLD = (
-        0.8  # Threshold for high or low rating dominance in decimal
+        0.4  # Threshold for high or low rating dominance in decimal
     )
 
     added_cols = [
@@ -259,10 +259,9 @@ class SmartReviewInsightsEnhancer(Step):
         tqdm.pandas(desc="Running reviews insights enhancement")
 
         # Apply the enhancement function
-        self.df[self.added_cols].progress_apply(
+        self.df[self.added_cols] = self.df.progress_apply(
             lambda lead: pd.Series(self._enhance_review_insights(lead)), axis=1
         )
-
         return self.df
 
     def finish(self) -> None:
@@ -275,7 +274,7 @@ class SmartReviewInsightsEnhancer(Step):
         reviews = fetch_reviews(reviews_path)
         if not reviews:
             return pd.Series({f"{col}": None for col in self.added_cols})
-        log.debug(f"FETCHED REVIEWS : {reviews}")
+        results = []
         reviews_langs = [
             {
                 "text": review.get("text", ""),
@@ -283,27 +282,18 @@ class SmartReviewInsightsEnhancer(Step):
             }
             for review in reviews
         ]
-        log.debug(f"EXTRACTED REVIEW AND LANG : {reviews_langs}")
-
         avg_gram_sco = self._calculate_average_grammatical_score(reviews_langs)
-        log.debug(f"AVG GRAM SCORE : {avg_gram_sco}")
+        results.append(avg_gram_sco)
 
         ratings = [
             review["rating"]
             for review in reviews
             if "rating" in review and review["rating"] is not None
         ]
-        log.debug(f"EXTRACTED RATINGS : {ratings}")
 
-        (
-            polarization_type,
-            polarization_score,
-            highest_rating_ratio,
-            lowest_rating_ratio,
-        ) = self._quantify_polarization(ratings)
-        log.debug(
-            f"POLARIZATION VALUES : type: {polarization_type}, score: {polarization_score}, high_ratio: {highest_rating_ratio}, low_ratio:{lowest_rating_ratio}"
-        )
+        polarization_results = list(self._quantify_polarization(ratings))
+        results += polarization_results
+
         rating_time = [
             {
                 "time": review.get("time"),
@@ -311,22 +301,12 @@ class SmartReviewInsightsEnhancer(Step):
             }
             for review in reviews
         ]
-        log.debug(f"EXTRACTED RATINGS AND TIMES: {rating_time}")
 
         rating_trend = self._analyze_rating_trend(rating_time)
+        results.append(rating_trend)
 
-        log.debug(f"ANALYZED RATINGS AND TIMES: {rating_trend}")
+        extracted_features = dict(zip(self.added_cols, results))
 
-        extracted_features = {
-            avg_gram_sco,
-            polarization_type,
-            polarization_score,
-            highest_rating_ratio,
-            lowest_rating_ratio,
-            rating_trend,
-        }
-
-        log.debug(f"Extracted feats : {extracted_features}")
         return pd.Series(extracted_features)
 
     def _analyze_rating_trend(self, rating_time):
@@ -356,7 +336,8 @@ class SmartReviewInsightsEnhancer(Step):
         # Normalize the slope to be within the range [-1, 1]
         slope_normalized = np.clip(slope, -1, 1)
 
-        return slope_normalized
+        # Replace -0 with 0
+        return 0 if slope_normalized == 0 else slope_normalized
 
     def _quantify_polarization(self, ratings: list):
         """
@@ -403,9 +384,9 @@ class SmartReviewInsightsEnhancer(Step):
         """
         if polarization_score > 0:
             if highest_rating_ratio > threshold:
-                return "High Rating Dominance"
+                return "High-Rating Dominance"
             elif lowest_rating_ratio > threshold:
-                return "Low Rating Dominance"
+                return "Low-Rating Dominance"
             return "High-Low Polarization"
         return "Balanced"
 
