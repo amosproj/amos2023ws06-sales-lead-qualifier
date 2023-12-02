@@ -211,16 +211,15 @@ def pipeline_demo():
         print("Invalid Choice")
 
     try:
-        choice = str(
-            input(
-                f"Use the Regionalatlas? (y/N)\n"
-            )
-        )
+        choice = str(input(f"Use the Regionalatlas? (y/N)\n"))
         if choice == "y" or choice == "Y":
-            steps.append(RegionalAtlas(force_refresh=True))
+            choice = str(
+                input(f"Do you want to force execution if the data is present? (y/N)\n")
+            )
+            force_execution = choice == "y" or choice == "Y"
+            steps.append(RegionalAtlas(force_refresh=force_execution))
     except ValueError:
-        print("Invalid Choice")    
-
+        print("Invalid Choice")
 
     limit = None
 
@@ -233,7 +232,7 @@ def pipeline_demo():
     except ValueError:
         print("Invalid Choice, no limit set")
 
-    log.info(f"Running Pipeline with {steps=}, {input_location=}, {output_location=}")    
+    log.info(f"Running Pipeline with {steps=}, {input_location=}, {output_location=}")
 
     pipeline = Pipeline(
         steps=steps,
