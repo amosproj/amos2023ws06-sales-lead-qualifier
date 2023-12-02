@@ -6,8 +6,6 @@
 # SPDX-FileCopyrightText: 2023 Ruchita Nathani <Ruchita.nathani@fau.de>
 # SPDX-FileCopyrightText: 2023 Ahmed Sheta <ahmed.sheta@fau.de>
 
-import os
-
 import numpy as np
 from sklearn.metrics import mean_squared_error
 
@@ -32,6 +30,8 @@ from evp.predictors import Predictors
 from logger import get_logger
 
 log = get_logger()
+
+S3_BUCKET = "amos--data--events"
 
 
 def bdc_demo():
@@ -138,12 +138,11 @@ def db_demo():
 
 def pipeline_demo():
     steps: list[Step] = [AnalyzeEmails(force_refresh=True)]
-    input_location = "./data/leads_enriched.csv"
-    index_col = 0
-    if not os.path.exists(input_location):
-        input_location = "./data/sumup_leads_email.csv"
-        index_col = None
-    output_location = "./data/leads_enriched.csv"
+    input_location = f"s3://{S3_BUCKET}/leads/enriched.csv"
+
+    index_col = None
+    output_location_local = "./data/leads_enriched.csv"
+    output_location_remote = None
     try:
         choice = str(input(f"Run Scrape Address step? (will take a long time) (y/N)\n"))
         if choice == "y" or choice == "Y":
@@ -211,16 +210,11 @@ def pipeline_demo():
         print("Invalid Choice")
 
     try:
-        choice = str(
-            input(
-                f"Use the Regionalatlas? (y/N)\n"
-            )
-        )
+        choice = str(input(f"Use the Regionalatlas? (y/N)\n"))
         if choice == "y" or choice == "Y":
             steps.append(RegionalAtlas(force_refresh=True))
     except ValueError:
-        print("Invalid Choice")    
-
+        print("Invalid Choice")
 
     limit = None
 
@@ -233,12 +227,27 @@ def pipeline_demo():
     except ValueError:
         print("Invalid Choice, no limit set")
 
-    log.info(f"Running Pipeline with {steps=}, {input_location=}, {output_location=}")    
+    if limit is None:
+        try:
+            choice = str(
+                input(
+                    f"Do you want to save the output data to S3? Will replace the current file!\n"
+                )
+            )
+            if choice == "y" or choice == "Y":
+                output_location_remote = f"s3://{S3_BUCKET}/leads/enriched.csv"
+        except ValueError:
+            print("Invalid Choice")
+
+    log.info(
+        f"Running Pipeline with {steps=}, {input_location=}, {output_location_local=}, {output_location_remote=}"
+    )
 
     pipeline = Pipeline(
         steps=steps,
         input_location=input_location,
-        output_location=output_location,
+        output_location_local=output_location_local,
+        output_location_remote=output_location_remote,
         limit=limit,
         index_col=index_col,
     )
