@@ -42,7 +42,14 @@ OUTPUT_FILE_BDC = "../data/collected_data.json"
 
 # Utility Functions
 def get_yes_no_input(prompt: str) -> bool:
-    return input(prompt).lower() in ["y", "yes"]
+    while True:
+        user_input = input(prompt).strip().lower()
+        if user_input in ["y", "yes"]:
+            return True
+        elif user_input in ["n", "no"]:
+            return False
+        else:
+            print("Invalid input. Please enter (yes/no) or (y/N).")
 
 
 def get_int_input(prompt: str) -> int:
