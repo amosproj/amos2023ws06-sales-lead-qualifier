@@ -21,7 +21,6 @@ pids
 # Python
 *.pyc
 __pycache__/
-# Pipfile.lock
 
 # Jupyter Notebook
 .ipynb_checkpoints
@@ -38,7 +37,6 @@ out/
 # Eclipse IDE
 .project
 bin/
-
 # MacOS
 .DS_Store
 .AppleDouble
@@ -51,9 +49,21 @@ bin/
 **/data/*.csv
 **/data/*.json
 **/data/*.env
+**/data/*.geojson
+!**/data/merged_geo.geojson
+**/data/reviews/*.json
 
 # Env files
 *.env
 
+# Report pdf
+report.pdf
+
 # trained models
 **/models/*
+
+# # logs
+**/logs/*
+**/cache/*
+
+!.gitkeep

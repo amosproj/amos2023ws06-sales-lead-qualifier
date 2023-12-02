@@ -6,6 +6,8 @@
 # SPDX-FileCopyrightText: 2023 Ruchita Nathani <Ruchita.nathani@fau.de>
 # SPDX-FileCopyrightText: 2023 Ahmed Sheta <ahmed.sheta@fau.de>
 
+import os
+
 import numpy as np
 from sklearn.metrics import mean_squared_error
 
@@ -15,7 +17,10 @@ from bdc.steps import (
     AnalyzeEmails,
     FacebookGraphAPI,
     GooglePlaces,
+    GooglePlacesDetailed,
+    GPTReviewSentimentAnalyzer,
     PreprocessPhonenumbers,
+    RegionalAtlas,
     ScrapeAddress,
 )
 from bdc.steps.step import Step
@@ -24,6 +29,9 @@ from database.parsers import LeadParser
 from evp import EstimatedValuePredictor
 from evp.data_processing import split_dataset
 from evp.predictors import Predictors
+from logger import get_logger
+
+log = get_logger()
 
 
 def bdc_demo():
@@ -49,7 +57,7 @@ def evp_demo():
         model_path = str(input("Provide model path\n"))
     else:
         model_path = None
-    print(f"Creating EVP from model {model_path}")
+    log.info(f"Creating EVP from model {model_path}")
     evp = EstimatedValuePredictor(
         model_type=Predictors.LinearRegression, model_path=model_path
     )
@@ -129,20 +137,32 @@ def db_demo():
 
 
 def pipeline_demo():
-    steps: list[Step] = [AnalyzeEmails()]
-    input_location = "./data/sumup_leads_email.csv"
+    steps: list[Step] = [AnalyzeEmails(force_refresh=True)]
+    input_location = "./data/leads_enriched.csv"
+    index_col = 0
+    if not os.path.exists(input_location):
+        input_location = "./data/sumup_leads_email.csv"
+        index_col = None
     output_location = "./data/leads_enriched.csv"
     try:
         choice = str(input(f"Run Scrape Address step? (will take a long time) (y/N)\n"))
         if choice == "y" or choice == "Y":
-            steps.append(ScrapeAddress())
+            choice = str(
+                input(f"Do you want to force execution if the data is present? (y/N)\n")
+            )
+            force_execution = choice == "y" or choice == "Y"
+            steps.append(ScrapeAddress(force_refresh=force_execution))
     except ValueError:
         print("Invalid Choice")
 
     try:
         choice = str(input(f"Run Facebook Graph API step? (will use token) (y/N)\n"))
         if choice == "y" or choice == "Y":
-            steps.append(FacebookGraphAPI())
+            choice = str(
+                input(f"Do you want to force execution if the data is present? (y/N)\n")
+            )
+            force_execution = choice == "y" or choice == "Y"
+            steps.append(FacebookGraphAPI(force_refresh=force_execution))
     except ValueError:
         print("Invalid Choice")
 
@@ -153,7 +173,11 @@ def pipeline_demo():
             )
         )
         if choice == "y" or choice == "Y":
-            steps.append(PreprocessPhonenumbers())
+            choice = str(
+                input(f"Do you want to force execution if the data is present? (y/N)\n")
+            )
+            force_execution = choice == "y" or choice == "Y"
+            steps.append(PreprocessPhonenumbers(force_refresh=force_execution))
     except ValueError:
         print("Invalid Choice")
 
@@ -162,11 +186,44 @@ def pipeline_demo():
             input(f"Run Google API step? (will use token and generate cost!) (y/N)\n")
         )
         if choice == "y" or choice == "Y":
-            steps.append(GooglePlaces())
+            choice = str(
+                input(f"Do you want to force execution if the data is present? (y/N)\n")
+            )
+            force_execution = choice == "y" or choice == "Y"
+            steps.append(GooglePlaces(force_refresh=force_execution))
+            steps.append(GooglePlacesDetailed(force_refresh=force_execution))
     except ValueError:
         print("Invalid Choice")
 
+    try:
+        choice = str(
+            input(
+                f"Run open API Sentiment Analyzer ? (will use token and generate cost!) (y/N)\n"
+            )
+        )
+        if choice == "y" or choice == "Y":
+            choice = str(
+                input(f"Do you want to force execution if the data is present? (y/N)\n")
+            )
+            force_execution = choice == "y" or choice == "Y"
+            steps.append(GPTReviewSentimentAnalyzer(force_refresh=force_execution))
+    except ValueError:
+        print("Invalid Choice")
+
+    try:
+        choice = str(
+            input(
+                f"Use the Regionalatlas? (y/N)\n"
+            )
+        )
+        if choice == "y" or choice == "Y":
+            steps.append(RegionalAtlas(force_refresh=True))
+    except ValueError:
+        print("Invalid Choice")    
+
+
     limit = None
+
     try:
         choice = int(input(f"Set limit for data point to be processed\n"))
         if choice > 0:
@@ -176,11 +233,13 @@ def pipeline_demo():
     except ValueError:
         print("Invalid Choice, no limit set")
 
-    print(f"Running Pipeline with {steps=}, {input_location=}, {output_location=}")
+    log.info(f"Running Pipeline with {steps=}, {input_location=}, {output_location=}")    
+
     pipeline = Pipeline(
         steps=steps,
         input_location=input_location,
         output_location=output_location,
         limit=limit,
+        index_col=index_col,
     )
     pipeline.run()

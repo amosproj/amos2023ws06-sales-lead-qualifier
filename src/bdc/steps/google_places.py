@@ -6,22 +6,27 @@
 # SPDX-FileCopyrightText: 2023 Ruchita Nathani <Ruchita.nathani@fau.de>
 # SPDX-FileCopyrightText: 2023 Ahmed Sheta <ahmed.sheta@fau.de>
 
+import json
 import re
 from http import HTTPStatus
 
 import googlemaps
 import pandas as pd
+import requests
 from googlemaps.exceptions import ApiError, HTTPError, Timeout, TransportError
 from requests import RequestException
 from tqdm import tqdm
 
 from bdc.steps.step import Step, StepError
 from config import GOOGLE_PLACES_API_KEY
+from database import mongo_connection
+from logger import get_logger
+
+log = get_logger()
 
 
 class GooglePlaces(Step):
     name = "Google_Places"
-    URL = "https://maps.googleapis.com/maps/api/place/textsearch/json?query="
 
     # fields that are expected as an output of the df.apply lambda function
     df_fields = [
@@ -37,6 +42,16 @@ class GooglePlaces(Step):
         "place_id_matches_phone_search",
         "confidence",
     ]
+
+    # Weirdly the expression [f"{name}_{field}" for field in df_fields] gives an error as name is not in the scope of the iterator
+    added_cols = [
+        name + field
+        for (name, field) in zip(
+            [f"{name.lower()}_"] * (len(df_fields)),
+            ([f"{field}" for field in df_fields]),
+        )
+    ]
+
     # fields that are accessed directly from the api
     api_fields = [
         "place_id",
@@ -68,12 +83,14 @@ class GooglePlaces(Step):
         )
 
     def run(self) -> pd.DataFrame:
-        tqdm.pandas(desc="Getting info from Places API")
+        # Call find_places API
+        tqdm.pandas(desc="Getting info from Find Places API")
         self.df[
             [f"{self.name.lower()}_{field}" for field in self.df_fields]
         ] = self.df.progress_apply(
             lambda lead: self.get_data_from_google_api(lead), axis=1
         )
+
         return self.df
 
     def finish(self) -> None:
@@ -87,10 +104,11 @@ class GooglePlaces(Step):
             / len(self._df["google_places_place_id_matches_phone_search"].notna())
             * 100
         )
-        self.log(
+
+        log.info(
             f"Percentage of mail search matching phone search (of all): {p_matches:.2f}%"
         )
-        self.log(
+        log.info(
             f"Percentage of mail search matching phone search (at least one result): {p_matches_rel:.2f}%"
         )
 
@@ -99,7 +117,6 @@ class GooglePlaces(Step):
         error_return_value = pd.Series([None] * len(self.df_fields))
 
         search_query = lead_row["domain"]
-
         phone_number = lead_row["number_formatted"]
 
         if search_query is None and lead_row["email_valid"]:
@@ -164,21 +181,22 @@ class GooglePlaces(Step):
             # Retrieve response
             # response = requests.get(self.URL + domain + "&key=" + GOOGLE_PLACES_API_KEY)
         except RequestException as e:
-            self.log(f"Error: {str(e)}")
+            log.error(f"Error: {str(e)}")
             return None, 0
         except (ApiError, HTTPError, Timeout, TransportError) as e:
-            self.log(f"Error: {str(e.message) if e.message is not None else str(e)}")
+            log.error(f"Error: {str(e.message) if e.message is not None else str(e)}")
             return None, 0
 
         if not response["status"] == HTTPStatus.OK.name:
-            self.log(f"Failed to fetch data. Status code: {response['status']}")
+            log.warning(
+                f"Failed to fetch data. Status code: {response['status']}",
+            )
             return None, 0
 
         if "candidates" not in response or len(response["candidates"]) == 0:
             return None, 0
 
         top_result = response["candidates"][0]
-
         no_candidates = len(response["candidates"])
 
         return top_result, no_candidates

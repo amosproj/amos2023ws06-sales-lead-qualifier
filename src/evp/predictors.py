@@ -7,6 +7,10 @@ from enum import Enum
 
 from sklearn.linear_model import LinearRegression
 
+from logger import get_logger
+
+log = get_logger()
+
 
 class Predictors(Enum):
     LinearRegression = "Linear Regression"
@@ -42,7 +46,7 @@ class LinearRegressionPredictor(RegressionPredictor):
             try:
                 self.predictor = pickle.load(open(model_path, "rb"))
             except FileNotFoundError:
-                print(f"Error: Could not find model at {model_path}!")
+                log.error(f"Could not find model at {model_path}!")
 
     def predict(self, X) -> float:
         return self.predictor.predict(X)
@@ -54,10 +58,10 @@ class LinearRegressionPredictor(RegressionPredictor):
         try:
             pickle.dump(self.predictor, open(path, "wb"))
         except Exception as e:
-            print(f"Error: Could not save model at {path}! Exception: {e}")
+            log.error(f"Error: Could not save model at {path}! Exception: {e}")
 
     def load(self, path: str) -> None:
         try:
             self.predictor = pickle.load(open(path, "rb"))
         except FileNotFoundError:
-            print(f"Error: Could not find model at {path}!")
+            log.error(f"Error: Could not find model at {path}!")
