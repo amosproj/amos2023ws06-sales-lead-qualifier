@@ -82,7 +82,12 @@ class GooglePlacesDetailed(Step):
         # Call for the detailed API using specified fields
         try:
             # Fetch place details including reviews
-            response = self.gmaps.place(place_id, fields=self.api_fields)
+            response = self.gmaps.place(
+                place_id,
+                fields=self.api_fields,
+                language="original",
+                reviews_no_translations=True,
+            )
 
             # Check response status
             if response.get("status") != HTTPStatus.OK.name:
