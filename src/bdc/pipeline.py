@@ -5,6 +5,7 @@ from datetime import datetime
 from io import StringIO
 
 import boto3
+import botocore.exceptions
 import numpy as np
 import pandas as pd
 
@@ -27,9 +28,15 @@ class Pipeline:
     ):
         self.steps: list[Step] = steps
         self.limit: int = limit
+        self.df = None
 
-        if output_location_remote is not None and limit is not None:
-            log.error("Enriched leads can only be saved to remote without a limit!")
+        if (
+            output_location_remote == "s3://amos--data--events/leads/enriched.csv"
+            and limit is not None
+        ):
+            log.error(
+                f"Only the full dataset can be saved to {output_location_remote}!"
+            )
             return
         if (
             output_location_remote is not None
@@ -135,8 +142,12 @@ def fetch_remote_data(bucket, object_key):
     obj = None
     try:
         obj = s3.get_object(Bucket=bucket, Key=object_key)
-    except (s3.exceptions.NoSuchKey, s3.exceptions.InvalidObjectState) as e:
-        log.warning(e)
+    except botocore.exceptions.ClientError as e:
+        log.warning(
+            f"{e.response['Error']['Code']}: {e.response['Error']['Message']}"
+            if "Error" in e.response
+            else f"Error while getting object s3://{bucket}/{object_key}"
+        )
     return obj
 
 
@@ -159,7 +170,9 @@ def backup_remote_data(bucket="amos--data--events", object_key="leads/enriched.c
     old_leads = fetch_remote_data(bucket, object_key)
     if old_leads is not None and "Body" in old_leads:
         old_hash = hashlib.md5(old_leads["Body"].read()).hexdigest()
-        backup_key = datetime.now().strftime("%Y/%m/%d/%H%M%S_" + old_hash + ".csv")
+        backup_key = "backup/" + datetime.now().strftime(
+            "%Y/%m/%d/%H%M%S_" + old_hash + ".csv"
+        )
         source = {"Bucket": bucket, "Key": "leads/enriched.csv"}
         s3.copy(source, bucket, backup_key)
         log.info(f"Successful backup to s3://{bucket}/{backup_key}")
