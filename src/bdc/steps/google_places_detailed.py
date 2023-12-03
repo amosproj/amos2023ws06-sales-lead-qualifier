@@ -8,6 +8,7 @@ import json
 import os
 from http import HTTPStatus
 
+import boto3
 import googlemaps
 import pandas as pd
 from googlemaps.exceptions import ApiError, HTTPError, Timeout, TransportError
@@ -15,7 +16,12 @@ from requests import RequestException
 from tqdm import tqdm
 
 from bdc.steps.step import Step, StepError
-from config import GOOGLE_PLACES_API_KEY
+from config import (
+    AWS_ACCESS_KEY_ID,
+    AWS_SECRET_ACCESS_KEY,
+    GOOGLE_PLACES_API_KEY,
+    REGION_NAME,
+)
 from logger import get_logger
 
 log = get_logger()
@@ -114,15 +120,26 @@ class GooglePlacesDetailed(Step):
         return pd.Series(results_list)
 
     def save_reviews(self, place_details, place_id):
+        bucket_name = "amos--data--events"
+        s3 = boto3.client(
+            "s3",
+            aws_access_key_id=AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+            region_name=REGION_NAME,
+        )
+
         if "result" in place_details and "reviews" in place_details["result"]:
             reviews = place_details["result"]["reviews"]
-
+            json_string = json.dumps(reviews)
             # Write the data to a JSON file
             file_name = place_id + "_reviews.json"
             json_file_path = "./data/reviews/" + file_name
             abs_path = os.path.abspath(
                 os.path.join(os.path.dirname(__file__), "../../" + json_file_path)
             )
+            file_key = "reviews/" + file_name
+            # Upload the JSON string to S3
+            s3.put_object(Body=json_string, Bucket=bucket_name, Key=file_key)
 
             if os.path.exists(abs_path):
                 log.info(f"Reviews for {place_id} already exist")

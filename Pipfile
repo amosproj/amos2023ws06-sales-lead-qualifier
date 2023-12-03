@@ -31,7 +31,7 @@ reportlab = "==4.0.7"
 osmnx = "==1.7.1"
 geopandas = "==0.14.1"
 shapely = "==2.0.2"
-
+boto3 = "==1.33.1"
 
 [requires]
 python_version = "3.10"
