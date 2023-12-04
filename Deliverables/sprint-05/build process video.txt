@@ -1,0 +1,15 @@
+SPDX-License-Identifier: MIT
+SPDX-FileCopyrightText: 2023 Fabian-Paul Utech <f.utech@gmx.net>
+
+Due to the size (>25MB), I uploaded the "build_process_video".mkv into a tubcloud (TU Berlin) folder which can be accessed with the following link:
+https://tubcloud.tu-berlin.de/s/JLatYYAQWdWkdGc
+
+
+The video has 4 parts:
+-----------------------------------------
+0:00  -  2:52	Build:   process demo
+2:52  -  5:15	Build:   process code
+5:15  - 10:00	Testing: pre-commit hooks
+10:00 - 13:04	Testing: github workflows
+
+	

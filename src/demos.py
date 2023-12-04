@@ -6,8 +6,6 @@
 # SPDX-FileCopyrightText: 2023 Ruchita Nathani <Ruchita.nathani@fau.de>
 # SPDX-FileCopyrightText: 2023 Ahmed Sheta <ahmed.sheta@fau.de>
 
-import os
-
 import numpy as np
 from sklearn.metrics import mean_squared_error
 
@@ -35,238 +33,179 @@ from logger import get_logger
 
 log = get_logger()
 
+# Constants and configurations
+S3_BUCKET = "amos--data--events"
+OUTPUT_FILE_LOCAL_PIPELINE = "./data/leads_enriched.csv"
+LEADS_TRAIN_FILE = "data/leads_train.csv"
+LEADS_TEST_FILE = "data/leads_test.csv"
+INPUT_FILE_BDC = "../data/sumup_leads_email.csv"
+OUTPUT_FILE_BDC = "../data/collected_data.json"
 
+
+# Utility Functions
+def get_yes_no_input(prompt: str) -> bool:
+    while True:
+        user_input = input(prompt).strip().lower()
+        if user_input in ["y", "yes"]:
+            return True
+        elif user_input in ["n", "no"]:
+            return False
+        else:
+            print("Invalid input. Please enter (yes/no) or (y/N).")
+
+
+def get_int_input(prompt: str) -> int:
+    while True:
+        try:
+            return int(input(prompt))
+        except ValueError:
+            print("Invalid input. Please enter a valid integer.")
+
+
+# bdc_demo
 def bdc_demo():
     dc = DataCollector()
-    input_file = "../data/sumup_leads_email.csv"
-    output_file = "../data/collected_data.json"
     try:
-        choice = int(input("(1) read CSV\n(2) Dummy API\n"))
-        match choice:
-            case 1:
-                dc.get_data_from_csv(file_path=input_file)
-            case 2:
-                dc.get_data_from_api(file_path=output_file)
-            case other:
-                print("Invalid choice")
+        choice = get_int_input("(1) Read CSV\n(2) Dummy API\n")
+        if choice == 1:
+            dc.get_data_from_csv(file_path=INPUT_FILE_BDC)
+        elif choice == 2:
+            dc.get_data_from_api(file_path=OUTPUT_FILE_BDC)
+        else:
+            print("Invalid choice")
     except ValueError:
         print("Invalid choice")
 
 
+# evp demo
 def evp_demo():
-    choice = str(input("Load model from file? (y/N)\n"))
-    if choice == "y" or choice == "Y":
-        model_path = str(input("Provide model path\n"))
-    else:
-        model_path = None
-    log.info(f"Creating EVP from model {model_path}")
     evp = EstimatedValuePredictor(
-        model_type=Predictors.LinearRegression, model_path=model_path
+        model_type=Predictors.LinearRegression,
+        model_path=input("Provide model path\n")
+        if get_yes_no_input("Load model from file? (y/N)\n")
+        else None,
     )
-    choice = str(input("Split dataset (y/N)\n"))
-    if choice == "y" or choice == "Y":
-        choice = str(input("Add dummy labels (the lead value) (y/N)\n"))
-        add_labels = False
-        if choice == "y" or choice == "Y":
-            add_labels = True
+
+    if get_yes_no_input("Split dataset (y/N)\n"):
         split_dataset(
             "data/leads_enriched.csv",
             "data/leads",
             0.8,
             0.1,
             0.1,
-            add_labels=add_labels,
+            add_labels=get_yes_no_input("Add dummy labels (the lead value) (y/N)\n"),
         )
+
     while True:
-        try:
-            choice = int(
-                input(
-                    "(1) Train\n(2) Test\n(3) Predict on single lead\n(4) Save model\n(5) Exit\n"
-                )
-            )
-            match choice:
-                case 1:
-                    evp.train("data/leads_train.csv")
-                case 2:
-                    leads = LeadParser.parse_leads_from_csv("data/leads_test.csv")
-                    predictions = np.array([evp.estimate_value(lead) for lead in leads])
-                    true_labels = np.array([lead.lead_value for lead in leads])
-                    mean_sq_error = mean_squared_error(true_labels, predictions)
-                    print(
-                        f"EVP has a mean squared error of {mean_sq_error} on the test set."
-                    )
-                case 3:
-                    leads = LeadParser.parse_leads_from_csv("data/leads_test.csv")
-                    try:
-                        lead_id = int(
-                            input(
-                                f"Chose a lead_id in range [0, {len(leads) - 1}] to predict for it\n"
-                            )
-                        )
-                        if lead_id < 0 or lead_id > len(leads) - 1:
-                            print("Invalid Choice")
-                            continue
-                    except ValueError:
-                        print("Invalid Choice")
-                        continue
-                    prediction = evp.estimate_value(leads[lead_id])
-                    print(
-                        f"Lead has predicted value of {prediction} and true value of {leads[lead_id].lead_value}"
-                    )
-                case 4:
-                    model_path = str(input("Provide model path\n"))
-                    evp.save_models(model_path)
-                case 5:
-                    break
-        except ValueError:
+        choice = get_int_input(
+            "(1) Train\n(2) Test\n(3) Predict on single lead\n(4) Save model\n(5) Exit\n"
+        )
+        if choice == 1:
+            evp.train(LEADS_TRAIN_FILE)
+        elif choice == 2:
+            test_evp_model(evp)
+        elif choice == 3:
+            predict_single_lead(evp)
+        elif choice == 4:
+            evp.save_models(input("Provide model path\n"))
+        elif choice == 5:
+            break
+        else:
             print("Invalid choice")
 
 
+def test_evp_model(evp: EstimatedValuePredictor):
+    leads = LeadParser.parse_leads_from_csv(LEADS_TEST_FILE)
+    predictions = [evp.estimate_value(lead) for lead in leads]
+    true_labels = [lead.lead_value for lead in leads]
+    print(
+        f"EVP has a mean squared error of {mean_squared_error(true_labels, predictions)} on the test set."
+    )
+
+
+def predict_single_lead(evp: EstimatedValuePredictor):
+    leads = LeadParser.parse_leads_from_csv(LEADS_TEST_FILE)
+    lead_id = get_int_input(f"Choose a lead_id in range [0, {len(leads) - 1}]\n")
+    if 0 <= lead_id < len(leads):
+        prediction = evp.estimate_value(leads[lead_id])
+        print(
+            f"Lead has predicted value of {prediction} and true value of {leads[lead_id].lead_value}"
+        )
+    else:
+        print("Invalid Choice")
+
+
+# db_demo
 def db_demo():
     amt_leads = get_database().get_cardinality()
-    try:
-        lead_id = int(
-            input(f"Chose a lead_id in range [1, {amt_leads}] to show its DB entry\n")
-        )
-    except ValueError:
+    lead_id = get_int_input(f"Choose a lead_id in range [1, {amt_leads}]\n")
+    if 1 <= lead_id <= amt_leads:
+        print(get_database().get_lead_by_id(lead_id))
+    else:
         print("Invalid Choice")
-        return
-    if lead_id < 1 or lead_id > amt_leads:
-        print("Invalid Choice")
-        return
-    lead = get_database().get_lead_by_id(lead_id)
-    print(lead)
 
 
+def add_step_if_requested(
+    steps, step_classes, step_desc, step_warning_message: str = ""
+):
+    if get_yes_no_input(f"Run {step_desc} {step_warning_message}(y/N)?\n"):
+        force = get_yes_no_input("Force execution if data is present? (y/N)\n")
+        for cls in step_classes:
+            steps.append(cls(force_refresh=force))
+
+
+# pipeline_demo
 def pipeline_demo():
-    steps: list[Step] = [AnalyzeEmails(force_refresh=True)]
-    input_location = "./data/leads_enriched.csv"
-    index_col = 0
-    if not os.path.exists(input_location):
-        input_location = "./data/sumup_leads_email.csv"
-        index_col = None
-    output_location = "./data/leads_enriched.csv"
-    try:
-        choice = str(input(f"Run Scrape Address step? (will take a long time) (y/N)\n"))
-        if choice == "y" or choice == "Y":
-            choice = str(
-                input(f"Do you want to force execution if the data is present? (y/N)\n")
-            )
-            force_execution = choice == "y" or choice == "Y"
-            steps.append(ScrapeAddress(force_refresh=force_execution))
-    except ValueError:
-        print("Invalid Choice")
+    steps = [AnalyzeEmails(force_refresh=True)]
+    additional_steps = [
+        ([ScrapeAddress], "Scrape Address", "(will take a long time)"),
+        ([FacebookGraphAPI], "Facebook Graph API", "(will use token)"),
+        ([PreprocessPhonenumbers], "Phone Number Validation", ""),
+        (
+            [GooglePlaces, GooglePlacesDetailed],
+            "Google API",
+            "(will use token and generate cost!)",
+        ),
+        (
+            [GPTReviewSentimentAnalyzer, GPTSummarizer],
+            "open API Sentiment Analyzer & Summarizer",
+            "(will use token and generate cost!)",
+        ),
+        (
+            [SmartReviewInsightsEnhancer],
+            "Smart Review Insights",
+            "(will take looong time!)",
+        ),
+        ([RegionalAtlas], "Regionalatlas", ""),
+    ]
 
-    try:
-        choice = str(input(f"Run Facebook Graph API step? (will use token) (y/N)\n"))
-        if choice == "y" or choice == "Y":
-            choice = str(
-                input(f"Do you want to force execution if the data is present? (y/N)\n")
-            )
-            force_execution = choice == "y" or choice == "Y"
-            steps.append(FacebookGraphAPI(force_refresh=force_execution))
-    except ValueError:
-        print("Invalid Choice")
+    if get_yes_no_input(f"Run Demo pipeline with all steps (y/N)?\n"):
+        for step_classes, _, _ in additional_steps:
+            step_instances = [cls(force_refresh=True) for cls in step_classes]
+            steps.extend(step_instances)
+    else:
+        for step_classes, desc, warning_message in additional_steps:
+            add_step_if_requested(steps, step_classes, desc, warning_message)
 
-    try:
-        choice = str(
-            input(
-                f"Validate the phone number and using the phone number to get information about the location? (y/N)\n"
-            )
-        )
-        if choice == "y" or choice == "Y":
-            choice = str(
-                input(f"Do you want to force execution if the data is present? (y/N)\n")
-            )
-            force_execution = choice == "y" or choice == "Y"
-            steps.append(PreprocessPhonenumbers(force_refresh=force_execution))
-    except ValueError:
-        print("Invalid Choice")
+    limit = get_int_input("Set limit for data points to be processed (0=No limit)\n")
+    limit = limit if limit > 0 else None
+    output_location_remote = (
+        f"s3://{S3_BUCKET}/leads/enriched.csv"
+        if limit is None and get_yes_no_input("Save output data to S3? (y/N)\n")
+        else None
+    )
 
-    try:
-        choice = str(
-            input(f"Run Google API step? (will use token and generate cost!) (y/N)\n")
-        )
-        if choice == "y" or choice == "Y":
-            choice = str(
-                input(f"Do you want to force execution if the data is present? (y/N)\n")
-            )
-            force_execution = choice == "y" or choice == "Y"
-            steps.append(GooglePlaces(force_refresh=force_execution))
-            steps.append(GooglePlacesDetailed(force_refresh=force_execution))
-    except ValueError:
-        print("Invalid Choice")
-
-    try:
-        choice = str(
-            input(
-                f"Run GPT Summarizer openAI API? (will use token and generate cost!) (y/N)\n"
-            )
-        )
-        if choice == "y" or choice == "Y":
-            choice = str(
-                input(f"Do you want to force execution if the data is present? (y/N)\n")
-            )
-            force_execution = choice == "y" or choice == "Y"
-            steps.append(GPTSummarizer(force_refresh=force_execution))
-    except ValueError:
-        print("Invalid Choice")
-
-    try:
-        choice = str(
-            input(
-                f"Run open API Sentiment Analyzer ? (will use token and generate cost!) (y/N)\n"
-            )
-        )
-        if choice == "y" or choice == "Y":
-            choice = str(
-                input(f"Do you want to force execution if the data is present? (y/N)\n")
-            )
-            force_execution = choice == "y" or choice == "Y"
-            steps.append(GPTReviewSentimentAnalyzer(force_refresh=force_execution))
-    except ValueError:
-        print("Invalid Choice")
-
-    try:
-        choice = str(
-            input(
-                f"Run Smart Review Insights Enhancer ? (will use token and generate cost!) (y/N)\n"
-            )
-        )
-        if choice == "y" or choice == "Y":
-            choice = str(
-                input(f"Do you want to force execution if the data is present? (y/N)\n")
-            )
-            force_execution = choice == "y" or choice == "Y"
-            steps.append(SmartReviewInsightsEnhancer(force_refresh=force_execution))
-    except ValueError:
-        print("Invalid Choice")
-
-    try:
-        choice = str(input(f"Use the Regionalatlas? (y/N)\n"))
-        if choice == "y" or choice == "Y":
-            steps.append(RegionalAtlas(force_refresh=True))
-    except ValueError:
-        print("Invalid Choice")
-
-    limit = None
-
-    try:
-        choice = int(input(f"Set limit for data point to be processed\n"))
-        if choice > 0:
-            limit = choice
-        else:
-            print("Invalid Choice, no limit set")
-    except ValueError:
-        print("Invalid Choice, no limit set")
-
-    log.info(f"Running Pipeline with {steps=}, {input_location=}, {output_location=}")
+    steps_info = "\n".join([str(step) for step in steps])
+    log.info(
+        f"Running Pipeline with steps:\n{steps_info}\ninput_location={S3_BUCKET}\noutput_location_remote={output_location_remote}"
+    )
 
     pipeline = Pipeline(
         steps=steps,
-        input_location=input_location,
-        output_location=output_location,
+        input_location=f"s3://{S3_BUCKET}/leads/enriched.csv",
+        output_location_local=OUTPUT_FILE_LOCAL_PIPELINE,
+        output_location_remote=output_location_remote,
         limit=limit,
-        index_col=index_col,
+        index_col=None,
     )
     pipeline.run()

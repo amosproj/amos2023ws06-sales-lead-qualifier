@@ -7,7 +7,7 @@ from unittest import mock
 import pandas as pd
 from pandas import DataFrame
 
-from bdc.pipeline import Pipeline
+from bdc.pipeline import Pipeline, decode_s3_url
 from bdc.steps.step import Step
 
 
@@ -112,7 +112,7 @@ class TestPipelineFramework(unittest.TestCase):
             verify_mock.assert_called_once()
             check_data_presence_mock.assert_called_once()
             run_mock.assert_not_called()
-            finish_mock.assert_called_once()
+            finish_mock.assert_not_called()
 
     def test_data_presence(self):
         with (
@@ -134,8 +134,19 @@ class TestPipelineFramework(unittest.TestCase):
             run_mock_two.assert_not_called()
             run_mock_three.assert_called_once()
 
-            finish_mock_two.assert_called_once()
+            finish_mock_two.assert_not_called()
             finish_mock_three.assert_called_once()
+
+
+class TestS3Utils(unittest.TestCase):
+    def test_s3_url_decoder(self):
+        bucket = "amos--data--events"
+        key = "leads/enriched.csv"
+        url = f"s3://{bucket}/{key}"
+
+        actual_bucket, actual_key = decode_s3_url(url)
+        self.assertEqual(bucket, actual_bucket)
+        self.assertEqual(key, actual_key)
 
 
 if __name__ == "__main__":
