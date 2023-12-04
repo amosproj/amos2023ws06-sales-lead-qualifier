@@ -184,7 +184,7 @@ def pipeline_demo():
     limit = limit if limit > 0 else None
     output_location_remote = (
         f"s3://{S3_BUCKET}/leads/enriched.csv"
-        if get_yes_no_input("Save output data to S3? (y/N)\n")
+        if limit is None and get_yes_no_input("Save output data to S3? (y/N)\n")
         else None
     )
 
