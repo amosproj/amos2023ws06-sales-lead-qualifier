@@ -138,11 +138,11 @@ def db_demo():
 
 def pipeline_demo():
     steps: list[Step] = [AnalyzeEmails(force_refresh=True)]
-    input_location = f"s3://{S3_BUCKET}/leads/enriched.csv"
 
-    index_col = None
-    output_location_local = "./data/leads_enriched.csv"
-    output_location_remote = None
+    # data is saved locally, unless the limit is None and the user decides to store
+    # the data in a remote database
+    db = "local"
+
     try:
         choice = str(input(f"Run Scrape Address step? (will take a long time) (y/N)\n"))
         if choice == "y" or choice == "Y":
@@ -235,20 +235,15 @@ def pipeline_demo():
                 )
             )
             if choice == "y" or choice == "Y":
-                output_location_remote = f"s3://{S3_BUCKET}/leads/enriched.csv"
+                db = "S3"
         except ValueError:
             print("Invalid Choice")
 
-    log.info(
-        f"Running Pipeline with {steps=}, {input_location=}, {output_location_local=}, {output_location_remote=}"
-    )
+    log.info(f"Running Pipeline with {steps=}, {db=}")
 
     pipeline = Pipeline(
         steps=steps,
-        input_location=input_location,
-        output_location_local=output_location_local,
-        output_location_remote=output_location_remote,
+        db=db,
         limit=limit,
-        index_col=index_col,
     )
     pipeline.run()

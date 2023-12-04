@@ -16,6 +16,7 @@ s3 = boto3.client("s3")
 
 
 class DataAbstractionLayer:
+    # Database paths and URLs can be set here
     S3_BUCKET = "s3://amos--data--events/leads/enriched.csv"
     LOCAL_OUTPUT = "./data/leads_enriched.csv"
 
@@ -33,6 +34,7 @@ class DataAbstractionLayer:
         self.obj_key = None
 
         if self.db_type == "S3" or self.db_type == "local":
+            # Use S3 as the input location for both S3 and local
             self._connect_s3()
         elif self.db_type == None:
             raise log.error("No output location selected.")
@@ -40,6 +42,9 @@ class DataAbstractionLayer:
             raise log.error("Unsupported database type")
 
     def _connect_s3(self):
+        """
+        Download database from specified S3 file
+        """
         if not self.S3_BUCKET.startswith("s3://"):
             log.error(
                 "S3 location has to be defined like this: s3://<BUCKET>/<OBJECT_KEY>"
@@ -51,7 +56,7 @@ class DataAbstractionLayer:
 
         try:
             self.bucket, self.obj_key = self._decode_s3_url()
-            remote_dataset = self.fetch_data_s3()
+            remote_dataset = self._fetch_object_s3()
         except IndexError:
             log.error(
                 "S3 location has to be defined like this: s3://<BUCKET>/<OBJECT_KEY>"
@@ -70,10 +75,10 @@ class DataAbstractionLayer:
         except FileNotFoundError:
             log.error("Error: Could not find input file for Pipeline.")
 
-    def _fetch_data_s3(self):
+    def _fetch_object_s3(self):
         """
         Tries to read an object from S3.
-        :return:
+        :return: s3 object
         """
         obj = None
         try:
@@ -82,27 +87,36 @@ class DataAbstractionLayer:
             log.warning(
                 f"{e.response['Error']['Code']}: {e.response['Error']['Message']}"
                 if "Error" in e.response
-                else f"Error while getting object s3://{self.bucket}/{self.object_key}"
+                else f"Error while getting object s3://{self.bucket}/{self.obj_key}"
             )
 
         return obj
 
     def _decode_s3_url(self):
+        """
+        Retrieve the bucket and object key from object url
+        :return: bucket string, object key string
+        """
         obj_identifier = self.S3_BUCKET.split("//")[1].split("/")
         bucket = obj_identifier[0]
         obj_key = "/".join(obj_identifier[1:])
         return bucket, obj_key
 
     def save_dataframe(self):
+        """
+        Save dataframe in chosen output location
+        """
         if self.db_type == "S3":
             self._backup_data()
             csv_buffer = StringIO()
             self.df.to_csv(csv_buffer, index=False)
             s3.put_object(
-                Bucket=self.bucket, Key=self.object_key, Body=csv_buffer.getvalue()
+                Bucket=self.bucket,
+                Key="test/" + self.obj_key,
+                Body=csv_buffer.getvalue(),
             )
             log.info(
-                f"Successfully saved enriched leads to s3://{self.bucket}/{self.object_key}"
+                f"Successfully saved enriched leads to s3://{self.bucket}/{self.obj_key}"
             )
 
         elif self.db_type == "local":
@@ -110,14 +124,16 @@ class DataAbstractionLayer:
             log.info(f"Saved enriched data locally to {self.LOCAL_OUTPUT}")
 
     def _backup_data(self):
-        # Backup remote data before overwriting. Not completed locally
+        """
+        Backup existing data if saving to a remote database
+        """
         if self.db_type == "S3":
-            old_leads = self._fetch_data_s3()
+            old_leads = self._fetch_object_s3()
             if old_leads is None or "Body" not in old_leads:
                 return
 
             old_hash = hashlib.md5(old_leads["Body"].read()).hexdigest()
-            backup_key = "backup/" + datetime.now().strftime(
+            backup_key = "test/backup/" + datetime.now().strftime(
                 "%Y/%m/%d/%H%M%S_" + old_hash + ".csv"
             )
             source = {"Bucket": self.bucket, "Key": "leads/enriched.csv"}
