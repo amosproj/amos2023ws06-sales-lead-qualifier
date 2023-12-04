@@ -180,7 +180,8 @@ def pipeline_demo():
         for step_classes, desc, warning_message in additional_steps:
             add_step_if_requested(steps, step_classes, desc, warning_message)
 
-    limit = get_int_input("Set limit for data points to be processed\n")
+    limit = get_int_input("Set limit for data points to be processed (0=No limit)\n")
+    limit = limit if limit > 0 else None
     output_location_remote = (
         f"s3://{S3_BUCKET}/leads/enriched.csv"
         if get_yes_no_input("Save output data to S3? (y/N)\n")
