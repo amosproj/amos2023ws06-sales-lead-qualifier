@@ -151,12 +151,12 @@ class GooglePlacesDetailed(Step):
 
             if os.path.exists(abs_path):
                 log.info(f"Reviews for {place_id} already exist")
-                return json_file_path
+                return file_key
 
             with open(abs_path, "w", encoding="utf-8") as json_file:
                 json.dump(reviews, json_file, ensure_ascii=False, indent=4)
 
-            return json_file_path
+            return file_key
         else:
             print("No reviews found.")
             log.info("No reviews found")
