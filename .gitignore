@@ -52,6 +52,7 @@ bin/
 **/data/*.geojson
 !**/data/merged_geo.geojson
 **/data/reviews/*.json
+**/data/reports/*.pdf
 
 # Env files
 *.env
