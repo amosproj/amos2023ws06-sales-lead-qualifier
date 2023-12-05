@@ -63,6 +63,7 @@ bin/
 !**/docs/make.bat
 !**/docs/Makefile
 !**/docs/readme_link.md
+**/data/reports/*.pdf
 
 # Env files
 *.env
