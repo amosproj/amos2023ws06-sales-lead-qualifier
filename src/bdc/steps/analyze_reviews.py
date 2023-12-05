@@ -7,6 +7,7 @@ import os.path
 import time
 from collections import Counter
 
+import boto3
 import language_tool_python as ltp
 import numpy as np
 import openai
@@ -21,6 +22,8 @@ from config import OPEN_AI_API_KEY
 from logger import get_logger
 
 log = get_logger()
+S3_CLIENT = boto3.client("s3")
+S3_BUCKET_NAME = "amos--data--events"
 
 
 """
@@ -67,6 +70,29 @@ def fetch_reviews(reviews_path):
         log.warning(f"Error loading reviews from path {full_path}.")
         # Return empty list if any exception occurred or status is not OK
         return []
+
+
+def fetch_reviews_from_S3(key):
+    try:
+        log.debug(f"Fetching review with id {key} from S3 bucket {S3_BUCKET_NAME}")
+
+        response = S3_CLIENT.get_object(Bucket=S3_BUCKET_NAME, Key=key)
+        log.debug("Successfully fetched data from S3")
+
+        file_content = response["Body"].read().decode("utf-8")
+        log.debug("Successfully read file content")
+
+        json_content = json.loads(file_content)
+        log.debug(f"Successfully loaded JSON content {json_content}")
+
+        return json_content
+    except Exception as e:
+        log.error(f"Error loading review from S3 with id {id}. Error: {str(e)}")
+        return []
+
+
+def parse_extract_reviews_path(reviews_path):
+    return reviews_path.split("/")[-1]
 
 
 """
@@ -118,7 +144,7 @@ class GPTReviewSentimentAnalyzer(Step):
         # if there is no reviews_path, then return without API call.
         if not is_valid_reviews_path(reviews_path):
             return None
-        reviews = fetch_reviews(reviews_path)
+        reviews = fetch_reviews_from_S3(reviews_path)
         review_texts = self.extract_text_from_reviews(reviews)
         if len(review_texts) == 0:
             return None
@@ -271,7 +297,7 @@ class SmartReviewInsightsEnhancer(Step):
         reviews_path = lead["google_places_detailed_reviews_path"]
         if not is_valid_reviews_path(reviews_path):
             return pd.Series({f"{col}": None for col in self.added_cols})
-        reviews = fetch_reviews(reviews_path)
+        reviews = fetch_reviews_from_S3(reviews_path)
         if not reviews:
             return pd.Series({f"{col}": None for col in self.added_cols})
         results = []
