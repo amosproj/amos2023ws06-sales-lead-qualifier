@@ -17,12 +17,14 @@ s3 = boto3.client("s3")
 
 class DataAbstractionLayer:
     # Database paths and URLs can be set here
-    S3_BUCKET = "s3://amos--data--events/leads/enriched.csv"
-    LOCAL_OUTPUT = "./data/leads_enriched.csv"
+    S3_DF = "s3://amos--data--events/leads/enriched.csv"
+    S3_REVIEWS = "s3://amos--data--events/leads/enriched.csv"
+
+    LOCAL_IO = "./data/leads_enriched.csv"
 
     def __init__(self, db_type=None):
         """
-        Initialise DAL
+        Initialise DAL, and saves the input df as an attribute
         :param db_type: Database to be used for output. As of 04/12/23, it can be: S3, local
         """
         # Attributes for all data types
@@ -33,25 +35,26 @@ class DataAbstractionLayer:
         self.bucket = None
         self.obj_key = None
 
-        if self.db_type == "S3" or self.db_type == "local":
-            # Use S3 as the input location for both S3 and local
-            self._connect_s3()
+        if self.db_type == "S3":
+            self._download_s3()
+        elif self.db_type == "local":
+            self._download_local()
         elif self.db_type == None:
             raise log.error("No output location selected.")
-        elif self.db_type is not None:
+        else:
             raise log.error("Unsupported database type")
 
-    def _connect_s3(self):
+    def _download_s3(self):
         """
         Download database from specified S3 file
         """
-        if not self.S3_BUCKET.startswith("s3://"):
+        if not self.S3_DF.startswith("s3://"):
             log.error(
                 "S3 location has to be defined like this: s3://<BUCKET>/<OBJECT_KEY>"
             )
             return
 
-        source = self.S3_BUCKET
+        source = self.S3_DF
         remote_dataset = None
 
         try:
@@ -72,6 +75,12 @@ class DataAbstractionLayer:
 
         try:
             self.df = pd.read_csv(source)
+        except FileNotFoundError:
+            log.error("Error: Could not find input file for Pipeline.")
+
+    def _download_local(self):
+        try:
+            self.df = pd.read_csv(self.LOCAL_IO)
         except FileNotFoundError:
             log.error("Error: Could not find input file for Pipeline.")
 
@@ -97,7 +106,7 @@ class DataAbstractionLayer:
         Retrieve the bucket and object key from object url
         :return: bucket string, object key string
         """
-        obj_identifier = self.S3_BUCKET.split("//")[1].split("/")
+        obj_identifier = self.S3_DF.split("//")[1].split("/")
         bucket = obj_identifier[0]
         obj_key = "/".join(obj_identifier[1:])
         return bucket, obj_key
@@ -120,8 +129,8 @@ class DataAbstractionLayer:
             )
 
         elif self.db_type == "local":
-            self.df.to_csv(self.LOCAL_OUTPUT, index=False)
-            log.info(f"Saved enriched data locally to {self.LOCAL_OUTPUT}")
+            self.df.to_csv(self.LOCAL_IO, index=False)
+            log.info(f"Saved enriched data locally to {self.LOCAL_IO}")
 
     def _backup_data(self):
         """
@@ -151,3 +160,9 @@ class DataAbstractionLayer:
             # TODO: Insert data into S3. When the database is bigger, it might make more sense to insert new data
             # instead of replacing the database/downloading the whole database
             print("Data inserted into S3")
+
+    def upload_review(self, review):
+        pass
+
+    def fetch_review(self, place_id):
+        pass
