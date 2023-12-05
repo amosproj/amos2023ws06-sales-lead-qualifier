@@ -74,3 +74,9 @@ class Step:
         Finish the execution. Print a report or clean up temporary files.
         """
         raise NotImplementedError
+
+    def __str__(self) -> str:
+        return f"Step(Name: {self.name}, Force Refresh: {self._force_refresh}, Added Columns: {self.added_cols})"
+
+    def __repr__(self) -> str:
+        return f"Step(name='{self.name}', force_refresh={self._force_refresh})"
