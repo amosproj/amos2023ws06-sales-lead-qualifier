@@ -25,7 +25,7 @@ def split_dataset(
         )
         return None
     try:
-        full_df = pd.read_csv(in_path, index_col=0)
+        full_df = pd.read_csv(in_path, index_col=None)
         if add_labels:
             full_df["lead_value"] = np.random.uniform(
                 low=1000, high=1000000, size=len(full_df)
