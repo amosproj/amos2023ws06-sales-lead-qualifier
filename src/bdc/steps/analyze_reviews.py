@@ -13,6 +13,7 @@ from tqdm import tqdm
 
 from bdc.steps.step import Step, StepError
 from config import OPEN_AI_API_KEY
+from database import get_database
 from logger import get_logger
 
 log = get_logger()
@@ -24,7 +25,7 @@ class GPTReviewSentimentAnalyzer(Step):
     model_encoding_name = "cl100k_base"
     MAX_PROMPT_TOKENS = 4096
     no_answer = "None"
-    gpt_required_fields = {"reviews_path": "google_places_detailed_reviews_path"}
+    gpt_required_fields = {"place_id": "google_places_place_id"}
     # system and user messages to be used for creating company summary for lead using website.
     system_message_for_sentiment_analysis = f"You are review sentiment analyzer, you being provided reviews of the companies. You analyze the review and come up with the score between range [-1, 1], if no reviews then just answer with '{no_answer}'"
     user_message_for_sentiment_analysis = "Sentiment analyze the reviews  and provide me a score between range [-1, 1]  : {}"
@@ -46,8 +47,8 @@ class GPTReviewSentimentAnalyzer(Step):
     def run(self) -> DataFrame:
         tqdm.pandas(desc="Running sentiment analysis on reviews")
         self.df[self.extracted_col_name] = self.df[
-            self.gpt_required_fields["reviews_path"]
-        ].progress_apply(lambda reviews_path: self.run_sentiment_analysis(reviews_path))
+            self.gpt_required_fields["place_id"]
+        ].progress_apply(lambda place_id: self.run_sentiment_analysis(place_id))
         return self.df
 
     def finish(self) -> None:
@@ -57,16 +58,16 @@ class GPTReviewSentimentAnalyzer(Step):
         if api_key is None:
             raise StepError(f"An API key for {api_name} is needed to run this step!")
 
-    def run_sentiment_analysis(self, reviews_path):
+    def run_sentiment_analysis(self, place_id):
         """
         Runs sentiment analysis on reviews of lead extracted from company's website
 
         """
 
         # if there is no reviews_path, then return without API call.
-        if reviews_path is None or pd.isna(reviews_path):
+        if place_id is None or pd.isna(place_id):
             return None
-        reviews = self.fetch_reviews(reviews_path)
+        reviews = get_database().fetch_review(place_id)
         review_texts = self.extract_text_from_reviews(reviews)
         if len(review_texts) == 0:
             return None
@@ -180,17 +181,3 @@ class GPTReviewSentimentAnalyzer(Step):
             batches.append(current_batch)
 
         return batches
-
-    def fetch_reviews(self, reviews_path):
-        try:
-            # reviews_path always starts with "./data/.."
-            full_path = os.path.abspath(
-                os.path.join(os.path.dirname(__file__), "../../" + reviews_path)
-            )
-            with open(full_path, "r", encoding="utf-8") as reviews_json:
-                reviews = json.load(reviews_json)
-                return reviews
-        except:
-            log.warning(f"Error loading reviews from path {full_path}.")
-            # Return empty list if any exception occurred or status is not OK
-            return []

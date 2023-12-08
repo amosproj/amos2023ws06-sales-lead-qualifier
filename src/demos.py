@@ -200,7 +200,6 @@ def pipeline_demo():
     if choice == "y" or choice == "Y":
         pipeline = PipelineDAL(
             steps=steps,
-            db=db,
             limit=limit,
         )
         pipeline.run()

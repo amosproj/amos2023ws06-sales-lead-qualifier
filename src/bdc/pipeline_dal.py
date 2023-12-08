@@ -4,6 +4,7 @@ import boto3
 import numpy as np
 
 from bdc.steps.step import Step, StepError
+from database import get_database
 from database.DAL import LocalDatabase, S3Database
 from logger import get_logger
 
@@ -15,26 +16,11 @@ class PipelineDAL:
     def __init__(
         self,
         steps,
-        db: str = None,
         limit: int = None,
     ):
         self.steps: list[Step] = steps
         self.limit: int = limit
-        self.df = None
-
-        if db == "S3" and limit is not None:
-            log.error(
-                f"Only the full dataset can be saved to S3! Changing chosen database to local."
-            )
-            db = "Local"
-
-        # Initialise DAL, then save df in Pipeline
-        if db == "S3":
-            self.data_abstraction_layer = S3Database(True)
-        elif db == "Local":
-            self.data_abstraction_layer = LocalDatabase(True)
-
-        self.df = self.data_abstraction_layer.get_dataframe()
+        self.df = get_database().get_dataframe()
 
         if limit is not None:
             self.df = self.df[:limit]
@@ -69,9 +55,9 @@ class PipelineDAL:
             self.df = self.df.replace(np.nan, None)
 
         # Set dataframe in DAL
-        self.data_abstraction_layer.set_dataframe(self.df)
+        get_database().set_dataframe(self.df)
 
         # Upload DAL dataframe to chosen database
-        self.data_abstraction_layer.save_dataframe()
+        get_database().save_dataframe()
 
         log.info(f"Pipeline finished running {len(self.steps)} steps!")
