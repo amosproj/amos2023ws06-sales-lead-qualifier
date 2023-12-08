@@ -1,6 +1,9 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Sophie Heasman <sophieheasmann@gmail.com>
 
+import json
+import os
+
 import pandas as pd
 
 from database.DAL import DataAbstractionLayer
@@ -36,16 +39,33 @@ class LocalDatabase(DataAbstractionLayer):
         """
         pass
 
-    def save_review(self, review):
+    def save_review(self, review, place_id, force_refresh=False):
         """
         TODO: Upload review to specified review path
         :param review: json contents of the review to be uploaded
         """
-        pass
+        # Write the data to a JSON file
+        file_name = place_id + "_reviews.json"
+        json_file_path = self.REVIEWS + file_name
+
+        if os.path.exists(json_file_path):
+            log.info(f"Reviews for {place_id} already exist")
+            return
+
+        with open(json_file_path, "w", encoding="utf-8") as json_file:
+            json.dump(review, json_file, ensure_ascii=False, indent=4)
 
     def fetch_review(self, place_id):
         """
         TODO: Fetch review for specified place_id
         :return: json contents of desired review
         """
-        pass
+        reviews_path = self.REVIEWS + place_id + "_reviews.json"
+        try:
+            with open(reviews_path, "r", encoding="utf-8") as reviews_json:
+                reviews = json.load(reviews_json)
+                return reviews
+        except:
+            log.warning(f"Error loading reviews from path {reviews_path}.")
+            # Return empty list if any exception occurred or status is not OK
+            return []

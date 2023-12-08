@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: 2023 Sophie Heasman <sophieheasmann@gmail.com>
 
 import hashlib
+import json
 from datetime import datetime
 from io import StringIO
 
@@ -34,7 +35,7 @@ class S3Database(DataAbstractionLayer):
         remote_dataset = None
 
         try:
-            self.bucket, self.obj_key = self._decode_s3_url()
+            self.bucket, self.obj_key = self._decode_s3_url(self.DF)
             remote_dataset = self._fetch_object_s3()
         except IndexError:
             log.error(
@@ -71,12 +72,12 @@ class S3Database(DataAbstractionLayer):
 
         return obj
 
-    def _decode_s3_url(self):
+    def _decode_s3_url(self, url):
         """
         Retrieve the bucket and object key from object url
         :return: bucket string, object key string
         """
-        obj_identifier = self.DF.split("//")[1].split("/")
+        obj_identifier = url.split("//")[1].split("/")
         bucket = obj_identifier[0]
         obj_key = "/".join(obj_identifier[1:])
         return bucket, obj_key
@@ -120,16 +121,43 @@ class S3Database(DataAbstractionLayer):
         """
         pass
 
-    def save_review(self, review):
+    def save_review(self, review, place_id, force_refresh=False):
         """
         TODO: Upload review to specified review path
         :param review: json contents of the review to be uploaded
         """
-        pass
+        # Write the data to a JSON file
+        file_name = place_id + "_reviews.json"
+        bucket, key = self._decode_s3_url(self.REVIEWS)
+        key += file_name
+
+        try:
+            # HeadObject throws an exception if the file doesn't exist
+            s3.head_object(Bucket=bucket, Key=key)
+            log.info(f"The file with key '{key}' exists in the bucket '{bucket}'.")
+
+        except Exception as e:
+            log.info(
+                f"The file with key '{key}' does not exist in the bucket '{bucket}'."
+            )
+            # Upload the JSON string to S3
+            s3.put_object(Body=review, Bucket=bucket, Key=key)
+            log.info("reviews uploaded to s3")
 
     def fetch_review(self, place_id):
         """
         TODO: Fetch review for specified place_id
         :return: json contents of desired review
         """
-        pass
+        file_name = place_id + "_reviews.json"
+        bucket, key = self._decode_s3_url(self.REVIEWS)
+        key += file_name
+
+        try:
+            response = s3.get_object(Bucket=bucket, Key=key)
+            file_content = response["Body"].read().decode("utf-8")
+            json_content = json.loads(file_content)
+            return json_content
+        except Exception as e:
+            log.error(f"Error loading review from S3 with id {id}. Error: {str(e)}")
+            return []

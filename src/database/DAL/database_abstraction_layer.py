@@ -22,7 +22,7 @@ class DataAbstractionLayer(ABC):
         """
         pass
 
-    def __init__(self, download_df=False):
+    def __init__(self, download_df=True):
         """
         Initialise DAL, and saves the input df as an attribute
         :param download_df: Specify if you want to download the dataframe in this instance (not needed when handling reviews)
@@ -61,7 +61,7 @@ class DataAbstractionLayer(ABC):
         pass
 
     @abstractmethod
-    def save_review(self, review):
+    def save_review(self, review, place_id, force_refresh=False):
         """
         Upload review to specified review path
         :param review: json contents of the review to be uploaded

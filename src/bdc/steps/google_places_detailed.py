@@ -17,6 +17,7 @@ from tqdm import tqdm
 
 from bdc.steps.step import Step, StepError
 from config import GOOGLE_PLACES_API_KEY
+from database import get_database
 from logger import get_logger
 
 log = get_logger()
@@ -26,7 +27,7 @@ class GooglePlacesDetailed(Step):
     name = "Google_Places_Detailed"
 
     # fields that are expected as an output of the df.apply lambda function
-    df_fields = ["website", "type", "reviews_path"]
+    df_fields = ["website", "type"]
 
     # Weirdly the expression [f"{name}_{field}" for field in df_fields] gives an error as name is not in the scope of the iterator
     added_cols = [
@@ -103,14 +104,17 @@ class GooglePlacesDetailed(Step):
             )
             log.warning(f"Error: {error_message}")
 
-        json_file_path = self.save_reviews(response, place_id)
+        reviews = []
+
+        if "result" in response and "reviews" in response["result"]:
+            reviews = response["result"]["reviews"]
+
+        get_database().save_review(reviews, place_id)
 
         results_list = [
             response["result"][field] if field in response["result"] else None
             for field in self.api_fields_output
         ]
-
-        results_list.append(json_file_path if json_file_path is not None else None)
 
         return pd.Series(results_list)
 
