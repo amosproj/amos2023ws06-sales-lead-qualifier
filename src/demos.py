@@ -188,7 +188,7 @@ def pipeline_demo():
         db = "S3"
     else:
         output_location_remote = None
-        db = "local"
+        db = "Local"
 
     steps_info = "\n".join([str(step) for step in steps])
     log.info(

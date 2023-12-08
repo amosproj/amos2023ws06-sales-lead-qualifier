@@ -1,15 +1,10 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Lucca Baumgärtner <lucca.baumgaertner@fau.de>
-import hashlib
-from datetime import datetime
-from io import StringIO
-
 import boto3
 import numpy as np
-import pandas as pd
 
 from bdc.steps.step import Step, StepError
-from database_abstraction_layer import DataAbstractionLayer
+from database.DAL import LocalDatabase, S3Database
 from logger import get_logger
 
 log = get_logger()
@@ -28,11 +23,17 @@ class PipelineDAL:
         self.df = None
 
         if db == "S3" and limit is not None:
-            log.error(f"Only the full dataset can be saved to S3!")
-            return
+            log.error(
+                f"Only the full dataset can be saved to S3! Changing chosen database to local."
+            )
+            db = "Local"
 
         # Initialise DAL, then save df in Pipeline
-        self.data_abstraction_layer = DataAbstractionLayer(db)
+        if db == "S3":
+            self.data_abstraction_layer = S3Database(True)
+        elif db == "Local":
+            self.data_abstraction_layer = LocalDatabase(True)
+
         self.df = self.data_abstraction_layer.get_dataframe()
 
         if limit is not None:
