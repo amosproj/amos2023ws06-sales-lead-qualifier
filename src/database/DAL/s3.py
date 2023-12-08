@@ -18,7 +18,7 @@ s3 = boto3.client("s3")
 
 
 class S3Database(DataAbstractionLayer):
-    DF = "s3://amos--data--events/leads/enriched.csv"
+    DF = "s3://amos--data--events/leads/sumup_leads_email.csv"
     REVIEWS = "s3://amos--data--events/reviews/"
 
     def _download(self):
@@ -141,7 +141,8 @@ class S3Database(DataAbstractionLayer):
                 f"The file with key '{key}' does not exist in the bucket '{bucket}'."
             )
             # Upload the JSON string to S3
-            s3.put_object(Body=review, Bucket=bucket, Key=key)
+            reviews_str = json.dumps(review)
+            s3.put_object(Body=reviews_str, Bucket=bucket, Key=key)
             log.info("reviews uploaded to s3")
 
     def fetch_review(self, place_id):
