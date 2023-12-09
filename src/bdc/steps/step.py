@@ -39,6 +39,7 @@ class Step:
     def verify(self) -> bool:
         """
         Verify that the data has been loaded correctly and is present in a format that can be processed by this step.
+        If this fails, run() and finish() will not be executed.
         """
         raise NotImplementedError
 
@@ -63,15 +64,15 @@ class Step:
 
     def run(self) -> DataFrame:
         """
-        Perform the actual processing step.
+        Perform the actual processing step. Will not be executed if verify() fails.
 
-        raises StepError
+        :raises: StepError
         """
         raise NotImplementedError
 
     def finish(self) -> None:
         """
-        Finish the execution. Print a report or clean up temporary files.
+        Finish the execution. Print a report or clean up temporary files. Will not be executed if verify() fails.
         """
         raise NotImplementedError
 

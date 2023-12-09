@@ -28,6 +28,10 @@ class GooglePlaces(Step):
     information along with the place id, that can be used to retrieve further detailed information and a confidence
     score that should indicate the confidence in having found the correct result. Confidence can vary based on the data
     source used for identifying the business and if multiple sources are used confidence is higher when results match.
+
+    Attributes:
+        name: Name of this step, used for logging
+        df_fields: List of fields that will be added to the main dataframe by executing this step
     """
 
     name = "Google_Places"
@@ -70,6 +74,9 @@ class GooglePlaces(Step):
     gmaps = None
 
     def load_data(self) -> None:
+        """
+        Make sure that the API key for Google places is present and construct the API client
+        """
         # don't perform this in class body or else it will fail in tests due to missing API key
         if GOOGLE_PLACES_API_KEY is None:
             raise StepError("An API key for Google Places is needed to run this step!")

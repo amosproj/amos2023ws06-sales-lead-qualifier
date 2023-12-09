@@ -23,6 +23,16 @@ log = get_logger()
 
 
 class GooglePlacesDetailed(Step):
+    """
+    The GooglePlacesDetailed step will try to gather detailed information for a given google business entry, identified
+    by the place ID. This information could be the website link, the review text and the business type. Reviews will
+    be saved to a separate location based on the persistence settings this could be local or AWS S3.
+
+    Attributes:
+        name: Name of this step, used for logging
+        df_fields: List of fields that will be added to the main dataframe by executing this step
+    """
+
     name = "Google_Places_Detailed"
 
     # fields that are expected as an output of the df.apply lambda function
