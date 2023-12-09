@@ -6,26 +6,30 @@
 # SPDX-FileCopyrightText: 2023 Ruchita Nathani <Ruchita.nathani@fau.de>
 # SPDX-FileCopyrightText: 2023 Ahmed Sheta <ahmed.sheta@fau.de>
 
-import json
 import re
 from http import HTTPStatus
 
 import googlemaps
 import pandas as pd
-import requests
 from googlemaps.exceptions import ApiError, HTTPError, Timeout, TransportError
 from requests import RequestException
 from tqdm import tqdm
 
 from bdc.steps.step import Step, StepError
 from config import GOOGLE_PLACES_API_KEY
-from database import mongo_connection
 from logger import get_logger
 
 log = get_logger()
 
 
 class GooglePlaces(Step):
+    """
+    The GooglePlaces step will try to find the correct business entry in the Google Maps database. It will save basic
+    information along with the place id, that can be used to retrieve further detailed information and a confidence
+    score that should indicate the confidence in having found the correct result. Confidence can vary based on the data
+    source used for identifying the business and if multiple sources are used confidence is higher when results match.
+    """
+
     name = "Google_Places"
 
     # fields that are expected as an output of the df.apply lambda function
