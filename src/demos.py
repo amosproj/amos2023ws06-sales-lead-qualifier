@@ -11,6 +11,7 @@ from sklearn.metrics import mean_squared_error
 
 from bdc import DataCollector
 from bdc.pipeline import Pipeline
+from bdc.pipeline_dal import PipelineDAL
 from bdc.steps import (
     AnalyzeEmails,
     FacebookGraphAPI,
@@ -189,23 +190,33 @@ def pipeline_demo():
 
     limit = get_int_input("Set limit for data points to be processed (0=No limit)\n")
     limit = limit if limit > 0 else None
-    output_location_remote = (
-        f"s3://{S3_BUCKET}/leads/enriched.csv"
-        if limit is None and get_yes_no_input("Save output data to S3? (y/N)\n")
-        else None
-    )
+    if limit is None and get_yes_no_input("Save output data to S3? (y/N)\n"):
+        output_location_remote = f"s3://{S3_BUCKET}/leads/enriched.csv"
+        db = "S3"
+    else:
+        output_location_remote = None
+        db = "Local"
 
     steps_info = "\n".join([str(step) for step in steps])
     log.info(
         f"Running Pipeline with steps:\n{steps_info}\ninput_location={S3_BUCKET}\noutput_location_remote={output_location_remote}"
     )
 
-    pipeline = Pipeline(
-        steps=steps,
-        input_location=f"s3://{S3_BUCKET}/leads/enriched.csv",
-        output_location_local=OUTPUT_FILE_LOCAL_PIPELINE,
-        output_location_remote=output_location_remote,
-        limit=limit,
-        index_col=None,
-    )
-    pipeline.run()
+    choice = input("\nDo you want to run the Pipeline with the DAL? (y/n)\n")
+
+    if choice == "y" or choice == "Y":
+        pipeline = PipelineDAL(
+            steps=steps,
+            limit=limit,
+        )
+        pipeline.run()
+    else:
+        pipeline = Pipeline(
+            steps=steps,
+            input_location=f"s3://{S3_BUCKET}/leads/enriched.csv",
+            output_location_local=OUTPUT_FILE_LOCAL_PIPELINE,
+            output_location_remote=output_location_remote,
+            limit=limit,
+            index_col=None,
+        )
+        pipeline.run()
