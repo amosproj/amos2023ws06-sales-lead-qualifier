@@ -2,13 +2,9 @@
 # SPDX-FileCopyrightText: 2023 Berkay Bozkurt <resitberkaybozkurt@gmail.com>
 # SPDX-FileCopyrightText: 2023 Sophie Heasman <sophieheasmann@gmail.com>
 
-import json
-import os.path
 import time
 from collections import Counter
 
-import boto3
-import language_tool_python as ltp
 import numpy as np
 import openai
 import pandas as pd
@@ -24,8 +20,6 @@ from database import get_database
 from logger import get_logger
 
 log = get_logger()
-S3_CLIENT = boto3.client("s3")
-S3_BUCKET_NAME = "amos--data--events"
 
 
 """
