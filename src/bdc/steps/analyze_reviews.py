@@ -17,6 +17,7 @@ from pandas import DataFrame
 from sklearn.linear_model import LinearRegression
 from tqdm import tqdm
 
+from bdc.steps.helpers import TextAnalyzer
 from bdc.steps.step import Step, StepError
 from config import OPEN_AI_API_KEY
 from database import get_database
@@ -35,65 +36,48 @@ HELPER FUNCTIONS
 def is_review_valid(review):
     """
     Checks if the review is valid (has text and original language).
+
+    Parameters:
+    review (dict): A dictionary representing a review.
+
+    Returns:
+    bool: True if the review is valid, False otherwise.
     """
     return not (review["text"] is None or review["lang"] is None)
 
 
-def is_dataframe_valid(df):
+def check_df(df, required_fields):
     """
-    Validates if the DataFrame has the required fields.
-    """
-    return df is not None and "google_places_detailed_reviews_path" in df
+    Check if the given DataFrame contains all the required fields.
 
+    Args:
+        df (pandas.DataFrame): The DataFrame to be checked.
+        required_fields (dict): A dictionary of required fields, where the keys are the field names and the values are not used.
 
-def is_valid_reviews_path(review_path):
+    Returns:
+        bool: True if the DataFrame contains all the required fields, False otherwise.
     """
-    Checks if the review_path is valid (not None and not NaN).
-    """
-    return review_path is not None and not pd.isna(review_path)
+    return df is not None and all(column in df for column in required_fields.values())
 
 
 def check_api_key(api_key, api_name):
+    """
+    Checks if an API key is provided for a specific API.
+
+    Args:
+        api_key (str): The API key to be checked.
+        api_name (str): The name of the API.
+
+    Raises:
+        StepError: If the API key is not provided.
+
+    Returns:
+        bool: True if the API key is provided, False otherwise.
+    """
     if api_key is None:
         raise StepError(f"An API key for {api_name} is needed to run this step!")
-
-
-def fetch_reviews(reviews_path):
-    try:
-        # reviews_path always starts with "./data/.."
-        full_path = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "../../" + reviews_path)
-        )
-        with open(full_path, "r", encoding="utf-8") as reviews_json:
-            reviews = json.load(reviews_json)
-            return reviews
-    except:
-        log.warning(f"Error loading reviews from path {full_path}.")
-        # Return empty list if any exception occurred or status is not OK
-        return []
-
-
-def fetch_reviews_from_S3(key):
-    try:
-        log.debug(f"Fetching review with id {key} from S3 bucket {S3_BUCKET_NAME}")
-
-        response = S3_CLIENT.get_object(Bucket=S3_BUCKET_NAME, Key=key)
-        log.debug("Successfully fetched data from S3")
-
-        file_content = response["Body"].read().decode("utf-8")
-        log.debug("Successfully read file content")
-
-        json_content = json.loads(file_content)
-        log.debug(f"Successfully loaded JSON content {json_content}")
-
-        return json_content
-    except Exception as e:
-        log.error(f"Error loading review from S3 with id {id}. Error: {str(e)}")
-        return []
-
-
-def parse_extract_reviews_path(reviews_path):
-    return reviews_path.split("/")[-1]
+    else:
+        return True
 
 
 """
@@ -102,31 +86,70 @@ CLASSES
 
 
 class GPTReviewSentimentAnalyzer(Step):
+    """
+    A class that performs sentiment analysis on reviews using GPT-4 model.
+
+    Attributes:
+        name (str): The name of the step.
+        model (str): The GPT model to be used for sentiment analysis.
+        model_encoding_name (str): The encoding name of the GPT model.
+        MAX_PROMPT_TOKENS (int): The maximum number of tokens allowed for a prompt.
+        no_answer (str): The default value for no answer.
+        gpt_required_fields (dict): The required fields for GPT analysis.
+        system_message_for_sentiment_analysis (str): The system message for sentiment analysis.
+        user_message_for_sentiment_analysis (str): The user message for sentiment analysis.
+        extracted_col_name (str): The name of the column to store the sentiment scores.
+        added_cols (list): The list of additional columns to be added to the DataFrame.
+        gpt (openai.OpenAI): The GPT instance for sentiment analysis.
+
+    Methods:
+        load_data(): Loads the GPT model.
+        verify(): Verifies the validity of the API key and DataFrame.
+        run(): Runs the sentiment analysis on the reviews.
+        finish(): Finishes the sentiment analysis step.
+        run_sentiment_analysis(place_id): Runs sentiment analysis on the reviews of a lead.
+        gpt_sentiment_analyze_review(review_list): Calculates the sentiment score using GPT.
+        extract_text_from_reviews(reviews_list): Extracts text from reviews and removes line characters.
+        num_tokens_from_string(text): Returns the number of tokens in a text string.
+        batch_reviews(reviews, max_tokens): Batches reviews into smaller batches based on token limit.
+    """
+
     name = "GPT-Review-Sentiment-Analyzer"
     model = "gpt-4"
     model_encoding_name = "cl100k_base"
     MAX_PROMPT_TOKENS = 4096
     no_answer = "None"
     gpt_required_fields = {"place_id": "google_places_place_id"}
-    # system and user messages to be used for creating company summary for lead using website.
     system_message_for_sentiment_analysis = f"You are review sentiment analyzer, you being provided reviews of the companies. You analyze the review and come up with the score between range [-1, 1], if no reviews then just answer with '{no_answer}'"
     user_message_for_sentiment_analysis = "Sentiment analyze the reviews  and provide me a score between range [-1, 1]  : {}"
-
     extracted_col_name = "reviews_sentiment_score"
     added_cols = [extracted_col_name]
     gpt = None
 
     def load_data(self) -> None:
+        """
+        Loads the GPT model.
+        """
         self.gpt = openai.OpenAI(api_key=OPEN_AI_API_KEY)
 
     def verify(self) -> bool:
-        check_api_key(OPEN_AI_API_KEY, "OpenAI")
+        """
+        Verifies the validity of the API key and DataFrame.
 
-        return self.df is not None and all(
-            column in self.df for column in self.gpt_required_fields.values()
-        )
+        Returns:
+            bool: True if the API key and DataFrame are valid, False otherwise.
+        """
+        is_key_valid = check_api_key(OPEN_AI_API_KEY, "OpenAI")
+        is_df_valid = check_df(self.df, self.gpt_required_fields)
+        return is_key_valid and is_df_valid
 
     def run(self) -> DataFrame:
+        """
+        Runs the sentiment analysis on the reviews.
+
+        Returns:
+            DataFrame: The DataFrame with the sentiment scores added.
+        """
         tqdm.pandas(desc="Running sentiment analysis on reviews")
         self.df[self.extracted_col_name] = self.df[
             self.gpt_required_fields["place_id"]
@@ -134,14 +157,21 @@ class GPTReviewSentimentAnalyzer(Step):
         return self.df
 
     def finish(self) -> None:
+        """
+        Finishes the sentiment analysis step.
+        """
         pass
 
-    def run_sentiment_analysis(self, reviews_path):
+    def run_sentiment_analysis(self, place_id):
         """
-        Runs sentiment analysis on reviews of lead extracted from company's website
+        Runs sentiment analysis on reviews of lead extracted from company's website.
 
+        Args:
+            place_id: The ID of the place.
+
+        Returns:
+            float: The average sentiment score of the reviews.
         """
-
         # if there is no reviews_path, then return without API call.
         if place_id is None or pd.isna(place_id):
             return None
@@ -162,7 +192,13 @@ class GPTReviewSentimentAnalyzer(Step):
 
     def gpt_sentiment_analyze_review(self, review_list):
         """
-        GPT calculates the sentiment score considering the reviews
+        GPT calculates the sentiment score considering the reviews.
+
+        Args:
+            review_list: The list of reviews.
+
+        Returns:
+            float: The sentiment score calculated by GPT.
         """
         max_retries = 5  # Maximum number of retries
         retry_delay = 5  # Initial delay in seconds (5 seconds)
@@ -220,7 +256,13 @@ class GPTReviewSentimentAnalyzer(Step):
 
     def extract_text_from_reviews(self, reviews_list):
         """
-        extracts text from reviews and removes line characters.
+        Extracts text from reviews and removes line characters.
+
+        Args:
+            reviews_list: The list of reviews.
+
+        Returns:
+            list: The list of formatted review texts.
         """
         reviews_texts = [review.get("text", None) for review in reviews_list]
         review_texts_formatted = [
@@ -229,14 +271,29 @@ class GPTReviewSentimentAnalyzer(Step):
         return review_texts_formatted
 
     def num_tokens_from_string(self, text: str):
-        """Returns the number of tokens in a text string."""
+        """
+        Returns the number of tokens in a text string.
+
+        Args:
+            text (str): The input text.
+
+        Returns:
+            int: The number of tokens in the text.
+        """
         encoding = tiktoken.get_encoding(self.model_encoding_name)
         num_tokens = len(encoding.encode(text))
         return num_tokens
 
     def batch_reviews(self, reviews, max_tokens=4096):
         """
-        Batchs reviews into batches so that every batch has the size less than max_tokens
+        Batches reviews into smaller batches based on token limit.
+
+        Args:
+            reviews: The list of reviews.
+            max_tokens (int): The maximum number of tokens allowed for a batch.
+
+        Returns:
+            list: The list of batches.
         """
         batches = []
         current_batch = []
@@ -261,7 +318,36 @@ class GPTReviewSentimentAnalyzer(Step):
 
 
 class SmartReviewInsightsEnhancer(Step):
+    """
+    A step class that enhances review insights for smart review analysis.
+
+    Attributes:
+        name (str): The name of the step.
+        required_fields (dict): A dictionary of required fields for the step.
+        language_tools (dict): A dictionary of language tools for different languages.
+        MIN_RATINGS_COUNT (int): The minimum number of ratings required to identify polarization.
+        RATING_DOMINANCE_THRESHOLD (float): The threshold for high or low rating dominance in decimal.
+        added_cols (list): A list of added columns for the enhanced review insights.
+
+    Methods:
+        load_data(): Loads the data for the step.
+        verify(): Verifies if the required fields are present in the data.
+        run(): Runs the step and enhances the review insights.
+        finish(): Finishes the step.
+        _get_language_tool(lang): Get the language tool for the specified language.
+        _enhance_review_insights(lead): Enhances the review insights for a given lead.
+        _analyze_rating_trend(rating_time): Analyzes the general trend of ratings over time.
+        _quantify_polarization(ratings): Analyzes and quantifies the polarization in a list of ratings.
+        _determine_polarization_type(polarization_score, highest_rating_ratio, lowest_rating_ratio, threshold): Determines the type of polarization based on rating ratios and a threshold.
+        _calculate_average_grammatical_score(reviews): Calculates the average grammatical score for a list of reviews.
+        _calculate_score(review): Calculates the score for a review.
+        _grammatical_errors(text, lang): Calculates the number of grammatical errors in a text.
+
+    """
+
     name = "Smart-Review-Insights-Enhancer"
+    required_fields = {"place_id": "google_places_place_id"}
+    text_analyzer = TextAnalyzer()
     MIN_RATINGS_COUNT = 1
     RATING_DOMINANCE_THRESHOLD = (
         0.4  # Threshold for high or low rating dominance in decimal
@@ -277,12 +363,27 @@ class SmartReviewInsightsEnhancer(Step):
     ]
 
     def load_data(self) -> None:
+        """
+        Loads the data for the step.
+        """
         pass
 
     def verify(self) -> bool:
-        return is_dataframe_valid(self.df)
+        """
+        Verifies if the required fields are present in the data.
+
+        Returns:
+            bool: True if the required fields are present, False otherwise.
+        """
+        return check_df(self.df, self.required_fields)
 
     def run(self) -> DataFrame:
+        """
+        Runs the step and enhances the review insights.
+
+        Returns:
+            DataFrame: The enhanced DataFrame with the added review insights.
+        """
         tqdm.pandas(desc="Running reviews insights enhancement")
 
         # Apply the enhancement function
@@ -292,20 +393,32 @@ class SmartReviewInsightsEnhancer(Step):
         return self.df
 
     def finish(self) -> None:
+        """
+        Finishes the step.
+        """
         pass
 
     def _enhance_review_insights(self, lead):
-        reviews_path = lead["google_places_detailed_reviews_path"]
-        if not is_valid_reviews_path(reviews_path):
+        """
+        Enhances the review insights for a given lead.
+
+        Args:
+            lead (pd.Series): The lead data.
+
+        Returns:
+            pd.Series: The enhanced review insights as a pandas Series.
+        """
+        place_id = lead["google_places_place_id"]
+        if place_id is None or pd.isna(place_id):
             return pd.Series({f"{col}": None for col in self.added_cols})
-        reviews = fetch_reviews_from_S3(reviews_path)
+        reviews = get_database().fetch_review(place_id)
         if not reviews:
             return pd.Series({f"{col}": None for col in self.added_cols})
         results = []
         reviews_langs = [
             {
                 "text": review.get("text", ""),
-                "lang": review.get("original_language", "en-US"),
+                "lang": review.get("original_language", "en"),
             }
             for review in reviews
         ]
@@ -340,11 +453,14 @@ class SmartReviewInsightsEnhancer(Step):
         """
         Analyzes the general trend of ratings over time.
 
-        :param reviews: List of review data, each a dict with 'time' (Unix timestamp) and 'rating'.
-        :return: A value between -1 and 1 indicating the trend of ratings.
-            - A value close to 1 indicates a strong increasing trend.
-            - A value close to -1 indicates a strong decreasing trend.
-            - A value around 0 indicates no significant trend (stable ratings).
+        Args:
+            rating_time (list): List of review data, each a dict with 'time' (Unix timestamp) and 'rating'.
+
+        Returns:
+            float: A value between -1 and 1 indicating the trend of ratings.
+                - A value close to 1 indicates a strong increasing trend.
+                - A value close to -1 indicates a strong decreasing trend.
+                - A value around 0 indicates no significant trend (stable ratings).
         """
         # Convert to DataFrame
         df = pd.DataFrame(rating_time)
@@ -370,10 +486,12 @@ class SmartReviewInsightsEnhancer(Step):
         """
         Analyzes and quantifies the polarization in a list of ratings.
 
+        Args:
+            ratings (list): List of ratings.
+
         Returns:
-            Tuple: A tuple containing the polarization type, polarization score,
-                highest rating ratio, lowest rating ratio, rating counts,
-                and total number of ratings.
+            tuple: A tuple containing the polarization type, polarization score,
+                highest rating ratio, and lowest rating ratio.
         """
 
         total_ratings = len(ratings)
@@ -408,6 +526,15 @@ class SmartReviewInsightsEnhancer(Step):
     ):
         """
         Determines the type of polarization based on rating ratios and a threshold.
+
+        Args:
+            polarization_score (float): The polarization score.
+            highest_rating_ratio (float): The highest rating ratio.
+            lowest_rating_ratio (float): The lowest rating ratio.
+            threshold (float): The threshold for high or low rating dominance.
+
+        Returns:
+            str: The type of polarization.
         """
         if polarization_score > 0:
             if highest_rating_ratio > threshold:
@@ -418,27 +545,40 @@ class SmartReviewInsightsEnhancer(Step):
         return "Balanced"
 
     def _calculate_average_grammatical_score(self, reviews):
-        if not reviews:
-            return 0
+        """
+        Calculates the average grammatical score for a list of reviews.
+
+        Args:
+            reviews (list): List of reviews.
+
+        Returns:
+            float: The average grammatical score.
+        """
         scores = [
             self._calculate_score(review)
             for review in reviews
             if is_review_valid(review)
         ]
-        return sum(scores) / len(scores) if scores else 0
+        valid_scores = [score for score in scores if score is not None]
+        return sum(valid_scores) / len(valid_scores) if valid_scores else 0
 
     def _calculate_score(self, review):
-        num_errors = self._grammatical_errors(review["text"], review["lang"])
-        num_words = len(review["text"].split())
-        if num_words == 0:
-            return 1
-        return max(1 - (num_errors / num_words), 0)
+        """
+        Calculates the score for a review.
 
-    def _grammatical_errors(self, text, lang="en-US"):
-        try:
-            tool = ltp.LanguageTool(lang)
-            errors = tool.check(text)
-            return len(errors)
-        except Exception as e:
-            log.error(f"An error occurred in grammatical_errors: {e}")
-            return 0
+        Args:
+            review (dict): The review data.
+
+        Returns:
+            float: The calculated score.
+        """
+        log.debug(
+            f"Calculating score for review: {review['text']}, in language {review['lang']}"
+        )
+        num_errors = self.text_analyzer.find_number_of_grammatical_errors(
+            review["text"], review["lang"]
+        )
+        num_words = len(review["text"].split())
+        if num_words == 0 or num_errors is None:
+            return None
+        return max(1 - (num_errors / num_words), 0)
