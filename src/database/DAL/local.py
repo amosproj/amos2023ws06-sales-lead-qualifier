@@ -13,7 +13,8 @@ log = get_logger()
 
 
 class LocalDatabase(DataAbstractionLayer):
-    DF = "./data/leads_enriched.csv"
+    DF_INPUT = "./data/leads_enriched.csv"
+    DF_OUTPUT = "./data/leads_enriched.csv"
     REVIEWS = "./data/reviews/"
 
     def _download(self):
@@ -21,7 +22,7 @@ class LocalDatabase(DataAbstractionLayer):
         Download database from specified DF path
         """
         try:
-            self.df = pd.read_csv(self.DF)
+            self.df = pd.read_csv(self.DF_INPUT)
         except FileNotFoundError:
             log.error("Error: Could not find input file for Pipeline.")
 
@@ -29,8 +30,8 @@ class LocalDatabase(DataAbstractionLayer):
         """
         Save dataframe in df attribute in chosen output location
         """
-        self.df.to_csv(self.DF, index=False)
-        log.info(f"Saved enriched data locally to {self.DF}")
+        self.df.to_csv(self.DF_OUTPUT, index=False)
+        log.info(f"Saved enriched data locally to {self.DF_OUTPUT}")
 
     def insert_data(self, data):
         """

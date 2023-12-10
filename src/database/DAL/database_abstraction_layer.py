@@ -8,7 +8,14 @@ class DataAbstractionLayer(ABC):
     # Database paths for dataframe and reviews have to be set
     @property
     @abstractmethod
-    def DF(self):
+    def DF_INPUT(self):
+        """
+        Define database path to load dataframe
+        """
+        pass
+
+    @property
+    def DF_OUTPUT(self):
         """
         Define database path to store dataframe
         """
@@ -22,15 +29,25 @@ class DataAbstractionLayer(ABC):
         """
         pass
 
-    def __init__(self, download_df=True):
+    def __init__(self):
         """
         Initialise DAL, and saves the input df as an attribute
         :param download_df: Specify if you want to download the dataframe in this instance (not needed when handling reviews)
         """
         self.df = None
+        self._download()
 
-        if download_df:
-            self._download()
+    def get_dataframe(self):
+        return self.df
+
+    def set_dataframe(self, df):
+        self.df = df
+
+    def get_input_path(self):
+        return self.DF_INPUT
+
+    def get_output_path(self):
+        return self.DF_OUTPUT
 
     @abstractmethod
     def _download(self):
@@ -45,12 +62,6 @@ class DataAbstractionLayer(ABC):
         Save dataframe in df attribute in chosen output location
         """
         pass
-
-    def get_dataframe(self):
-        return self.df
-
-    def set_dataframe(self, df):
-        self.df = df
 
     @abstractmethod
     def insert_data(self, data):
