@@ -16,10 +16,11 @@ class StepError(Exception):
 class Step:
     name: str = None
     added_cols: list[str] = []
+    required_cols: list[str] = []
 
     def __init__(self, force_refresh: bool = False) -> None:
-        self._df = None
-        self._force_refresh = force_refresh
+        self.df = None
+        self.force_refresh = force_refresh
 
     @property
     def df(self) -> DataFrame:
@@ -52,7 +53,7 @@ class Step:
             log.warning(
                 "Warning trying to check for data presence without setting self.added_cols!",
             )
-        if self._force_refresh:
+        if self.force_refresh:
             log.info("Data refresh was forced")
             return False
         data_present = all([col in self._df for col in self.added_cols])
@@ -77,7 +78,7 @@ class Step:
         raise NotImplementedError
 
     def __str__(self) -> str:
-        return f"Step(Name: {self.name}, Force Refresh: {self._force_refresh}, Added Columns: {self.added_cols})"
+        return f"Step(Name: {self.name}, Force Refresh: {self.force_refresh}, Added Columns: {self.added_cols})"
 
     def __repr__(self) -> str:
-        return f"Step(name='{self.name}', force_refresh={self._force_refresh})"
+        return f"Step(name='{self.name}', force_refresh={self.force_refresh})"

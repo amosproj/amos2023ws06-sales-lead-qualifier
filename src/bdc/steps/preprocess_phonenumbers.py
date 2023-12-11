@@ -59,7 +59,7 @@ class PreprocessPhonenumbers(Step):
         }
 
     def finish(self):
-        p_phone_numbers = self._df["number_valid"].sum() / len(self._df) * 100
+        p_phone_numbers = self.df["number_valid"].sum() / len(self.df) * 100
         log.info(f"Percentage of valid numbers: {p_phone_numbers}%")
 
     def check_number(self, phone_number: str) -> Optional[str]:

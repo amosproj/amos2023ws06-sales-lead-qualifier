@@ -33,7 +33,7 @@ class FacebookGraphAPI(Step):
 
     def verify(self) -> bool:
         return self.df is not None and all(
-            [col in self._df for col in self.required_cols]
+            [col in self.df for col in self.required_cols]
         )
 
     def run(self):

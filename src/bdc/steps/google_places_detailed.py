@@ -67,7 +67,7 @@ class GooglePlacesDetailed(Step):
     def verify(self) -> bool:
         return (
             self.df is not None
-            and all([col in self._df for col in self.required_cols])
+            and all([col in self.df for col in self.required_cols])
             and GOOGLE_PLACES_API_KEY is not None
         )
 

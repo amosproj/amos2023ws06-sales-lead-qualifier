@@ -94,7 +94,7 @@ class GooglePlaces(Step):
     def verify(self) -> bool:
         return (
             self.df is not None
-            and all([col in self._df for col in self.required_cols])
+            and all([col in self.df for col in self.required_cols])
             and GOOGLE_PLACES_API_KEY is not None
         )
 
@@ -111,13 +111,13 @@ class GooglePlaces(Step):
 
     def finish(self) -> None:
         p_matches = (
-            self._df["google_places_place_id_matches_phone_search"].sum()
-            / len(self._df)
+            self.df["google_places_place_id_matches_phone_search"].sum()
+            / len(self.df)
             * 100
         )
         p_matches_rel = (
-            self._df["google_places_place_id_matches_phone_search"].notna().sum()
-            / len(self._df["google_places_place_id_matches_phone_search"].notna())
+            self.df["google_places_place_id_matches_phone_search"].notna().sum()
+            / len(self.df["google_places_place_id_matches_phone_search"].notna())
             * 100
         )
 

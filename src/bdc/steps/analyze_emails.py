@@ -66,8 +66,8 @@ class AnalyzeEmails(Step):
         pass
 
     def verify(self):
-        return self._df is not None and all(
-            [col in self._df for col in self.required_cols]
+        return self.df is not None and all(
+            [col in self.df for col in self.required_cols]
         )
 
     def run(self):
@@ -113,18 +113,18 @@ class AnalyzeEmails(Step):
         ]
         # extract domain from email
         # Possibly add the normalized email here
-        self._df[["domain", "email_valid"]] = self._df.apply(
+        self.df[["domain", "email_valid"]] = self.df.apply(
             lambda lead: extract_custom_domain(str(lead["Email"])), axis=1
         )
 
-        self._df[["first_name_in_account", "last_name_in_account"]] = self._df.apply(
+        self.df[["first_name_in_account", "last_name_in_account"]] = self.df.apply(
             lambda lead: analyze_email_account(lead), axis=1
         )
 
         # remove commercial domains
-        self._df["domain"].replace(commercial_domains, None, inplace=True)
+        self.df["domain"].replace(commercial_domains, None, inplace=True)
         return self.df
 
     def finish(self):
-        p_custom_domains = self._df["domain"].notna().sum() / len(self._df) * 100
+        p_custom_domains = self.df["domain"].notna().sum() / len(self.df) * 100
         log.info(f"Percentage of custom domains: {p_custom_domains:.2f}%")

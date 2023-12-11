@@ -38,7 +38,7 @@ class ScrapeAddress(Step):
     def verify(self):
         return (
             self.df is not None
-            and all([col in self._df for col in self.required_cols])
+            and all([col in self.df for col in self.required_cols])
             in self.df
             in self.df
         )
@@ -53,7 +53,7 @@ class ScrapeAddress(Step):
         return self.df
 
     def finish(self):
-        p_address = self._df["address_ver_1"].notna().sum() / len(self._df) * 100
+        p_address = self.df["address_ver_1"].notna().sum() / len(self.df) * 100
         log.info(f"Percentage of addresses scraped: {p_address:.2f}%")
 
 
