@@ -21,6 +21,18 @@ log = get_logger()
 
 
 class GPTSummarizer(Step):
+    """
+    The GPTSummarizer step will attempt to download a businesses website in raw html format and pass this information
+    to OpenAIs GPT, which will then attempt to summarize the raw contents and extract valuable information for a
+    salesperson.
+
+    Attributes:
+        name: Name of this step, used for logging
+        added_cols: List of fields that will be added to the main dataframe by executing this step
+        required_cols: List of fields that are required to be existent in the input dataframe before performing this
+            step
+    """
+
     name = "GPT-Summarizer"
     model = "gpt-4"
     no_answer = "None"
@@ -34,6 +46,7 @@ class GPTSummarizer(Step):
     extracted_col_name_website_summary = "sales_person_summary"
 
     added_cols = [extracted_col_name_website_summary]
+    required_cols = ["google_places_website"]
 
     client = None
 
@@ -43,7 +56,9 @@ class GPTSummarizer(Step):
     def verify(self) -> bool:
         if OPEN_AI_API_KEY is None:
             raise StepError("An API key for openAI is need to run this step!")
-        return self.df is not None and "google_places_website" in self.df
+        return self.df is not None and all(
+            [col in self.df for col in self.required_cols]
+        )
 
     def run(self) -> DataFrame:
         tqdm.pandas(desc="Summarizing the website of leads")

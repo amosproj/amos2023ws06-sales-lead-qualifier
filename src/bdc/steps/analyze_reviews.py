@@ -20,6 +20,16 @@ log = get_logger()
 
 
 class GPTReviewSentimentAnalyzer(Step):
+    """
+    The GPTReviewSentiment Analyzer step will read reviews obtained for a business (e.g. from Google Maps) and perform
+    sentiment analysis using OpenAI GPT3/4.
+
+    Attributes:
+        name: Name of this step, used for logging
+        added_cols: List of fields that will be added to the main dataframe by executing this step
+        required_cols: List of fields that are required to be existent in the input dataframe before performing this step
+    """
+
     name = "GPT-Review-Sentiment-Analyzer"
     model = "gpt-4"
     model_encoding_name = "cl100k_base"
@@ -32,6 +42,7 @@ class GPTReviewSentimentAnalyzer(Step):
 
     extracted_col_name = "reviews_sentiment_score"
     added_cols = [extracted_col_name]
+    required_cols = gpt_required_fields.values()
     gpt = None
 
     def load_data(self) -> None:
@@ -41,7 +52,7 @@ class GPTReviewSentimentAnalyzer(Step):
         self.check_api_key(OPEN_AI_API_KEY, "OpenAI")
 
         return self.df is not None and all(
-            column in self.df for column in self.gpt_required_fields.values()
+            column in self.df for column in self.required_cols
         )
 
     def run(self) -> DataFrame:
