@@ -66,6 +66,7 @@ To run the application interactively run
 ```[bash]
 ./run_app.sh
 ```
+
 ## Database Connection
 
 To build the Docker containers
