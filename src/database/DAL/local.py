@@ -42,7 +42,7 @@ class LocalDatabase(DataAbstractionLayer):
 
     def save_review(self, review, place_id, force_refresh=False):
         """
-        TODO: Upload review to specified review path
+        Upload review to specified review path
         :param review: json contents of the review to be uploaded
         """
         # Write the data to a JSON file
@@ -58,7 +58,7 @@ class LocalDatabase(DataAbstractionLayer):
 
     def fetch_review(self, place_id):
         """
-        TODO: Fetch review for specified place_id
+        Fetch review for specified place_id
         :return: json contents of desired review
         """
         reviews_path = self.REVIEWS + place_id + "_reviews.json"

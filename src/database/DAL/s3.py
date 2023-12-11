@@ -19,7 +19,7 @@ s3 = boto3.client("s3")
 
 class S3Database(DataAbstractionLayer):
     DF_INPUT = "s3://amos--data--events/leads/enriched.csv"
-    DF_OUTPUT = "s3://amos--data--events/test/leads/enriched.csv"
+    DF_OUTPUT = "s3://amos--data--events/leads/enriched.csv"
     REVIEWS = "s3://amos--data--events/reviews/"
 
     def _download(self):
@@ -108,7 +108,7 @@ class S3Database(DataAbstractionLayer):
             return
 
         old_hash = hashlib.md5(old_leads["Body"].read()).hexdigest()
-        backup_key = "test/backup/" + datetime.now().strftime(
+        backup_key = "backup/" + datetime.now().strftime(
             "%Y/%m/%d/%H%M%S_" + old_hash + ".csv"
         )
         source = {"Bucket": bucket, "Key": "leads/enriched.csv"}
@@ -124,7 +124,7 @@ class S3Database(DataAbstractionLayer):
 
     def save_review(self, review, place_id, force_refresh=False):
         """
-        TODO: Upload review to specified review path
+        Upload review to specified review path
         :param review: json contents of the review to be uploaded
         """
         # Write the data to a JSON file
@@ -148,7 +148,7 @@ class S3Database(DataAbstractionLayer):
 
     def fetch_review(self, place_id):
         """
-        TODO: Fetch review for specified place_id
+        Fetch review for specified place_id
         :return: json contents of desired review
         """
         file_name = place_id + "_reviews.json"
