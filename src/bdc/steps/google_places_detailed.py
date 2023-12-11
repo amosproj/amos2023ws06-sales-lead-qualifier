@@ -17,6 +17,7 @@ from tqdm import tqdm
 
 from bdc.steps.step import Step, StepError
 from config import GOOGLE_PLACES_API_KEY
+from database import get_database
 from logger import get_logger
 
 log = get_logger()
@@ -26,7 +27,7 @@ class GooglePlacesDetailed(Step):
     name = "Google_Places_Detailed"
 
     # fields that are expected as an output of the df.apply lambda function
-    df_fields = ["website", "type", "reviews_path"]
+    df_fields = ["website", "type"]
 
     # Weirdly the expression [f"{name}_{field}" for field in df_fields] gives an error as name is not in the scope of the iterator
     added_cols = [
@@ -103,56 +104,16 @@ class GooglePlacesDetailed(Step):
             )
             log.warning(f"Error: {error_message}")
 
-        json_file_path = self.save_reviews(response, place_id)
+        reviews = []
+
+        if "result" in response and "reviews" in response["result"]:
+            reviews = response["result"]["reviews"]
+
+        get_database().save_review(reviews, place_id)
 
         results_list = [
             response["result"][field] if field in response["result"] else None
             for field in self.api_fields_output
         ]
 
-        results_list.append(json_file_path if json_file_path is not None else None)
-
         return pd.Series(results_list)
-
-    def save_reviews(self, place_details, place_id):
-        bucket_name = "amos--data--events"
-        s3 = boto3.client("s3")
-
-        if "result" in place_details and "reviews" in place_details["result"]:
-            reviews = place_details["result"]["reviews"]
-            json_string = json.dumps(reviews)
-            # Write the data to a JSON file
-            file_name = place_id + "_reviews.json"
-            json_file_path = "./data/reviews/" + file_name
-            abs_path = os.path.abspath(
-                os.path.join(os.path.dirname(__file__), "../../" + json_file_path)
-            )
-            file_key = "reviews/" + file_name
-
-            try:
-                # HeadObject throws an exception if the file doesn't exist
-                s3.head_object(Bucket=bucket_name, Key=file_key)
-                log.info(
-                    f"The file with key '{file_key}' exists in the bucket '{bucket_name}'."
-                )
-
-            except Exception as e:
-                log.info(
-                    f"The file with key '{file_key}' does not exist in the bucket '{bucket_name}'."
-                )
-                # Upload the JSON string to S3
-                s3.put_object(Body=json_string, Bucket=bucket_name, Key=file_key)
-                log.info("reviews uploaded to s3")
-
-            if os.path.exists(abs_path):
-                log.info(f"Reviews for {place_id} already exist")
-                return json_file_path
-
-            with open(abs_path, "w", encoding="utf-8") as json_file:
-                json.dump(reviews, json_file, ensure_ascii=False, indent=4)
-
-            return json_file_path
-        else:
-            print("No reviews found.")
-            log.info("No reviews found")
-            return None
