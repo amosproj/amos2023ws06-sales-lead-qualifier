@@ -4,7 +4,6 @@
 from http import HTTPStatus
 
 import facebook
-import pandas as pd
 import requests
 from tqdm import tqdm
 
@@ -16,15 +15,25 @@ log = get_logger()
 
 
 class FacebookGraphAPI(Step):
+    """
+    The FacebookGraphAPI step will query Facebooks graph API for the leads full name to analyze resulting accounts.
+
+    Attributes:
+        name: Name of this step, used for logging
+        added_cols: List of fields that will be added to the main dataframe by executing this step
+        required_cols: List of fields that are required to be existent in the input dataframe before performing this step
+    """
+
     name = "Facebook_Graph"
     added_cols = ["Full Name", "email"]
+    required_cols = ["First Name", "Last Name"]
 
     def load_data(self) -> None:
         pass
 
     def verify(self) -> bool:
-        return (
-            self.df is not None and "First Name" in self.df and "Last Name" in self.df
+        return self.df is not None and all(
+            [col in self._df for col in self.required_cols]
         )
 
     def run(self):

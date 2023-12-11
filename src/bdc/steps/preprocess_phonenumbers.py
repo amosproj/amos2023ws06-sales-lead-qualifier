@@ -15,6 +15,17 @@ log = get_logger()
 
 
 class PreprocessPhonenumbers(Step):
+    """
+    The PreprocessPhonenumbers step will check if the provided phone numbers are valid and extract geo information
+    if possible.
+
+    Attributes:
+        name: Name of this step, used for logging
+        added_cols: List of fields that will be added to the main dataframe by executing this step
+        required_cols: List of fields that are required to be existent in the input dataframe before performing this
+            step
+    """
+
     name = "Preprocess-Phonenumbers"
     added_cols = [
         "number_formatted",
@@ -23,12 +34,15 @@ class PreprocessPhonenumbers(Step):
         "number_valid",
         "number_possible",
     ]
+    required_cols = ["Phone"]
 
     def load_data(self):
         pass
 
     def verify(self):
-        return "Phone" in self._df
+        return self.df is not None and all(
+            [col in self.df for col in self.required_cols]
+        )
 
     def run(self):
         tqdm.pandas(desc="Preprocessing Phone numbers")
