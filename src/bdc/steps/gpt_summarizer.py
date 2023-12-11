@@ -3,6 +3,7 @@
 # SPDX-FileCopyrightText: 2023 Sophie Heasman <sophieheasmann@gmail.com>
 
 
+import time
 from http import HTTPStatus
 
 import openai
