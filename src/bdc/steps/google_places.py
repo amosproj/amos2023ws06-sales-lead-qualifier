@@ -30,8 +30,9 @@ class GooglePlaces(Step):
     source used for identifying the business and if multiple sources are used confidence is higher when results match.
 
     Attributes:
-        name: Name of this step, used for logging
-        df_fields: List of fields that will be added to the main dataframe by executing this step
+        name: Name of this step, used for logging and as a column prefix
+        added_cols: List of fields that will be added to the main dataframe by executing this step
+        required_cols: List of fields that are required to be existent in the input dataframe before performing this step
     """
 
     name = "Google_Places"
@@ -71,6 +72,14 @@ class GooglePlaces(Step):
         "price_level",
     ]
 
+    required_cols = [
+        "Email",
+        "domain",
+        "first_name_in_account",
+        "last_name_in_account",
+        "number_formatted",
+    ]
+
     gmaps = None
 
     def load_data(self) -> None:
@@ -85,11 +94,7 @@ class GooglePlaces(Step):
     def verify(self) -> bool:
         return (
             self.df is not None
-            and "Email" in self.df
-            and "domain" in self.df
-            and "first_name_in_account" in self.df
-            and "last_name_in_account" in self.df
-            and "number_formatted" in self.df
+            and all([col in self._df for col in self.required_cols])
             and GOOGLE_PLACES_API_KEY is not None
         )
 

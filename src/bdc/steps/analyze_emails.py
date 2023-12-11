@@ -44,6 +44,11 @@ class AnalyzeEmails(Step):
     - **email_valid**: Boolean result of email check
     - **first_name_in_account**: Boolean, True if the given first name is part of the email account name
     - **last_name_in_account**: Boolean, True if the given last name is part of the email account name
+
+    Attributes:
+        name: Name of this step, used for logging
+        added_cols: List of fields that will be added to the main dataframe by executing this step
+        required_cols: List of fields that are required to be existent in the input dataframe before performing this step
     """
 
     name = "Analyze-Emails"
@@ -55,15 +60,14 @@ class AnalyzeEmails(Step):
         "last_name_in_account",
     ]
 
+    required_cols = ["Email", "First Name", "Last Name"]
+
     def load_data(self):
         pass
 
     def verify(self):
-        return (
-            self._df is not None
-            and "Email" in self._df
-            and "First Name" in self._df
-            and "Last Name" in self._df
+        return self._df is not None and all(
+            [col in self._df for col in self.required_cols]
         )
 
     def run(self):
