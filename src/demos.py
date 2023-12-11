@@ -9,7 +9,7 @@
 from sklearn.metrics import mean_squared_error
 
 from bdc import DataCollector
-from bdc.pipeline_dal import PipelineDAL
+from bdc.pipeline_dal import Pipeline
 from bdc.steps import (
     AnalyzeEmails,
     FacebookGraphAPI,
@@ -194,7 +194,7 @@ def pipeline_demo():
         f"Running Pipeline with steps:\n{steps_info}\ninput_location={get_database().get_input_path()}\noutput_location={get_database().get_output_path()}"
     )
 
-    pipeline = PipelineDAL(
+    pipeline = Pipeline(
         steps=steps,
         limit=limit,
     )

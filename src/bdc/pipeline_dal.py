@@ -12,7 +12,7 @@ log = get_logger()
 s3 = boto3.client("s3")
 
 
-class PipelineDAL:
+class Pipeline:
     def __init__(
         self,
         steps,
