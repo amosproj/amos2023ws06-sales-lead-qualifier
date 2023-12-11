@@ -199,6 +199,7 @@ class GPTReviewSentimentAnalyzer(Step):
 
         for attempt in range(max_retries):
             try:
+                log.info(f"Attempt {attempt+1} of {max_retries}")
                 response = self.gpt.chat.completions.create(
                     model=self.model,
                     messages=[
@@ -344,7 +345,7 @@ class SmartReviewInsightsEnhancer(Step):
     text_analyzer = TextAnalyzer()
     MIN_RATINGS_COUNT = 1
     RATING_DOMINANCE_THRESHOLD = (
-        0.4  # Threshold for high or low rating dominance in decimal
+        0.4  # Threshold for high or low rating dominance in percentage (1.0 == 100%)
     )
 
     added_cols = [
@@ -566,9 +567,6 @@ class SmartReviewInsightsEnhancer(Step):
         Returns:
             float: The calculated score.
         """
-        log.debug(
-            f"Calculating score for review: {review['text']}, in language {review['lang']}"
-        )
         num_errors = self.text_analyzer.find_number_of_grammatical_errors(
             review["text"], review["lang"]
         )

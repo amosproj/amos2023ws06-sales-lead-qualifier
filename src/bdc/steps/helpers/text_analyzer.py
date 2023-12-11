@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: 2023 Berkay Bozkurt <resitberkaybozkurt@gmail.com>
 
 import difflib
+import time
 
 from autocorrect import Speller
 from pylanguagetool import api as ltp
@@ -106,9 +107,7 @@ class TextAnalyzer:
             return text
 
         speller_corrected_text = speller(text) if speller is not None else text
-        log.info(f"Speller corrected text: {speller_corrected_text}")
         split_word = speller_corrected_text.split()
-        log.info(f"Split word: {split_word}")
         spell_checker_corrected_text = (
             " ".join(
                 spell_checker.correction(word)
@@ -119,7 +118,6 @@ class TextAnalyzer:
             if spell_checker is not None
             else text
         )
-        log.info(f"Spell checker corrected text: {spell_checker_corrected_text}")
 
         return spell_checker_corrected_text
 
@@ -156,16 +154,32 @@ class TextAnalyzer:
         Finds the number of grammatical errors in the input text.
 
         Args:
-            inp_text (str): The input text to be analyzed.
-            language (str, optional): The language of the text. Defaults to "en".
+            inp_text (str): The input text to analyze for grammatical errors.
+            language (str, optional): The language of the input text. Defaults to "en".
+            max_retries (int, optional): The maximum number of retry attempts. Defaults to 3.
 
         Returns:
-            int: The number of grammatical errors found in the text.
+            int: The number of grammatical errors found in the input text, or None if an error occurs.
         """
+
+        max_retries = 5  # Maximum number of retries
+        retry_delay = 5  # Initial delay in seconds (5 seconds)
         if inp_text is None or len(inp_text) == 0:
             return None
-        errors = ltp.check(
-            inp_text, api_url="https://languagetool.org/api/v2/", lang=language
-        )
-        log.info(f"Errors: {errors['matches']}")
-        return len(errors)
+
+        for attempt in range(max_retries):
+            try:
+                errors = ltp.check(
+                    inp_text, api_url="https://languagetool.org/api/v2/", lang=language
+                )
+                return len(errors)
+            except Exception as e:
+                log.error(f"Error while finding grammatical errors: {str(e)}")
+                if attempt < max_retries - 1:  # No need to sleep on the last attempt
+                    log.warning(
+                        f"Rate limit exceeded, retrying in {retry_delay} seconds..."
+                    )
+                    time.sleep(retry_delay)
+                    retry_delay *= 2
+                else:
+                    return None
