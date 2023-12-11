@@ -14,6 +14,16 @@ class StepError(Exception):
 
 
 class Step:
+    """
+    Step is an abstract parent class for all steps of the data enrichment pipeline. Steps can be added to a list
+    and then be passed to the pipeline for sequential execution.
+
+    Attributes:
+        name: Name of this step, used for logging and as column prefix
+        added_cols: List of fields that will be added to the main dataframe by executing a step
+        required_cols: List of fields that are required to be existent in the input dataframe before performing a step
+    """
+
     name: str = None
     added_cols: list[str] = []
     required_cols: list[str] = []
