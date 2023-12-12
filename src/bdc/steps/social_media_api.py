@@ -15,54 +15,6 @@ from logger import get_logger
 log = get_logger()
 
 
-def is_company_email(email):
-    commercial_domains = [
-        "web.de",
-        "mail.com",
-        "mail.de",
-        "msn.com",
-        "gmail.com",
-        "yahoo.com",
-        "hotmail.com",
-        "aol.com",
-        "hotmail.co.uk",
-        "hotmail.fr",
-        "yahoo.fr",
-        "live.com",
-        "gmx.de",
-        "outlook.com",
-        "icloud.com",
-        "outlook.de",
-        "online.de",
-        "gmx.net",
-        "googlemail.com",
-        "yahoo.de",
-        "t-online.de",
-        "gmx.ch",
-        "gmx.at",
-        "hotmail.ch",
-        "live.nl",
-        "hotmail.de",
-        "home.nl",
-        "bluewin.ch",
-        "freenet.de",
-        "upcmail.nl",
-        "zeelandnet.nl",
-        "hotmail.nl",
-        "arcor.de",
-        "aol.de",
-        "me.com",
-        "gmail.con",
-        "office.de",
-        "my.com",
-    ]
-
-    if email.split("@")[1] in commercial_domains:
-        return False
-    else:
-        return True
-
-
 class FacebookGraphAPI(Step):
     name = "Facebook_Graph"
     added_cols = ["email", "category"]
@@ -79,13 +31,13 @@ class FacebookGraphAPI(Step):
         # choosing company name as search query if email is not in commercial domain, otherwise choose first and last names
         self.df["search-query"] = self.df.apply(
             lambda row: row["Company / Account"]
-            if is_company_email(row["Email"])
+            if row["domain"] is not None
             else row["First Name"] + " " + row["Last Name"],
             axis=1,
         )
         self.df["data-fields"] = self.df.apply(
             lambda row: ["category", "about", "location", "website"]
-            if is_company_email(row["Email"])
+            if row["domain"] is not None
             else ["email", "location"],
             axis=1,
         )
