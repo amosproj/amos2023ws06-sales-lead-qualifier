@@ -118,6 +118,7 @@ class GPTReviewSentimentAnalyzer(Step):
     user_message_for_sentiment_analysis = "Sentiment analyze the reviews  and provide me a score between range [-1, 1]  : {}"
     extracted_col_name = "reviews_sentiment_score"
     added_cols = [extracted_col_name]
+    required_cols = gpt_required_fields.values()
     gpt = None
 
     def load_data(self) -> None:

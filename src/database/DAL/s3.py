@@ -18,34 +18,35 @@ s3 = boto3.client("s3")
 
 
 class S3Database(DataAbstractionLayer):
-    DF = "s3://amos--data--events/leads/sumup_leads_email.csv"
+    DF_INPUT = "s3://amos--data--events/leads/enriched.csv"
+    DF_OUTPUT = "s3://amos--data--events/leads/enriched.csv"
     REVIEWS = "s3://amos--data--events/reviews/"
 
     def _download(self):
         """
         Download database from specified DF path
         """
-        if not self.DF.startswith("s3://"):
+        if not self.DF_INPUT.startswith("s3://") or not self.DF_OUTPUT.startswith(
+            "s3://"
+        ):
             log.error(
                 "S3 location has to be defined like this: s3://<BUCKET>/<OBJECT_KEY>"
             )
             return
 
-        source = self.DF
+        source = None
         remote_dataset = None
 
         try:
-            self.bucket, self.obj_key = self._decode_s3_url(self.DF)
-            remote_dataset = self._fetch_object_s3()
+            bucket, obj_key = self._decode_s3_url(self.DF_INPUT)
+            remote_dataset = self._fetch_object_s3(bucket, obj_key)
         except IndexError:
             log.error(
                 "S3 location has to be defined like this: s3://<BUCKET>/<OBJECT_KEY>"
             )
 
         if remote_dataset is None or "Body" not in remote_dataset:
-            log.error(
-                f"Couldn't find dataset in S3 bucket {self.bucket} and key {self.obj_key}"
-            )
+            log.error(f"Couldn't find dataset in S3 bucket {bucket} and key {obj_key}")
             return
         else:
             source = remote_dataset["Body"]
@@ -55,19 +56,19 @@ class S3Database(DataAbstractionLayer):
         except FileNotFoundError:
             log.error("Error: Could not find input file for Pipeline.")
 
-    def _fetch_object_s3(self):
+    def _fetch_object_s3(self, bucket, obj_key):
         """
         Tries to read an object from S3.
         :return: s3 object
         """
         obj = None
         try:
-            obj = s3.get_object(Bucket=self.bucket, Key=self.obj_key)
+            obj = s3.get_object(Bucket=bucket, Key=obj_key)
         except botocore.exceptions.ClientError as e:
             log.warning(
                 f"{e.response['Error']['Code']}: {e.response['Error']['Message']}"
                 if "Error" in e.response
-                else f"Error while getting object s3://{self.bucket}/{self.obj_key}"
+                else f"Error while getting object s3://{bucket}/{obj_key}"
             )
 
         return obj
@@ -86,33 +87,33 @@ class S3Database(DataAbstractionLayer):
         """
         Save dataframe in df attribute in chosen output location
         """
+        bucket, obj_key = self._decode_s3_url(self.DF_OUTPUT)
         self._backup_data()
         csv_buffer = StringIO()
         self.df.to_csv(csv_buffer, index=False)
         s3.put_object(
-            Bucket=self.bucket,
-            Key="test/" + self.obj_key,
+            Bucket=bucket,
+            Key=obj_key,
             Body=csv_buffer.getvalue(),
         )
-        log.info(
-            f"Successfully saved enriched leads to s3://{self.bucket}/{self.obj_key}"
-        )
+        log.info(f"Successfully saved enriched leads to s3://{bucket}/{obj_key}")
 
     def _backup_data(self):
         """
         Backup existing data to S3
         """
-        old_leads = self._fetch_object_s3()
+        bucket, obj_key = self._decode_s3_url(self.DF_OUTPUT)
+        old_leads = self._fetch_object_s3(bucket, obj_key)
         if old_leads is None or "Body" not in old_leads:
             return
 
         old_hash = hashlib.md5(old_leads["Body"].read()).hexdigest()
-        backup_key = "test/backup/" + datetime.now().strftime(
+        backup_key = "backup/" + datetime.now().strftime(
             "%Y/%m/%d/%H%M%S_" + old_hash + ".csv"
         )
-        source = {"Bucket": self.bucket, "Key": "leads/enriched.csv"}
-        s3.copy(source, self.bucket, backup_key)
-        log.info(f"Successful backup to s3://{self.bucket}/{backup_key}")
+        source = {"Bucket": bucket, "Key": "leads/enriched.csv"}
+        s3.copy(source, bucket, backup_key)
+        log.info(f"Successful backup to s3://{bucket}/{backup_key}")
 
     def insert_data(self, data):
         """
@@ -123,7 +124,7 @@ class S3Database(DataAbstractionLayer):
 
     def save_review(self, review, place_id, force_refresh=False):
         """
-        TODO: Upload review to specified review path
+        Upload review to specified review path
         :param review: json contents of the review to be uploaded
         """
         # Write the data to a JSON file
@@ -147,7 +148,7 @@ class S3Database(DataAbstractionLayer):
 
     def fetch_review(self, place_id):
         """
-        TODO: Fetch review for specified place_id
+        Fetch review for specified place_id
         :return: json contents of desired review
         """
         file_name = place_id + "_reviews.json"
@@ -160,5 +161,7 @@ class S3Database(DataAbstractionLayer):
             json_content = json.loads(file_content)
             return json_content
         except Exception as e:
-            log.error(f"Error loading review from S3 with id {id}. Error: {str(e)}")
+            log.error(
+                f"Error loading review from S3 with id {place_id}. Error: {str(e)}"
+            )
             return []

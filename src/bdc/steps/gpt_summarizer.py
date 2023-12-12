@@ -36,6 +36,18 @@ def check_df(df, required_fields):
 
 
 class GPTSummarizer(Step):
+    """
+    The GPTSummarizer step will attempt to download a businesses website in raw html format and pass this information
+    to OpenAIs GPT, which will then attempt to summarize the raw contents and extract valuable information for a
+    salesperson.
+
+    Attributes:
+        name: Name of this step, used for logging
+        added_cols: List of fields that will be added to the main dataframe by executing this step
+        required_cols: List of fields that are required to be existent in the input dataframe before performing this
+            step
+    """
+
     name = "GPT-Summarizer"
     model = "gpt-4"
     no_answer = "None"
@@ -50,6 +62,7 @@ class GPTSummarizer(Step):
     gpt_required_fields = {"website": "google_places_detailed_website"}
 
     added_cols = [extracted_col_name_website_summary]
+    required_cols = ["google_places_website"]
 
     client = None
 

@@ -24,6 +24,17 @@ log = get_logger()
 
 
 class GooglePlacesDetailed(Step):
+    """
+    The GooglePlacesDetailed step will try to gather detailed information for a given google business entry, identified
+    by the place ID. This information could be the website link, the review text and the business type. Reviews will
+    be saved to a separate location based on the persistence settings this could be local or AWS S3.
+
+    Attributes:
+        name: Name of this step, used for logging
+        added_cols: List of fields that will be added to the main dataframe by executing this step
+        required_cols: List of fields that are required to be existent in the input dataframe before performing this step
+    """
+
     name = "Google_Places_Detailed"
 
     # fields that are expected as an output of the df.apply lambda function
@@ -37,6 +48,8 @@ class GooglePlacesDetailed(Step):
             ([f"{field}" for field in df_fields]),
         )
     ]
+
+    required_cols = ["google_places_place_id"]
 
     # fields that are accessed directly from the api
     api_fields = ["website", "type", "reviews"]
@@ -55,7 +68,7 @@ class GooglePlacesDetailed(Step):
     def verify(self) -> bool:
         return (
             self.df is not None
-            and "google_places_place_id" in self.df
+            and all([col in self.df for col in self.required_cols])
             and GOOGLE_PLACES_API_KEY is not None
         )
 

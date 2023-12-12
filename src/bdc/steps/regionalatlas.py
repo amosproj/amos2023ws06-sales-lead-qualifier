@@ -6,9 +6,7 @@
 import geopandas as gpd
 import osmnx
 import pandas as pd
-from geopandas.tools import sjoin
 from pandas import DataFrame
-from shapely.geometry import Point, shape
 from tqdm import tqdm
 
 from bdc.steps.step import Step
@@ -18,6 +16,17 @@ log = get_logger()
 
 
 class RegionalAtlas(Step):
+    """
+    The RegionalAtlas step will query the RegionalAtlas database for location based geographic and demographic
+        information, based on the address that was found for a business (currently through Google API).
+
+    Attributes:
+        name: Name of this step, used for logging
+        added_cols: List of fields that will be added to the main dataframe by executing this step
+        required_cols: List of fields that are required to be existent in the input dataframe before performing this
+            step
+    """
+
     name: str = "Regional_Atlas"
     reagionalatlas_feature_keys = {
         "pop_density": "ai0201",
@@ -55,17 +64,17 @@ class RegionalAtlas(Step):
             ([f"{field}" for field in reagionalatlas_feature_keys.keys()]),
         )
     ]
-    # germany_gdf = osmnx.geocode_to_gdf("Germany")
 
-    def __init__(self, force_refresh: bool = False) -> None:
-        self._df = None
-        self._force_refresh = force_refresh
+    required_cols = ["google_places_formatted_address"]
+    # germany_gdf = osmnx.geocode_to_gdf("Germany")
 
     def load_data(self) -> None:
         pass
 
     def verify(self) -> bool:
-        return "google_places_formatted_address" in self._df
+        return self.df is not None and all(
+            [col in self.df for col in self.required_cols]
+        )
 
     def run(self) -> DataFrame:
         tqdm.pandas(desc="Getting social data")

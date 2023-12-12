@@ -19,17 +19,29 @@ log = get_logger()
 class ScrapeAddress(Step):
     """
     A data enrichment step, scraping the leads website for an address using regex.
+    TODO: This is still very raw and looking to be refined in #77.
+
+    Attributes:
+        name: Name of this step, used for logging and as a column prefix
+        added_cols: List of fields that will be added to the main dataframe by executing this step
+        required_cols: List of fields that are required to be existent in the input dataframe before performing this step
     """
 
     name = "Scrape-Address"
     added_cols = ["address_ver_1"]
+    required_cols = ["domain"]
 
     def load_data(self):
         # nothing to be done, we expect self.df to be set
         pass
 
     def verify(self):
-        return self.df is not None and "domain" in self.df and "Email" in self.df
+        return (
+            self.df is not None
+            and all([col in self.df for col in self.required_cols])
+            in self.df
+            in self.df
+        )
 
     def run(self):
         tqdm.pandas(desc="Getting addresses from custom domains...")
@@ -41,7 +53,7 @@ class ScrapeAddress(Step):
         return self.df
 
     def finish(self):
-        p_address = self._df["address_ver_1"].notna().sum() / len(self._df) * 100
+        p_address = self.df["address_ver_1"].notna().sum() / len(self.df) * 100
         log.info(f"Percentage of addresses scraped: {p_address:.2f}%")
 
 

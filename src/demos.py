@@ -6,12 +6,10 @@
 # SPDX-FileCopyrightText: 2023 Ruchita Nathani <Ruchita.nathani@fau.de>
 # SPDX-FileCopyrightText: 2023 Ahmed Sheta <ahmed.sheta@fau.de>
 
-import numpy as np
 from sklearn.metrics import mean_squared_error
 
 from bdc import DataCollector
-from bdc.pipeline import Pipeline
-from bdc.pipeline_dal import PipelineDAL
+from bdc.pipeline_dal import Pipeline
 from bdc.steps import (
     AnalyzeEmails,
     FacebookGraphAPI,
@@ -24,8 +22,7 @@ from bdc.steps import (
     ScrapeAddress,
     SmartReviewInsightsEnhancer,
 )
-from bdc.steps.step import Step
-from database import get_database
+from database import DATABASE_TYPE, get_database
 from database.parsers import LeadParser
 from evp import EstimatedValuePredictor
 from evp.data_processing import split_dataset
@@ -35,8 +32,6 @@ from logger import get_logger
 log = get_logger()
 
 # Constants and configurations
-S3_BUCKET = "amos--data--events"
-OUTPUT_FILE_LOCAL_PIPELINE = "./data/leads_enriched.csv"
 LEADS_TRAIN_FILE = "data/leads_train.csv"
 LEADS_TEST_FILE = "data/leads_test.csv"
 INPUT_FILE_BDC = "../data/sumup_leads_email.csv"
@@ -190,31 +185,25 @@ def pipeline_demo():
 
     limit = get_int_input("Set limit for data points to be processed (0=No limit)\n")
     limit = limit if limit > 0 else None
-    if limit is None and get_yes_no_input("Save output data to S3? (y/N)\n"):
-        output_location_remote = f"s3://{S3_BUCKET}/leads/enriched.csv"
-        db = "S3"
-    else:
-        output_location_remote = None
-        db = "Local"
+
+    if limit is not None and DATABASE_TYPE == "S3":
+        choice = input(
+            "The output cannot be limited when uploading to S3.\nThe limit will be removed, and the pipeline will be executed on the full database.\n\nWould you like to continue? (y/n)\n"
+        )
+
+        if choice != "y" and choice != "Y":
+            return
+
+        limit = None
 
     steps_info = "\n".join([str(step) for step in steps])
     log.info(
-        f"Running Pipeline with steps:\n{steps_info}\ninput_location={S3_BUCKET}\noutput_location_remote={output_location_remote}"
+        f"Running Pipeline with steps:\n{steps_info}\ninput_location={get_database().get_input_path()}\noutput_location={get_database().get_output_path()}"
     )
 
-    if get_yes_no_input("\nDo you want to run the Pipeline with the DAL? (y/n)\n"):
-        pipeline = PipelineDAL(
-            steps=steps,
-            limit=limit,
-        )
-        pipeline.run()
-    else:
-        pipeline = Pipeline(
-            steps=steps,
-            input_location=f"s3://{S3_BUCKET}/leads/enriched.csv",
-            output_location_local=OUTPUT_FILE_LOCAL_PIPELINE,
-            output_location_remote=output_location_remote,
-            limit=limit,
-            index_col=None,
-        )
-        pipeline.run()
+    pipeline = Pipeline(
+        steps=steps,
+        limit=limit,
+    )
+
+    pipeline.run()
