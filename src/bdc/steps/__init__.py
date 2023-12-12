@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: 2023 Lucca Baumgärtner <lucca.baumgaertner@fau.de>
 
 from .analyze_emails import AnalyzeEmails
-from .analyze_reviews import GPTReviewSentimentAnalyzer
+from .analyze_reviews import GPTReviewSentimentAnalyzer, SmartReviewInsightsEnhancer
 from .google_places import GooglePlaces
 from .google_places_detailed import GooglePlacesDetailed
 from .gpt_summarizer import GPTSummarizer

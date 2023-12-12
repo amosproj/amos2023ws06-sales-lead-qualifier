@@ -16,9 +16,11 @@ from bdc.steps import (
     GooglePlaces,
     GooglePlacesDetailed,
     GPTReviewSentimentAnalyzer,
+    GPTSummarizer,
     PreprocessPhonenumbers,
     RegionalAtlas,
     ScrapeAddress,
+    SmartReviewInsightsEnhancer,
 )
 from database import DATABASE_TYPE, get_database
 from database.parsers import LeadParser
@@ -161,9 +163,14 @@ def pipeline_demo():
             "(will use token and generate cost!)",
         ),
         (
-            [GPTReviewSentimentAnalyzer],
-            "open API Sentiment Analyzer",
+            [GPTReviewSentimentAnalyzer, GPTSummarizer],
+            "open API Sentiment Analyzer & Summarizer",
             "(will use token and generate cost!)",
+        ),
+        (
+            [SmartReviewInsightsEnhancer],
+            "Smart Review Insights",
+            "(will take looong time!)",
         ),
         ([RegionalAtlas], "Regionalatlas", ""),
     ]

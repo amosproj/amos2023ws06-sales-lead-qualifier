@@ -66,11 +66,7 @@ class GooglePlacesDetailed(Step):
         self.gmaps = googlemaps.Client(key=GOOGLE_PLACES_API_KEY)
 
     def verify(self) -> bool:
-        return (
-            self.df is not None
-            and all([col in self.df for col in self.required_cols])
-            and GOOGLE_PLACES_API_KEY is not None
-        )
+        return super().verify() and GOOGLE_PLACES_API_KEY is not None
 
     def run(self) -> pd.DataFrame:
         # Call places API
@@ -97,7 +93,12 @@ class GooglePlacesDetailed(Step):
         # Call for the detailed API using specified fields
         try:
             # Fetch place details including reviews
-            response = self.gmaps.place(place_id, fields=self.api_fields)
+            response = self.gmaps.place(
+                place_id,
+                fields=self.api_fields,
+                language="original",
+                reviews_no_translations=True,
+            )
 
             # Check response status
             if response.get("status") != HTTPStatus.OK.name:

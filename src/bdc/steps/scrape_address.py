@@ -36,12 +36,7 @@ class ScrapeAddress(Step):
         pass
 
     def verify(self):
-        return (
-            self.df is not None
-            and all([col in self.df for col in self.required_cols])
-            in self.df
-            in self.df
-        )
+        return super().verify()
 
     def run(self):
         tqdm.pandas(desc="Getting addresses from custom domains...")

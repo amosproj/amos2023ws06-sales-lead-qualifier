@@ -27,14 +27,11 @@ class FacebookGraphAPI(Step):
     name = "Facebook_Graph"
     added_cols = ["email", "category"]
 
-
     def load_data(self) -> None:
         pass
 
     def verify(self) -> bool:
-        return self.df is not None and all(
-            [col in self.df for col in self.required_cols]
-        )
+        return super().verify()
 
     def run(self):
         # choosing company name as search query if email is not in commercial domain, otherwise choose first and last names

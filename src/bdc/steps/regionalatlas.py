@@ -72,9 +72,7 @@ class RegionalAtlas(Step):
         pass
 
     def verify(self) -> bool:
-        return self.df is not None and all(
-            [col in self.df for col in self.required_cols]
-        )
+        return super().verify()
 
     def run(self) -> DataFrame:
         tqdm.pandas(desc="Getting social data")
