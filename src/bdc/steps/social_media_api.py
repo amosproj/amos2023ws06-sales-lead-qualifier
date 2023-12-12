@@ -27,7 +27,6 @@ class FacebookGraphAPI(Step):
     name = "Facebook_Graph"
     added_cols = ["email", "category"]
 
-
     def load_data(self) -> None:
         pass
 
