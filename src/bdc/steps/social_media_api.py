@@ -65,6 +65,7 @@ def is_company_email(email):
 
 class FacebookGraphAPI(Step):
     name = "Facebook_Graph"
+    added_cols = ["email", "category"]
 
     def load_data(self) -> None:
         pass
@@ -76,32 +77,32 @@ class FacebookGraphAPI(Step):
 
     def run(self):
         # choosing company name as search query if email is not in commercial domain, otherwise choose first and last names
-        self.df["Company-bool"] = self.df.apply(
-            lambda row: True if is_company_email(row["Email"]) else False, axis=1
-        )
         self.df["search-query"] = self.df.apply(
             lambda row: row["Email"]
             if is_company_email(row["Email"])
             else row["First Name"] + " " + row["Last Name"],
             axis=1,
         )
-        self.desired_fields = ["email"]  # category, about
-        for field in self.desired_fields:
-            self.df[field] = None
+        self.df["data-fields"] = self.df.apply(
+            lambda row: ["category", "about", "location", "website"]
+            if is_company_email(row["Email"])
+            else ["email", "location"],
+            axis=1,
+        )
+
         tqdm.pandas(desc="Searching Facebook Graph API")
         try:
-            self.df["search-query"].progress_apply(
-                lambda lead: self.search_facebook_graph(lead)
-            )
+            self.df.progress_apply(self.search_facebook_graph, axis=1)
         except ValueError as e:
             log.error(f"Error: {e}")
 
-        # delete the column search-query from the df at the end
+        # delete the additional columns from the df at the end
         self.df.drop("search-query", axis=1, inplace=True)
+        self.df.drop("data-fields", axis=1, inplace=True)
 
         return self.df
 
-    def search_facebook_graph(self, search_query):
+    def search_facebook_graph(self, row):
         search_results = None
         access_token = None
         user_email = None
@@ -121,21 +122,27 @@ class FacebookGraphAPI(Step):
         graph = facebook.GraphAPI(access_token)
         try:
             search_results = graph.request(
-                "/search", {"q": search_query, "type": "user"}
+                "/search", {"q": row["search-query"], "type": "user"}
             )
             if isinstance(search_results, dict) and search_results.get("data"):
                 user = search_results["data"][0]
                 user_id = user.get("id")
-                user_details = graph.get_object(user_id, fields=self.desired_fields)
+                user_details = graph.get_object(user_id, fields=row["data-fields"])
                 log.debug(f"user_details={user_details}")
-                if "email" in graph.get_object(user_id):
-                    user_email = graph.get_object(user_id)["email"]
-                    log.debug(f"User Email: {user_email}")
-                    self.df["email"] = user_email
-                else:
-                    log.info(f"No user email found for {search_query}!")
+
+                for field in row["data-fields"]:
+                    if field in graph.get_object(user_id):
+                        data_found = graph.get_object(user_id)[row["data-fields"]]
+                        log.debug(f"found {row['data-fields']}: {data_found}")
+                        self.df[row["data-fields"]] = data_found
+                    else:
+                        log.info(
+                            f"No user data fields found for {row['search-query']}!"
+                        )
             else:
-                log.info(f"No users found with the given name {search_query}!")
+                log.info(
+                    f"No users/pages found with the given name {row['search-query']}!"
+                )
         except facebook.GraphAPIError as e:
             log.error(f"Graph API Error: {e}")
 
