@@ -32,9 +32,7 @@ class FacebookGraphAPI(Step):
         pass
 
     def verify(self) -> bool:
-        return self.df is not None and all(
-            [col in self.df for col in self.required_cols]
-        )
+        return super().verify()
 
     def run(self):
         self.df["Full Name"] = self.df["First Name"] + " " + self.df["Last Name"]

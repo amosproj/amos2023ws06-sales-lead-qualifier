@@ -21,20 +21,6 @@ from logger import get_logger
 log = get_logger()
 
 
-def check_df(df, required_fields):
-    """
-    Check if the given DataFrame contains all the required fields.
-
-    Args:
-        df (pandas.DataFrame): The DataFrame to be checked.
-        required_fields (dict): A dictionary of required fields, where the keys are the field names and the values are not used.
-
-    Returns:
-        bool: True if the DataFrame contains all the required fields, False otherwise.
-    """
-    return df is not None and all(column in df for column in required_fields.values())
-
-
 class GPTSummarizer(Step):
     """
     The GPTSummarizer step will attempt to download a businesses website in raw html format and pass this information
@@ -72,7 +58,7 @@ class GPTSummarizer(Step):
     def verify(self) -> bool:
         if OPEN_AI_API_KEY is None:
             raise StepError("An API key for openAI is need to run this step!")
-        return check_df(self.df, self.gpt_required_fields)
+        return super().verify()
 
     def run(self) -> DataFrame:
         tqdm.pandas(desc="Summarizing the website of leads")

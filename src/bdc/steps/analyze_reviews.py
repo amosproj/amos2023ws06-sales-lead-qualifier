@@ -40,20 +40,6 @@ def is_review_valid(review):
     return not (review["text"] is None or review["lang"] is None)
 
 
-def check_df(df, required_fields):
-    """
-    Check if the given DataFrame contains all the required fields.
-
-    Args:
-        df (pandas.DataFrame): The DataFrame to be checked.
-        required_fields (dict): A dictionary of required fields, where the keys are the field names and the values are not used.
-
-    Returns:
-        bool: True if the DataFrame contains all the required fields, False otherwise.
-    """
-    return df is not None and all(column in df for column in required_fields.values())
-
-
 def check_api_key(api_key, api_name):
     """
     Checks if an API key is provided for a specific API.
@@ -134,9 +120,9 @@ class GPTReviewSentimentAnalyzer(Step):
         Returns:
             bool: True if the API key and DataFrame are valid, False otherwise.
         """
+
         is_key_valid = check_api_key(OPEN_AI_API_KEY, "OpenAI")
-        is_df_valid = check_df(self.df, self.gpt_required_fields)
-        return is_key_valid and is_df_valid
+        return super().verify() and is_key_valid
 
     def run(self) -> DataFrame:
         """
@@ -371,7 +357,7 @@ class SmartReviewInsightsEnhancer(Step):
         Returns:
             bool: True if the required fields are present, False otherwise.
         """
-        return check_df(self.df, self.required_fields)
+        return super().verify()
 
     def run(self) -> DataFrame:
         """

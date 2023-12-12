@@ -52,7 +52,9 @@ class Step:
         Verify that the data has been loaded correctly and is present in a format that can be processed by this step.
         If this fails, run() and finish() will not be executed.
         """
-        raise NotImplementedError
+        return self.df is not None and all(
+            column in self.df for column in self.required_cols
+        )
 
     def check_data_presence(self) -> bool:
         """
