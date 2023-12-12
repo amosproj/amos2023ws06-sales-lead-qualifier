@@ -78,7 +78,7 @@ class FacebookGraphAPI(Step):
     def run(self):
         # choosing company name as search query if email is not in commercial domain, otherwise choose first and last names
         self.df["search-query"] = self.df.apply(
-            lambda row: row["Email"]
+            lambda row: row["Company / Account"]
             if is_company_email(row["Email"])
             else row["First Name"] + " " + row["Last Name"],
             axis=1,
