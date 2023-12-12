@@ -202,9 +202,7 @@ def pipeline_demo():
         f"Running Pipeline with steps:\n{steps_info}\ninput_location={S3_BUCKET}\noutput_location_remote={output_location_remote}"
     )
 
-    choice = input("\nDo you want to run the Pipeline with the DAL? (y/n)\n")
-
-    if choice == "y" or choice == "Y":
+    if get_yes_no_input("\nDo you want to run the Pipeline with the DAL? (y/n)\n"):
         pipeline = PipelineDAL(
             steps=steps,
             limit=limit,
