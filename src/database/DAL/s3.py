@@ -10,11 +10,16 @@ import boto3
 import botocore.exceptions
 import pandas as pd
 
+from config import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
 from database.DAL import DataAbstractionLayer
 from logger import get_logger
 
 log = get_logger()
-s3 = boto3.client("s3")
+s3 = boto3.client(
+    "s3",
+    aws_access_key_id=AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+)
 
 
 class S3Database(DataAbstractionLayer):
