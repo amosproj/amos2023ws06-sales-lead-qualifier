@@ -14,12 +14,23 @@ class StepError(Exception):
 
 
 class Step:
+    """
+    Step is an abstract parent class for all steps of the data enrichment pipeline. Steps can be added to a list
+    and then be passed to the pipeline for sequential execution.
+
+    Attributes:
+        name: Name of this step, used for logging and as column prefix
+        added_cols: List of fields that will be added to the main dataframe by executing a step
+        required_cols: List of fields that are required to be existent in the input dataframe before performing a step
+    """
+
     name: str = None
     added_cols: list[str] = []
+    required_cols: list[str] = []
 
     def __init__(self, force_refresh: bool = False) -> None:
-        self._df = None
-        self._force_refresh = force_refresh
+        self.df = None
+        self.force_refresh = force_refresh
 
     @property
     def df(self) -> DataFrame:
@@ -39,8 +50,11 @@ class Step:
     def verify(self) -> bool:
         """
         Verify that the data has been loaded correctly and is present in a format that can be processed by this step.
+        If this fails, run() and finish() will not be executed.
         """
-        raise NotImplementedError
+        return self.df is not None and all(
+            column in self.df for column in self.required_cols
+        )
 
     def check_data_presence(self) -> bool:
         """
@@ -51,7 +65,7 @@ class Step:
             log.warning(
                 "Warning trying to check for data presence without setting self.added_cols!",
             )
-        if self._force_refresh:
+        if self.force_refresh:
             log.info("Data refresh was forced")
             return False
         data_present = all([col in self._df for col in self.added_cols])
@@ -63,20 +77,20 @@ class Step:
 
     def run(self) -> DataFrame:
         """
-        Perform the actual processing step.
+        Perform the actual processing step. Will not be executed if verify() fails.
 
-        raises StepError
+        :raises: StepError
         """
         raise NotImplementedError
 
     def finish(self) -> None:
         """
-        Finish the execution. Print a report or clean up temporary files.
+        Finish the execution. Print a report or clean up temporary files. Will not be executed if verify() fails.
         """
         raise NotImplementedError
 
     def __str__(self) -> str:
-        return f"Step(Name: {self.name}, Force Refresh: {self._force_refresh}, Added Columns: {self.added_cols})"
+        return f"Step(Name: {self.name}, Force Refresh: {self.force_refresh}, Added Columns: {self.added_cols})"
 
     def __repr__(self) -> str:
-        return f"Step(name='{self.name}', force_refresh={self._force_refresh})"
+        return f"Step(name='{self.name}', force_refresh={self.force_refresh})"

@@ -6,9 +6,7 @@
 import geopandas as gpd
 import osmnx
 import pandas as pd
-from geopandas.tools import sjoin
 from pandas import DataFrame
-from shapely.geometry import Point, shape
 from tqdm import tqdm
 
 from bdc.steps.step import Step
@@ -18,6 +16,17 @@ log = get_logger()
 
 
 class RegionalAtlas(Step):
+    """
+    The RegionalAtlas step will query the RegionalAtlas database for location based geographic and demographic
+        information, based on the address that was found for a business (currently through Google API).
+
+    Attributes:
+        name: Name of this step, used for logging
+        added_cols: List of fields that will be added to the main dataframe by executing this step
+        required_cols: List of fields that are required to be existent in the input dataframe before performing this
+            step
+    """
+
     name: str = "Regional_Atlas"
     reagionalatlas_feature_keys = {
         "pop_density": "ai0201",
@@ -27,11 +36,11 @@ class RegionalAtlas(Step):
         "age_2": "ai0205",
         "age_3": "ai0206",
         "age_4": "ai0207",
-        "pop_avg_age (Bevölkerung)": "ai0218",
+        "pop_avg_age": "ai0218",
         "per_service_sector": "ai0706",
         "per_trade": "ai0707",
-        "employment_rate (Beschäftigt)": "ai0710",
-        "unemployment_rate (Arbeitslos)": "ai0801",
+        "employment_rate": "ai0710",
+        "unemployment_rate": "ai0801",
         "per_long_term_unemployment": "ai0808",
         "investments_p_employee": "ai1001",
         "gross_salary_p_employee": "ai1002",
@@ -41,8 +50,8 @@ class RegionalAtlas(Step):
         "gdp_development": "ai1702",
         "gdp_p_inhabitant": "ai1703",
         "gdp_p_workhours": "ai1704",
-        "pop_avg_age (Gesamtbevölkerung)": "ai_z01",
-        "unemployment_rate (Erwerbslos)": "ai_z08",
+        "pop_avg_age": "ai_z01",
+        "unemployment_rate_jobless": "ai_z08",
     }
 
     df_fields: list[str] = reagionalatlas_feature_keys.values()
@@ -54,18 +63,16 @@ class RegionalAtlas(Step):
             [f"{name.lower()}_"] * (len(df_fields)),
             ([f"{field}" for field in reagionalatlas_feature_keys.keys()]),
         )
-    ]
-    # germany_gdf = osmnx.geocode_to_gdf("Germany")
+    ] + [f"{name.lower()}_regional_score"]
 
-    def __init__(self, force_refresh: bool = False) -> None:
-        self._df = None
-        self._force_refresh = force_refresh
+    required_cols = ["google_places_formatted_address"]
+    # germany_gdf = osmnx.geocode_to_gdf("Germany")
 
     def load_data(self) -> None:
         pass
 
     def verify(self) -> bool:
-        return "google_places_formatted_address" in self._df
+        return super().verify()
 
     def run(self) -> DataFrame:
         tqdm.pandas(desc="Getting social data")
@@ -81,6 +88,12 @@ class RegionalAtlas(Step):
                 for k, v in self.reagionalatlas_feature_keys.items()
             }
         )
+
+        tqdm.pandas(desc="Computing Regional Score")
+        self.df[f"{self.name.lower()}_regional_score"] = self.df.progress_apply(
+            lambda lead: pd.Series(self.calculate_regional_score(lead)), axis=1
+        )
+
         return self.df
 
     def finish(self) -> None:
@@ -177,3 +190,36 @@ class RegionalAtlas(Step):
                     break
 
         return return_values
+
+    def calculate_regional_score(self, lead) -> float | None:
+        """
+        Calculate a regional score for a lead based on information from the RegionalAtlas API.
+
+        This function uses population density, employment rate, and average income to compute
+        the buying power of potential customers in the area in millions of euro.
+
+        The score is computed as:
+            (population density * employment rate * average income) / 1,000,000
+
+        Possible extensions could include:
+        - Population age groups
+
+        :param lead: Lead for which to compute the score
+
+        :return: float | None - The computed score if the necessary fields are present for the lead. None otherwise.
+        """
+
+        if (
+            lead[f"{self.name.lower()}_pop_density"] is None
+            or lead[f"{self.name.lower()}_employment_rate"] is None
+            or lead[f"{self.name.lower()}_disp_income_p_inhabitant"] is None
+        ):
+            return None
+
+        regional_score = (
+            lead[f"{self.name.lower()}_pop_density"]
+            * lead[f"{self.name.lower()}_employment_rate"]
+            * lead[f"{self.name.lower()}_disp_income_p_inhabitant"]
+        ) / 1000000
+
+        return regional_score

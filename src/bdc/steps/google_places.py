@@ -6,26 +6,35 @@
 # SPDX-FileCopyrightText: 2023 Ruchita Nathani <Ruchita.nathani@fau.de>
 # SPDX-FileCopyrightText: 2023 Ahmed Sheta <ahmed.sheta@fau.de>
 
-import json
 import re
 from http import HTTPStatus
 
 import googlemaps
 import pandas as pd
-import requests
 from googlemaps.exceptions import ApiError, HTTPError, Timeout, TransportError
 from requests import RequestException
 from tqdm import tqdm
 
 from bdc.steps.step import Step, StepError
 from config import GOOGLE_PLACES_API_KEY
-from database import mongo_connection
 from logger import get_logger
 
 log = get_logger()
 
 
 class GooglePlaces(Step):
+    """
+    The GooglePlaces step will try to find the correct business entry in the Google Maps database. It will save basic
+    information along with the place id, that can be used to retrieve further detailed information and a confidence
+    score that should indicate the confidence in having found the correct result. Confidence can vary based on the data
+    source used for identifying the business and if multiple sources are used confidence is higher when results match.
+
+    Attributes:
+        name: Name of this step, used for logging and as a column prefix
+        added_cols: List of fields that will be added to the main dataframe by executing this step
+        required_cols: List of fields that are required to be existent in the input dataframe before performing this step
+    """
+
     name = "Google_Places"
 
     # fields that are expected as an output of the df.apply lambda function
@@ -63,24 +72,27 @@ class GooglePlaces(Step):
         "price_level",
     ]
 
+    required_cols = [
+        "Email",
+        "domain",
+        "first_name_in_account",
+        "last_name_in_account",
+        "number_formatted",
+    ]
+
     gmaps = None
 
     def load_data(self) -> None:
+        """
+        Make sure that the API key for Google places is present and construct the API client
+        """
         # don't perform this in class body or else it will fail in tests due to missing API key
         if GOOGLE_PLACES_API_KEY is None:
             raise StepError("An API key for Google Places is needed to run this step!")
         self.gmaps = googlemaps.Client(key=GOOGLE_PLACES_API_KEY)
 
     def verify(self) -> bool:
-        return (
-            self.df is not None
-            and "Email" in self.df
-            and "domain" in self.df
-            and "first_name_in_account" in self.df
-            and "last_name_in_account" in self.df
-            and "number_formatted" in self.df
-            and GOOGLE_PLACES_API_KEY is not None
-        )
+        return super().verify() and GOOGLE_PLACES_API_KEY is not None
 
     def run(self) -> pd.DataFrame:
         # Call find_places API
@@ -95,13 +107,13 @@ class GooglePlaces(Step):
 
     def finish(self) -> None:
         p_matches = (
-            self._df["google_places_place_id_matches_phone_search"].sum()
-            / len(self._df)
+            self.df["google_places_place_id_matches_phone_search"].sum()
+            / len(self.df)
             * 100
         )
         p_matches_rel = (
-            self._df["google_places_place_id_matches_phone_search"].notna().sum()
-            / len(self._df["google_places_place_id_matches_phone_search"].notna())
+            self.df["google_places_place_id_matches_phone_search"].notna().sum()
+            / len(self.df["google_places_place_id_matches_phone_search"].notna())
             * 100
         )
 
