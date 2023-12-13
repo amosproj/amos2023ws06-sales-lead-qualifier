@@ -10,6 +10,7 @@ RUN pip install pipenv
 RUN pipenv install
 
 ADD src .
+ADD .env .
 
 ENTRYPOINT [ "pipenv", "run" ]
 CMD [ "python", "main.py" ]
