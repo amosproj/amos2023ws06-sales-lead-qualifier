@@ -13,7 +13,7 @@ log = get_logger()
 
 
 class LocalDatabase(DataAbstractionLayer):
-    DF_INPUT = "./data/leads_enriched.csv"
+    DF_INPUT = "./data/sumup_leads_email.csv"
     DF_OUTPUT = "./data/leads_enriched.csv"
     REVIEWS = "./data/reviews/"
 
