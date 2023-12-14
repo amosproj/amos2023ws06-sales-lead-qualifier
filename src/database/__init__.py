@@ -2,11 +2,11 @@
 # SPDX-FileCopyrightText: 2023 Felix Zailskas <felixzailskas@gmail.com>
 
 from config import DATABASE_TYPE
-from database.leads import LocalRepository, Repository, S3Repository
 from logger import get_logger
 
 from .database_dummy import DatabaseDummy
 from .db_connection import mongo_connection
+from .leads import LocalRepository, Repository, S3Repository
 
 _database = None
 log = get_logger()

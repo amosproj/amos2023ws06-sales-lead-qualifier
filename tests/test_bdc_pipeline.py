@@ -7,8 +7,9 @@ from unittest import mock
 import pandas as pd
 from pandas import DataFrame
 
-from bdc.pipeline import Pipeline, decode_s3_url
+from bdc.pipeline import Pipeline
 from bdc.steps.step import Step
+from database.leads import decode_s3_url
 
 
 class DummyStepOne(Step):
@@ -63,12 +64,16 @@ class TestPipelineFramework(unittest.TestCase):
         self.dummy_step_two = DummyStepTwo()
         self.dummy_step_three = DummyStepTwo(force_refresh=True)
         # create pipeline without actually reading from a csv file
-        with mock.patch("pandas.read_csv") as read_csv_mock:
-            self.p_one = Pipeline([self.dummy_step_one], "./not_valid.csv")
+        with mock.patch(
+            "database.leads.repository.Repository.__init__"
+        ) as init_db_mock, mock.patch(
+            "database.leads.repository.Repository.get_dataframe"
+        ):
+            init_db_mock.return_value = None
+            self.p_one = Pipeline([self.dummy_step_one], limit=10)
             self.p_two = Pipeline(
-                [self.dummy_step_two, self.dummy_step_three], "./not_valid.csv"
+                [self.dummy_step_two, self.dummy_step_three], limit=10
             )
-            read_csv_mock.assert_called_with("./not_valid.csv")
 
     def test_verify(self):
         with (

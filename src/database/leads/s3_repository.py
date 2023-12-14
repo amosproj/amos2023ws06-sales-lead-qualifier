@@ -11,8 +11,9 @@ import botocore.exceptions
 import pandas as pd
 
 from config import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
-from database.leads import Repository
 from logger import get_logger
+
+from .repository import Repository
 
 log = get_logger()
 s3 = boto3.client(
@@ -20,6 +21,17 @@ s3 = boto3.client(
     aws_access_key_id=AWS_ACCESS_KEY_ID,
     aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
 )
+
+
+def decode_s3_url(url):
+    """
+    Retrieve the bucket and object key from object url
+    :return: bucket string, object key string
+    """
+    obj_identifier = url.split("//")[1].split("/")
+    bucket = obj_identifier[0]
+    obj_key = "/".join(obj_identifier[1:])
+    return bucket, obj_key
 
 
 class S3Repository(Repository):
@@ -43,7 +55,7 @@ class S3Repository(Repository):
         remote_dataset = None
 
         try:
-            bucket, obj_key = self._decode_s3_url(self.DF_INPUT)
+            bucket, obj_key = decode_s3_url(self.DF_INPUT)
             remote_dataset = self._fetch_object_s3(bucket, obj_key)
         except IndexError:
             log.error(
@@ -78,21 +90,11 @@ class S3Repository(Repository):
 
         return obj
 
-    def _decode_s3_url(self, url):
-        """
-        Retrieve the bucket and object key from object url
-        :return: bucket string, object key string
-        """
-        obj_identifier = url.split("//")[1].split("/")
-        bucket = obj_identifier[0]
-        obj_key = "/".join(obj_identifier[1:])
-        return bucket, obj_key
-
     def save_dataframe(self):
         """
         Save dataframe in df attribute in chosen output location
         """
-        bucket, obj_key = self._decode_s3_url(self.DF_OUTPUT)
+        bucket, obj_key = decode_s3_url(self.DF_OUTPUT)
         self._backup_data()
         csv_buffer = StringIO()
         self.df.to_csv(csv_buffer, index=False)
@@ -107,7 +109,7 @@ class S3Repository(Repository):
         """
         Backup existing data to S3
         """
-        bucket, obj_key = self._decode_s3_url(self.DF_OUTPUT)
+        bucket, obj_key = decode_s3_url(self.DF_OUTPUT)
         old_leads = self._fetch_object_s3(bucket, obj_key)
         if old_leads is None or "Body" not in old_leads:
             return
@@ -134,7 +136,7 @@ class S3Repository(Repository):
         """
         # Write the data to a JSON file
         file_name = place_id + "_reviews.json"
-        bucket, key = self._decode_s3_url(self.REVIEWS)
+        bucket, key = decode_s3_url(self.REVIEWS)
         key += file_name
 
         try:
@@ -157,7 +159,7 @@ class S3Repository(Repository):
         :return: json contents of desired review
         """
         file_name = place_id + "_reviews.json"
-        bucket, key = self._decode_s3_url(self.REVIEWS)
+        bucket, key = decode_s3_url(self.REVIEWS)
         key += file_name
 
         try:

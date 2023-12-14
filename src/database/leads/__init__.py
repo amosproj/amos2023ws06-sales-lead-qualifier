@@ -3,4 +3,4 @@
 
 from .local_repository import LocalRepository
 from .repository import Repository
-from .s3_repository import S3Repository
+from .s3_repository import S3Repository, decode_s3_url

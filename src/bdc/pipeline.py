@@ -25,7 +25,7 @@ class Pipeline:
             self.df = self.df[:limit]
 
     def run(self):
-        if "df" not in self or self.df is None:
+        if self.df is None:
             log.error(
                 "Error: DataFrame of pipeline has not been initialized, aborting pipeline run!"
             )
