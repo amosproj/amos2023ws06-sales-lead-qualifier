@@ -26,7 +26,7 @@ class Pipeline:
             self.df = self.df[:limit]
 
     def run(self):
-        run_id = datetime.now().strftime("%Y/%m/%d/%H%M%S")
+        run_id = datetime.now().strftime("%Y/%m/%d/%H%M%S/")
         error_occurred = False
         if self.df is None:
             log.error(

@@ -17,7 +17,7 @@ class LocalRepository(Repository):
     DF_INPUT = "./data/sumup_leads_email.csv"
     DF_OUTPUT = "./data/leads_enriched.csv"
     REVIEWS = "./data/reviews/"
-    SNAPSHOTS = "./data/snapshots"
+    SNAPSHOTS = "./data/snapshots/"
 
     def _download(self):
         """
@@ -72,3 +72,12 @@ class LocalRepository(Repository):
             log.warning(f"Error loading reviews from path {reviews_path}.")
             # Return empty list if any exception occurred or status is not OK
             return []
+
+    def create_snapshot(self, df, prefix, name):
+        full_path = (
+            f"{self.SNAPSHOTS}{prefix.replace('/','_')}{name.lower()}_snapshot.csv"
+        )
+        df.to_csv(full_path, index=False)
+
+    def clean_snapshots(self, prefix):
+        pass

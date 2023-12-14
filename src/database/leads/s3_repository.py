@@ -35,10 +35,11 @@ def decode_s3_url(url):
 
 
 class S3Repository(Repository):
-    DF_INPUT = "s3://amos--data--events/leads/enriched.csv"
-    DF_OUTPUT = "s3://amos--data--events/leads/enriched.csv"
-    REVIEWS = "s3://amos--data--events/reviews/"
-    SNAPSHOTS = "s3://amos-data--events/snapshots"
+    BUCKET = "amos--data--events"
+    DF_INPUT = f"s3://{BUCKET}/leads/enriched.csv"
+    DF_OUTPUT = f"s3://{BUCKET}/leads/enriched.csv"
+    REVIEWS = f"s3://{BUCKET}/reviews/"
+    SNAPSHOTS = f"s3://{BUCKET}/snapshots/"
 
     def _download(self):
         """
@@ -99,12 +100,15 @@ class S3Repository(Repository):
         self._backup_data()
         csv_buffer = StringIO()
         self.df.to_csv(csv_buffer, index=False)
+        self._save_to_s3(csv_buffer.getvalue(), bucket, obj_key)
+        log.info(f"Successfully saved enriched leads to s3://{bucket}/{obj_key}")
+
+    def _save_to_s3(self, data, bucket, key):
         s3.put_object(
             Bucket=bucket,
-            Key=obj_key,
-            Body=csv_buffer.getvalue(),
+            Key=key,
+            Body=data,
         )
-        log.info(f"Successfully saved enriched leads to s3://{bucket}/{obj_key}")
 
     def _backup_data(self):
         """
@@ -173,3 +177,14 @@ class S3Repository(Repository):
                 f"Error loading review from S3 with id {place_id}. Error: {str(e)}"
             )
             return []
+
+    def create_snapshot(self, df, prefix, name):
+        full_path = f"{self.SNAPSHOTS}{prefix}{name}_snapshot.csv"
+        bucket, key = decode_s3_url(full_path)
+
+        csv_buffer = StringIO()
+        df.to_csv(csv_buffer, index=False)
+        self._save_to_s3(csv_buffer.getvalue(), bucket, key)
+
+    def clean_snapshots(self, prefix):
+        pass
