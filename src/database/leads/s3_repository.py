@@ -123,8 +123,16 @@ class S3Repository(Repository):
         backup_key = "backup/" + datetime.now().strftime(
             "%Y/%m/%d/%H%M%S_" + old_hash + ".csv"
         )
-        source = {"Bucket": bucket, "Key": "leads/enriched.csv"}
-        s3.copy(source, bucket, backup_key)
+        source = {"Bucket": bucket, "Key": obj_key}
+        try:
+            s3.copy(source, bucket, backup_key)
+        except botocore.exceptions.ClientError as e:
+            log.warning(
+                f"{e.response['Error']['Code']}: {e.response['Error']['Message']}"
+                if "Error" in e.response
+                else f"Error while backing up object s3://{bucket}/{obj_key}. Object does not exist"
+            )
+
         log.info(f"Successful backup to s3://{bucket}/{backup_key}")
 
     def insert_data(self, data):
