@@ -14,10 +14,15 @@ log = get_logger()
 
 
 class LocalRepository(Repository):
-    DF_INPUT = "./data/sumup_leads_email.csv"
-    DF_OUTPUT = "./data/leads_enriched.csv"
-    REVIEWS = "./data/reviews/"
-    SNAPSHOTS = "./data/snapshots/"
+    BASE_PATH = os.path.dirname(__file__)
+    DF_INPUT = os.path.abspath(
+        os.path.join(BASE_PATH, "../../data/sumup_leads_email.csv")
+    )
+    DF_OUTPUT = os.path.abspath(
+        os.path.join(BASE_PATH, "../../data/leads_enriched.csv")
+    )
+    REVIEWS = os.path.abspath(os.path.join(BASE_PATH, "../../data/reviews/"))
+    SNAPSHOTS = os.path.abspath(os.path.join(BASE_PATH, "../../data/snapshots/"))
 
     def _download(self):
         """
