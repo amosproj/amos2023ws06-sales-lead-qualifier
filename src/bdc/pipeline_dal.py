@@ -5,7 +5,6 @@ import numpy as np
 
 from bdc.steps.step import Step, StepError
 from database import get_database
-from database.DAL import LocalDatabase, S3Database
 from logger import get_logger
 
 log = get_logger()
