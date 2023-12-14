@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Lucca Baumgärtner <lucca.baumgaertner@fau.de>
-
+import os
 import unittest
 from unittest import mock
 
@@ -60,6 +60,7 @@ class TestPipelineFramework(unittest.TestCase):
     dummy_step_three: Step
 
     def setUp(self):
+        os.environ["DATABASE_TYPE"] = "Local"
         self.dummy_step_one = DummyStepOne()
         self.dummy_step_two = DummyStepTwo()
         self.dummy_step_three = DummyStepTwo(force_refresh=True)
