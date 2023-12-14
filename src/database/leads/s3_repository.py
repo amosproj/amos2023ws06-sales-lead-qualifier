@@ -38,6 +38,7 @@ class S3Repository(Repository):
     DF_INPUT = "s3://amos--data--events/leads/enriched.csv"
     DF_OUTPUT = "s3://amos--data--events/leads/enriched.csv"
     REVIEWS = "s3://amos--data--events/reviews/"
+    SNAPSHOTS = "s3://amos-data--events/snapshots"
 
     def _download(self):
         """

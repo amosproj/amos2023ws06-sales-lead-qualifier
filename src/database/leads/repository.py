@@ -29,6 +29,14 @@ class Repository(ABC):
         """
         pass
 
+    @property
+    @abstractmethod
+    def SNAPSHOTS(self):
+        """
+        Define database path to store snapshots
+        """
+        pass
+
     def __init__(self):
         """
         Initialise DAL, and saves the input df as an attribute
@@ -70,6 +78,24 @@ class Repository(ABC):
         :param data: Data to be inserted (desired format must be checked)
         """
         pass
+
+    @abstractmethod
+    def create_snapshot(self, df, prefix, name):
+        """
+        Snapshot the current state of the dataframe
+        :param df: Data to create a snapshot of
+        :param prefix: Prefix for a group of snapshots belonging to a singe pipeline run, used to identify snapshots
+        when cleaning up after a pipeline run
+        :param name: Name of the snapshot
+        :return: None
+        """
+
+    @abstractmethod
+    def clean_snapshots(self, prefix):
+        """
+        Clean up the snapshots after a pipeline ran successfully
+        :param prefix: Prefix of the current pipeline run used to identify all snapshots to delete
+        """
 
     @abstractmethod
     def save_review(self, review, place_id, force_refresh=False):

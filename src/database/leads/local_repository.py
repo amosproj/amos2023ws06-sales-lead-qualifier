@@ -17,6 +17,7 @@ class LocalRepository(Repository):
     DF_INPUT = "./data/sumup_leads_email.csv"
     DF_OUTPUT = "./data/leads_enriched.csv"
     REVIEWS = "./data/reviews/"
+    SNAPSHOTS = "./data/snapshots"
 
     def _download(self):
         """
