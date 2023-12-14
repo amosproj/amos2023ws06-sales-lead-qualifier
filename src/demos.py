@@ -9,7 +9,7 @@
 from sklearn.metrics import mean_squared_error
 
 from bdc import DataCollector
-from bdc.pipeline_dal import Pipeline
+from bdc.pipeline import Pipeline
 from bdc.steps import (
     AnalyzeEmails,
     FacebookGraphAPI,
