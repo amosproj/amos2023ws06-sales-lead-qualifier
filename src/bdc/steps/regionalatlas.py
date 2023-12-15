@@ -8,7 +8,6 @@ import osmnx
 import pandas as pd
 from geopandas.tools import sjoin
 from pandas import DataFrame
-from shapely.geometry import Point, shape
 from tqdm import tqdm
 
 from bdc.steps.step import Step
@@ -18,6 +17,17 @@ log = get_logger()
 
 
 class RegionalAtlas(Step):
+    """
+    The RegionalAtlas step will query the RegionalAtlas database for location based geographic and demographic
+        information, based on the address that was found for a business (currently through Google API).
+
+    Attributes:
+        name: Name of this step, used for logging
+        added_cols: List of fields that will be added to the main dataframe by executing this step
+        required_cols: List of fields that are required to be existent in the input dataframe before performing this
+            step
+    """
+
     name: str = "Regional_Atlas"
     reagionalatlas_feature_keys: dict = {
         "pop_density": "ai0201",
@@ -27,11 +37,11 @@ class RegionalAtlas(Step):
         "age_2": "ai0205",
         "age_3": "ai0206",
         "age_4": "ai0207",
-        "pop_avg_age (Bevölkerung)": "ai0218",
+        "pop_avg_age": "ai0218",
         "per_service_sector": "ai0706",
         "per_trade": "ai0707",
-        "employment_rate (Beschäftigt)": "ai0710",
-        "unemployment_rate (Arbeitslos)": "ai0801",
+        "employment_rate": "ai0710",
+        "unemployment_rate": "ai0801",
         "per_long_term_unemployment": "ai0808",
         "investments_p_employee": "ai1001",
         "gross_salary_p_employee": "ai1002",
@@ -41,24 +51,29 @@ class RegionalAtlas(Step):
         "gdp_development": "ai1702",
         "gdp_p_inhabitant": "ai1703",
         "gdp_p_workhours": "ai1704",
-        "pop_avg_age (Gesamtbevölkerung)": "ai_z01",
-        "unemployment_rate (Erwerbslos)": "ai_z08",
+        "pop_avg_age_zensus": "ai_z01",
+        "unemployment_rate": "ai_z08",
     }
 
-    added_cols: list[str] = reagionalatlas_feature_keys.keys()
+    # Weirdly the expression [f"{name}_{field}" for field in df_fields] gives an error as name is not in the scope of the iterator
+    added_cols = [
+        name + field
+        for (name, field) in zip(
+            [f"{name.lower()}_"] * (len(df_fields)),
+            ([f"{field}" for field in reagionalatlas_feature_keys.keys()]),
+        )
+    ] + [f"{name.lower()}_regional_score"]
+    df_fields: list[str] = reagionalatlas_feature_keys.values()
+    required_cols = ["google_places_formatted_address"]
+    
     regions_gdfs = gpd.GeoDataFrame()
-    empty_result: dict = dict.fromkeys(added_cols)
-    # germany_gdf = osmnx.geocode_to_gdf("Germany")
-
-    def __init__(self, force_refresh: bool = False) -> None:
-        self._df = None
-        self._force_refresh = force_refresh
+    empty_result: dict = dict.fromkeys(self.reagionalatlas_feature_keys.values())
 
     def load_data(self) -> None:
         pass
 
     def verify(self) -> bool:
-        return "google_places_formatted_address" in self._df
+        return super().verify()
 
     def run(self) -> DataFrame:
         tqdm.pandas(desc="Getting social data")
@@ -77,19 +92,26 @@ class RegionalAtlas(Step):
             lambda lead: pd.Series(self.get_data_from_address(lead)), axis=1
         )
 
+        self.df = self.df.rename(
+            columns={
+                f"{self.name.lower()}_{v.lower()}": f"{self.name.lower()}_{k.lower()}"
+                for k, v in self.reagionalatlas_feature_keys.items()
+            }
+        )
+
+        tqdm.pandas(desc="Computing Regional Score")
+        self.df[f"{self.name.lower()}_regional_score"] = self.df.progress_apply(
+            lambda lead: pd.Series(self.calculate_regional_score(lead)), axis=1
+        )
+
         return self.df
 
     def finish(self) -> None:
-        prefix = "regional_atlas"
-        matching_columns = [col for col in self.df.columns if col.startswith(prefix)]
-        success_rate = 0
-
-        if len(matching_columns) > 0:
-            success_rate = (
-                1
-                - self.df[matching_columns[0]].isna().sum()
-                / len(self.df[matching_columns[0]])
-            ) * 100
+        success_rate = (
+            1
+            - self.df["regional_atlas_pop_density"].isna().sum()
+            / len(self.df["regional_atlas_pop_density"])
+        ) * 100
         log.info(
             "Percentage of regional information (germany): {:.2f}%".format(
                 round(success_rate, 2)
@@ -174,10 +196,37 @@ class RegionalAtlas(Step):
                     )
                     break
 
-        columns = {}
-        for col, value in return_values.items():
-            for k, v in self.reagionalatlas_feature_keys.items():
-                if col == v:
-                    columns[k] = value
+        return return_values
 
-        return columns
+    def calculate_regional_score(self, lead) -> float | None:
+        """
+        Calculate a regional score for a lead based on information from the RegionalAtlas API.
+
+        This function uses population density, employment rate, and average income to compute
+        the buying power of potential customers in the area in millions of euro.
+
+        The score is computed as:
+            (population density * employment rate * average income) / 1,000,000
+
+        Possible extensions could include:
+        - Population age groups
+
+        :param lead: Lead for which to compute the score
+
+        :return: float | None - The computed score if the necessary fields are present for the lead. None otherwise.
+        """
+
+        if (
+            lead[f"{self.name.lower()}_pop_density"] is None
+            or lead[f"{self.name.lower()}_employment_rate"] is None
+            or lead[f"{self.name.lower()}_disp_income_p_inhabitant"] is None
+        ):
+            return None
+
+        regional_score = (
+            lead[f"{self.name.lower()}_pop_density"]
+            * lead[f"{self.name.lower()}_employment_rate"]
+            * lead[f"{self.name.lower()}_disp_income_p_inhabitant"]
+        ) / 1000000
+
+        return regional_score

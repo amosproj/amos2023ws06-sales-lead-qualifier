@@ -3,6 +3,7 @@
 # SPDX-FileCopyrightText: 2023 Sophie Heasman <sophieheasmann@gmail.com>
 
 
+import time
 from http import HTTPStatus
 
 import openai
@@ -21,6 +22,18 @@ log = get_logger()
 
 
 class GPTSummarizer(Step):
+    """
+    The GPTSummarizer step will attempt to download a businesses website in raw html format and pass this information
+    to OpenAIs GPT, which will then attempt to summarize the raw contents and extract valuable information for a
+    salesperson.
+
+    Attributes:
+        name: Name of this step, used for logging
+        added_cols: List of fields that will be added to the main dataframe by executing this step
+        required_cols: List of fields that are required to be existent in the input dataframe before performing this
+            step
+    """
+
     name = "GPT-Summarizer"
     model = "gpt-4"
     no_answer = "None"
@@ -32,8 +45,10 @@ class GPTSummarizer(Step):
     )
 
     extracted_col_name_website_summary = "sales_person_summary"
+    gpt_required_fields = {"website": "google_places_detailed_website"}
 
     added_cols = [extracted_col_name_website_summary]
+    required_cols = ["google_places_website"]
 
     client = None
 
@@ -43,13 +58,13 @@ class GPTSummarizer(Step):
     def verify(self) -> bool:
         if OPEN_AI_API_KEY is None:
             raise StepError("An API key for openAI is need to run this step!")
-        return self.df is not None and "google_places_website" in self.df
+        return super().verify()
 
     def run(self) -> DataFrame:
         tqdm.pandas(desc="Summarizing the website of leads")
         self.df[self.extracted_col_name_website_summary] = self.df.progress_apply(
             lambda lead: self.summarize_the_company_website(
-                lead["google_places_website"]
+                lead[self.gpt_required_fields["website"]]
             ),
             axis=1,
         )
@@ -70,45 +85,63 @@ class GPTSummarizer(Step):
 
         if html is None:
             return None
+        max_retries = 5  # Maximum number of retries
+        retry_delay = 5  # Initial delay in seconds (5 seconds)
 
-        try:
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": self.system_message_for_website_summary,
-                    },
-                    {
-                        "role": "user",
-                        "content": self.user_message_for_website_summary.format(html),
-                    },
-                ],
-                temperature=0,
-            )
+        for attempt in range(max_retries):
+            try:
+                log.info(f"Attempt {attempt+1} of {max_retries}")
+                response = self.client.chat.completions.create(
+                    model=self.model,
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": self.system_message_for_website_summary,
+                        },
+                        {
+                            "role": "user",
+                            "content": self.user_message_for_website_summary.format(
+                                html
+                            ),
+                        },
+                    ],
+                    temperature=0,
+                )
 
-            # Check if the response contains the expected data
-            if response.choices[0].message.content:
-                company_summary = response.choices[0].message.content
+                # Check if the response contains the expected data
+                if response.choices[0].message.content:
+                    company_summary = response.choices[0].message.content
 
-                if company_summary == self.no_answer:
+                    if company_summary == self.no_answer:
+                        return None
+
+                    return company_summary
+                else:
+                    log.info("No summary data found in the response.")
                     return None
-
-                return company_summary
-            else:
-                log.info("No summary data found in the response.")
-                return None
-        except (
-            openai.APITimeoutError,
-            openai.APIConnectionError,
-            openai.BadRequestError,
-            openai.AuthenticationError,
-            openai.PermissionDeniedError,
-            Exception,
-        ) as e:
-            # Handle possible errors
-            log.error(f"An error occurred during summarizing the lead with GPT: {e}")
-            pass
+            except openai.RateLimitError as e:
+                if attempt < max_retries - 1:
+                    log.warning(
+                        f"Rate limit exceeded, retrying in {retry_delay} seconds..."
+                    )
+                    time.sleep(retry_delay)
+                    retry_delay *= 2  # Exponential backoff
+                else:
+                    log.error("Max retries reached. Unable to complete the request.")
+                    break
+            except (
+                openai.APITimeoutError,
+                openai.APIConnectionError,
+                openai.BadRequestError,
+                openai.AuthenticationError,
+                openai.PermissionDeniedError,
+                Exception,
+            ) as e:
+                # Handle possible errors
+                log.error(
+                    f"An error occurred during summarizing the lead with GPT: {e}"
+                )
+                pass
 
     def extract_the_raw_html_and_parse(self, url):
         try:
