@@ -55,6 +55,8 @@ class RegionalAtlas(Step):
         "unemployment_rate": "ai_z08",
     }
 
+    df_fields: list[str] = reagionalatlas_feature_keys.values()
+
     # Weirdly the expression [f"{name}_{field}" for field in df_fields] gives an error as name is not in the scope of the iterator
     added_cols = [
         name + field
@@ -63,11 +65,15 @@ class RegionalAtlas(Step):
             ([f"{field}" for field in reagionalatlas_feature_keys.keys()]),
         )
     ] + [f"{name.lower()}_regional_score"]
-    df_fields: list[str] = reagionalatlas_feature_keys.values()
+
     required_cols = ["google_places_formatted_address"]
-    
+
     regions_gdfs = gpd.GeoDataFrame()
-    empty_result: dict = dict.fromkeys(self.reagionalatlas_feature_keys.values())
+    empty_result: dict = dict.fromkeys(reagionalatlas_feature_keys.values())
+
+    # Adjust the EPSG code from the osmnx search query to the regionalatlas specific code
+    # epsg_code 4326 [WGS 84 (used by osmnx)]=> epsg_code_etrs = 25832 [ETRS89 / UTM zone 32N (used by regionalatlas)]
+    epsg_code_etrs = 25832
 
     def load_data(self) -> None:
         pass
@@ -86,17 +92,8 @@ class RegionalAtlas(Step):
             return self.empty_result
 
         # Add the new fields to the df
-        self.df[
-            [f"{self.name.lower()}_{field}" for field in self.added_cols]
-        ] = self.df.progress_apply(
+        self.df[self.added_cols[:-1]] = self.df.progress_apply(
             lambda lead: pd.Series(self.get_data_from_address(lead)), axis=1
-        )
-
-        self.df = self.df.rename(
-            columns={
-                f"{self.name.lower()}_{v.lower()}": f"{self.name.lower()}_{k.lower()}"
-                for k, v in self.reagionalatlas_feature_keys.items()
-            }
         )
 
         tqdm.pandas(desc="Computing Regional Score")
@@ -163,10 +160,7 @@ class RegionalAtlas(Step):
             log.info("Google location not found!")
             return self.empty_result
 
-        # Adjust the EPSG code from the osmnx search query to the regionalatlas specific code
-        # epsg_code 4326 [WGS 84 (used by osmnx)]=> epsg_code_etrs = 25832 [ETRS89 / UTM zone 32N (used by regionalatlas)]
-        epsg_code_etrs = 25832
-        search_gdf_reprojected = search_gdf.to_crs("EPSG:" + str(epsg_code_etrs))
+        search_gdf_reprojected = search_gdf.to_crs("EPSG:" + str(self.epsg_code_etrs))
 
         # Use the centroid of the city, to check if a region
         search_centroid = search_gdf_reprojected.centroid
