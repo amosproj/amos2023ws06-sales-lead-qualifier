@@ -98,6 +98,7 @@ class GPTReviewSentimentAnalyzer(Step):
     model = "gpt-4"
     model_encoding_name = "cl100k_base"
     MAX_PROMPT_TOKENS = 4096
+    model_cost_per_100k_token = 0.03
     no_answer = "None"
     gpt_required_fields = {"place_id": "google_places_place_id"}
     system_message_for_sentiment_analysis = f"You are review sentiment analyzer, you being provided reviews of the companies. You analyze the review and come up with the score between range [-1, 1], if no reviews then just answer with '{no_answer}'"
@@ -106,6 +107,7 @@ class GPTReviewSentimentAnalyzer(Step):
     added_cols = [extracted_col_name]
     required_cols = gpt_required_fields.values()
     gpt = None
+    total_requests = 0
 
     def load_data(self) -> None:
         """
@@ -138,9 +140,10 @@ class GPTReviewSentimentAnalyzer(Step):
         return self.df
 
     def finish(self) -> None:
-        """
-        Finishes the sentiment analysis step.
-        """
+        log.info(f"Total requests made to GPT: {self.total_requests}")
+        log.info(
+            f"Total cost of GPT: ${self.total_requests * self.model_cost_per_100k_token / 100000}"
+        )
         pass
 
     def run_sentiment_analysis(self, place_id):
@@ -205,6 +208,7 @@ class GPTReviewSentimentAnalyzer(Step):
                 )
                 # Extract and return the sentiment score
                 sentiment_score = response.choices[0].message.content
+                self.total_requests += 1
                 if sentiment_score and sentiment_score != self.no_answer:
                     return float(sentiment_score)
                 else:
