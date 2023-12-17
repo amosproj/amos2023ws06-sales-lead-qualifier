@@ -190,7 +190,7 @@ def pipeline_demo():
         choice = input(
             "The output cannot be limited when uploading to S3.\nThe limit will be removed, and the pipeline will be executed on the full database.\n\nWould you like to continue? (y/n)\n"
         )
-
+        
         if choice != "y" and choice != "Y":
             return
 

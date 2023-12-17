@@ -6,10 +6,11 @@
 import geopandas as gpd
 import osmnx
 import pandas as pd
+from geopandas.tools import sjoin
 from pandas import DataFrame
 from tqdm import tqdm
 
-from bdc.steps.step import Step
+from bdc.steps.step import Step, StepError
 from logger import get_logger
 
 log = get_logger()
@@ -18,17 +19,23 @@ log = get_logger()
 class RegionalAtlas(Step):
     """
     The RegionalAtlas step will query the RegionalAtlas database for location based geographic and demographic
-        information, based on the address that was found for a business (currently through Google API).
+        information, based on the address that was found for a business (currently through Google API) or the
+        area provided by the phonenumber (preprocess_phonenumbers.py).
 
     Attributes:
         name: Name of this step, used for logging
+        reagionalatlas_feature_keys: Dictionary to translate between the keys in the merged.geojson and the used column names in the df
+        df_fields: the keys of the merged.geojson
         added_cols: List of fields that will be added to the main dataframe by executing this step
-        required_cols: List of fields that are required to be existent in the input dataframe before performing this
-            step
+        required_cols: List of fields that are required in the input dataframe before performing this step
+
+        regions_gdfs: dataframe that includes all keys/values from the merged.geojson
+        empty_result: empty result that will be used in case there are problems with the data
+        epsg_code_etrs: 25832 is the standard used by RegionAtlas
     """
 
     name: str = "Regional_Atlas"
-    reagionalatlas_feature_keys = {
+    reagionalatlas_feature_keys: dict = {
         "pop_density": "ai0201",
         "pop_development": "ai0202",
         "age_0": "ai0203",
@@ -50,8 +57,8 @@ class RegionalAtlas(Step):
         "gdp_development": "ai1702",
         "gdp_p_inhabitant": "ai1703",
         "gdp_p_workhours": "ai1704",
-        "pop_avg_age": "ai_z01",
-        "unemployment_rate_jobless": "ai_z08",
+        "pop_avg_age_zensus": "ai_z01",
+        "unemployment_rate": "ai_z08",
     }
 
     df_fields: list[str] = reagionalatlas_feature_keys.values()
@@ -66,27 +73,33 @@ class RegionalAtlas(Step):
     ] + [f"{name.lower()}_regional_score"]
 
     required_cols = ["google_places_formatted_address"]
-    # germany_gdf = osmnx.geocode_to_gdf("Germany")
+
+    regions_gdfs = gpd.GeoDataFrame()
+    empty_result: dict = dict.fromkeys(reagionalatlas_feature_keys.values())
+
+    # Adjust the EPSG code from the osmnx search query to the regionalatlas specific code
+    # epsg_code 4326 [WGS 84 (used by osmnx)]=> epsg_code_etrs = 25832 [ETRS89 / UTM zone 32N (used by regionalatlas)]
+    epsg_code_etrs = 25832
 
     def load_data(self) -> None:
         pass
 
     def verify(self) -> bool:
+        # Load the data file
+        try:
+            self.regions_gdfs = gpd.read_file("data/merged_geo.geojson")
+        except:
+            raise StepError(
+                "The path for the geojson for regional information (Regionalatlas) is not valid!"
+            )
         return super().verify()
 
     def run(self) -> DataFrame:
         tqdm.pandas(desc="Getting social data")
-        self.df[
-            [f"{self.name.lower()}_{field}" for field in self.df_fields]
-        ] = self.df.progress_apply(
-            lambda lead: pd.Series(self.get_data_from_address(lead)), axis=1
-        )
 
-        self.df = self.df.rename(
-            columns={
-                f"{self.name.lower()}_{v.lower()}": f"{self.name.lower()}_{k.lower()}"
-                for k, v in self.reagionalatlas_feature_keys.items()
-            }
+        # Add the new fields to the df
+        self.df[self.added_cols[:-1]] = self.df.progress_apply(
+            lambda lead: pd.Series(self.get_data_from_address(lead)), axis=1
         )
 
         tqdm.pandas(desc="Computing Regional Score")
@@ -109,17 +122,39 @@ class RegionalAtlas(Step):
         )
 
     def get_data_from_address(self, row):
-        empty_result = dict.fromkeys(self.reagionalatlas_feature_keys.values())
+        """
+        Retrieve the regional features for every lead. Every column of reagionalatlas_feature_keys is added.
 
-        if row["google_places_formatted_address"] is None:
-            return empty_result
+        Based on the google places address or the phonenumber area. Checks if the centroid of the
+        searched city is in a RegionalAtlas region.
 
-        google_location = str(row["google_places_formatted_address"]).split(",")[-2:]
-        google_location = [name.strip() for name in google_location]
+        Possible extensions could include:
+        - More RegionalAtlas features
 
-        #!!!!! CHECK THE PHONENUMBER AS 2nd CRITERIUM FOR COUNTRY / CITY
+        :param row: Lead for which to retrieve the features
 
-        country = google_location[-1].lower()
+        :return: dict - The retrieved features if the necessary fields are present for the lead. Empty dictionary otherwise.
+        """
+
+        # can only get an result if we know the region
+        if (
+            row["google_places_formatted_address"] is None
+            and row["number_area"] is None
+        ):
+            return self.empty_result
+
+        country = ""
+
+        # the phone number has secondary priority (because it can be a private number), therefore can be overwritten by the google places information
+        if row["number_country"] is not None:
+            country = row["number_country"]
+
+        if row["google_places_formatted_address"] is not None:
+            google_location = str(row["google_places_formatted_address"]).split(",")[
+                -2:
+            ]
+            google_location = [name.strip() for name in google_location]
+            country = google_location[-1].lower()
 
         # the 'regionalatlas' data is specific to germany
         if country not in [
@@ -129,37 +164,23 @@ class RegionalAtlas(Step):
             "tyskland",
             "germania",
         ]:
-            return empty_result
+            return self.empty_result
 
-        # Alternative to the if 'if country not in ...'
-        # if not self.germany_gdf.intersects(row_gdf):
-        #     return empty_result
+        """#Alternative to the if 'if country not in ...'
+        if not self.germany_gdf.intersects(row_gdf):
+            return self.empty_result"""
 
         # Get the polygon of the city, to find the corresponding region
         try:
-            search_gdf = osmnx.geocode_to_gdf(",".join(google_location))
+            if row["google_places_formatted_address"] is not None:
+                search_gdf = osmnx.geocode_to_gdf(",".join(google_location))
+            else:  # at this point we know, that either a google_places_address exists or a number_area
+                search_gdf = osmnx.geocode_to_gdf(row["number_area"])
         except:
             log.info("Google location not found!")
-            return empty_result
+            return self.empty_result
 
-        # Load the data file
-        #!!!!! INTO THE RUN PART
-        try:
-            regions_gdfs = gpd.read_file(
-                "data/merged_geo.geojson"
-            )  # {"gdp": gpd.read_file("data/merged_geo.geojson")}
-        except:
-            log.info("File does not exist!")
-            return empty_result
-
-        # WGS 84 (used by osmnx)
-        epsg_code_ll = 4326
-
-        # ETRS89 / UTM zone 32N (used by regionalatlas)
-        epsg_code_etrs = 25832
-
-        search_gdf.crs = {"init": "epsg:{}".format(epsg_code_ll)}
-        search_gdf_reprojected = search_gdf.to_crs(epsg_code_etrs)
+        search_gdf_reprojected = search_gdf.to_crs("EPSG:" + str(self.epsg_code_etrs))
 
         # Use the centroid of the city, to check if a region
         search_centroid = search_gdf_reprojected.centroid
@@ -169,7 +190,7 @@ class RegionalAtlas(Step):
         return_values = {}
 
         # go through all regions of germany ...
-        for idx, region in regions_gdfs.iterrows():
+        for idx, region in self.regions_gdfs.iterrows():
             if area_key is not None:
                 if region["schluessel"] != area_key:
                     continue
