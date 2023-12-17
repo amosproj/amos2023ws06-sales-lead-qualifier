@@ -10,7 +10,7 @@ from geopandas.tools import sjoin
 from pandas import DataFrame
 from tqdm import tqdm
 
-from bdc.steps.step import Step
+from bdc.steps.step import Step, StepError
 from logger import get_logger
 
 log = get_logger()
@@ -19,13 +19,19 @@ log = get_logger()
 class RegionalAtlas(Step):
     """
     The RegionalAtlas step will query the RegionalAtlas database for location based geographic and demographic
-        information, based on the address that was found for a business (currently through Google API).
+        information, based on the address that was found for a business (currently through Google API) or the
+        area provided by the phonenumber (preprocess_phonenumbers.py).
 
     Attributes:
         name: Name of this step, used for logging
+        reagionalatlas_feature_keys: Dictionary to translate between the keys in the merged.geojson and the used column names in the df
+        df_fields: the keys of the merged.geojson
         added_cols: List of fields that will be added to the main dataframe by executing this step
-        required_cols: List of fields that are required to be existent in the input dataframe before performing this
-            step
+        required_cols: List of fields that are required in the input dataframe before performing this step
+
+        regions_gdfs: dataframe that includes all keys/values from the merged.geojson
+        empty_result: empty result that will be used in case there are problems with the data
+        epsg_code_etrs: 25832 is the standard used by RegionAtlas
     """
 
     name: str = "Regional_Atlas"
@@ -79,17 +85,17 @@ class RegionalAtlas(Step):
         pass
 
     def verify(self) -> bool:
-        return super().verify()
-
-    def run(self) -> DataFrame:
-        tqdm.pandas(desc="Getting social data")
-
         # Load the data file
         try:
             self.regions_gdfs = gpd.read_file("data/merged_geo.geojson")
         except:
-            log.info("File does not exist!")
-            return self.empty_result
+            raise StepError(
+                "The path for the geojson for regional information (Regionalatlas) is not valid!"
+            )
+        return super().verify()
+
+    def run(self) -> DataFrame:
+        tqdm.pandas(desc="Getting social data")
 
         # Add the new fields to the df
         self.df[self.added_cols[:-1]] = self.df.progress_apply(
@@ -116,6 +122,20 @@ class RegionalAtlas(Step):
         )
 
     def get_data_from_address(self, row):
+        """
+        Retrieve the regional features for every lead. Every column of reagionalatlas_feature_keys is added.
+
+        Based on the google places address or the phonenumber area. Checks if the centroid of the
+        searched city is in a RegionalAtlas region.
+
+        Possible extensions could include:
+        - More RegionalAtlas features
+
+        :param row: Lead for which to retrieve the features
+
+        :return: dict - The retrieved features if the necessary fields are present for the lead. Empty dictionary otherwise.
+        """
+
         # can only get an result if we know the region
         if (
             row["google_places_formatted_address"] is None
