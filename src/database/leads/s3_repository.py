@@ -40,6 +40,7 @@ class S3Repository(Repository):
     DF_OUTPUT = f"s3://{BUCKET}/leads/enriched.csv"
     REVIEWS = f"s3://{BUCKET}/reviews/"
     SNAPSHOTS = f"s3://{BUCKET}/snapshots/"
+    GPT_OPERATIONS = f"s3://{BUCKET}/gpt/"
 
     def _download(self):
         """
@@ -91,6 +92,25 @@ class S3Repository(Repository):
             )
 
         return obj
+
+    def _file_exists(self, full_path):
+        bucket, key = decode_s3_url(full_path)
+        try:
+            s3.head_object(Bucket=bucket, Key=key)
+            return True
+        except Exception as e:
+            return False
+
+    def _load_from_s3(self, bucket, key):
+        """
+        Load a file from S3
+        :param bucket: The name of the S3 bucket
+        :param key: The key of the object in the S3 bucket
+        :return: The contents of the file
+        """
+        response = s3.get_object(Bucket=bucket, Key=key)
+        file_content = response["Body"].read().decode("utf-8")
+        return file_content
 
     def save_dataframe(self):
         """
@@ -196,3 +216,34 @@ class S3Repository(Repository):
 
     def clean_snapshots(self, prefix):
         pass
+
+    def save_gpt_result(self, gpt_result, file_id, operation_name, force_refresh=False):
+        """
+        Saves the GPT result for a given file ID and operation name on S3
+        """
+        # Define the file name and path
+        file_name = f"{file_id}_gpt_result.json"
+        bucket, key = decode_s3_url(self.GPT_RESULTS)
+        key += file_name
+
+        # Get current date and time
+        current_time = self._get_current_time_as_string()
+
+        # Prepare the data to be saved
+        data_to_save = {"result": gpt_result, "last_update_date": current_time}
+
+        # Check if the file already exists
+        if self._file_exists(full_path) and not force_refresh:
+            # Load the existing data
+            existing_data = json.loads(self._load_from_s3(*decode_s3_url(full_path)))
+
+            # Update the existing data with the new result
+            existing_data[operation_name] = data_to_save
+
+            # Save the updated data back to S3
+            self._save_to_s3(json.dumps(existing_data), *decode_s3_url(full_path))
+        else:
+            # Save the new result to S3
+            self._save_to_s3(
+                json.dumps({operation_name: data_to_save}), *decode_s3_url(full_path)
+            )
