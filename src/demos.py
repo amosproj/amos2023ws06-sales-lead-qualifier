@@ -193,9 +193,9 @@ def pipeline_demo():
         if get_yes_no_input(
             f"The output cannot be limited when uploading to {get_database().DF_OUTPUT}.\nThe limit will be removed, and the pipeline will be executed on the full database.\n\nWould you like to continue? (y/n)\n"
         ):
+            limit = None
+        else:
             return
-
-        limit = None
 
     steps_info = "\n".join([str(step) for step in steps])
     log.info(

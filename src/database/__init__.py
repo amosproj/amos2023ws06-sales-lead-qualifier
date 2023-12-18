@@ -16,10 +16,8 @@ def get_database() -> Repository:
     global _database
     if _database is None:
         if DATABASE_TYPE == "S3":
-            log.debug("Using S3 database")
             _database = S3Repository()
         elif DATABASE_TYPE == "Local":
-            log.debug("Using local database")
             _database = LocalRepository()
         else:
             log.error("Database type not initialised")
