@@ -24,7 +24,7 @@ class LocalRepository(Repository):
     )
     REVIEWS = os.path.abspath(os.path.join(BASE_PATH, "../../data/reviews/"))
     SNAPSHOTS = os.path.abspath(os.path.join(BASE_PATH, "../../data/snapshots/"))
-    GPT_RESULTS = os.path.abspath(os.path.join(BASE_PATH, "../../data/gpt/"))
+    GPT_RESULTS = os.path.abspath(os.path.join(BASE_PATH, "../../data/gpt-results/"))
 
     def _download(self):
         """
@@ -55,8 +55,8 @@ class LocalRepository(Repository):
         :param review: json contents of the review to be uploaded
         """
         # Write the data to a JSON file
-        file_name = place_id + "_reviews.json"
-        json_file_path = self.REVIEWS + file_name
+        file_name = place_id + "_gpt_results.json"
+        json_file_path = os.path.join(self.REVIEWS, file_name)
 
         if os.path.exists(json_file_path):
             log.info(f"Reviews for {place_id} already exist")
@@ -70,7 +70,8 @@ class LocalRepository(Repository):
         Fetch review for specified place_id
         :return: json contents of desired review
         """
-        reviews_path = self.REVIEWS + place_id + "_reviews.json"
+        file_name = place_id + "_gpt_results.json"
+        reviews_path = os.path.join(self.REVIEWS, file_name)
         try:
             with open(reviews_path, "r", encoding="utf-8") as reviews_json:
                 reviews = json.load(reviews_json)
@@ -97,7 +98,8 @@ class LocalRepository(Repository):
         :param save_date: The date the results were saved
         """
         file_name = file_id + "_gpt_results.json"
-        json_file_path = self.GPT_RESULTS + file_name
+        json_file_path = os.path.join(self.GPT_RESULTS, file_name)
+
         current_date = self._get_current_time_as_string()
         if os.path.exists(json_file_path):
             with open(json_file_path, "r", encoding="utf-8") as json_file:
@@ -136,7 +138,9 @@ class LocalRepository(Repository):
             The GPT result for the specified file ID and operation name.
         """
         file_name = file_id + "_gpt_results.json"
-        json_file_path = self.GPT_RESULTS + file_name
+        json_file_path = os.path.join(self.GPT_RESULTS, file_name)
+        if not os.path.exists(json_file_path):
+            return ""
         try:
             with open(json_file_path, "r", encoding="utf-8") as json_file:
                 data = json.load(json_file)

@@ -85,12 +85,10 @@ class GPTSummarizer(Step):
 
         if website is None or pd.isna(website):
             return None
-        result = get_database().fetch_gpt_result(place_id, self.name)
-        if result:
-            log.info(
-                f"Found cached result for place_id {place_id} in GPT results as {result['result']} from {result['last_update_date']}."
-            )
-            return result["result"]
+        company_summary = get_database().fetch_gpt_result(place_id, self.name)
+        if company_summary:
+            return company_summary["result"]
+
         html = self.extract_the_raw_html_and_parse(website)
 
         if html is None:
@@ -124,7 +122,7 @@ class GPTSummarizer(Step):
 
                     if company_summary == self.no_answer:
                         return None
-
+                    get_database().save_gpt_result(company_summary, place_id, self.name)
                     return company_summary
                 else:
                     log.info("No summary data found in the response.")

@@ -40,7 +40,7 @@ class S3Repository(Repository):
     DF_OUTPUT = f"s3://{BUCKET}/leads/enriched.csv"
     REVIEWS = f"s3://{BUCKET}/reviews/"
     SNAPSHOTS = f"s3://{BUCKET}/snapshots/"
-    GPT_RESULTS = f"s3://{BUCKET}/gpt/"
+    GPT_RESULTS = f"s3://{BUCKET}/gpt-results/"
 
     def _download(self):
         """
