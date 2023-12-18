@@ -159,6 +159,12 @@ class GPTReviewSentimentAnalyzer(Step):
         # if there is no reviews_path, then return without API call.
         if place_id is None or pd.isna(place_id):
             return None
+        result = get_database().fetch_gpt_result(place_id, self.name)
+        if result:
+            log.info(
+                f"Found cached result for place_id {place_id} in GPT results as {result['result']} from {result['last_update_date']}."
+            )
+            return result["result"]
         reviews = get_database().fetch_review(place_id)
         review_texts = self.extract_text_from_reviews(reviews)
         if len(review_texts) == 0:
@@ -171,8 +177,9 @@ class GPTReviewSentimentAnalyzer(Step):
         for review_batch in review_batches:
             sentiment_score = self.gpt_sentiment_analyze_review(review_batch)
             scores += sentiment_score or 0
-        scores
-        return scores / len(review_batches)
+        result = scores / len(review_batches)
+        get_database().save_gpt_result(result, place_id, self.name)
+        return result
 
     def gpt_sentiment_analyze_review(self, review_list):
         """
