@@ -213,7 +213,7 @@ class TextAnalyzer:
             log.error(f"Error while translating: {str(e)}")
             return None
 
-    def calculate_sentiment_analysis(self, inp_text, lang="en"):
+    def calculate_sentiment_analysis_score(self, inp_text, lang="en"):
         """
         Calculates the sentiment analysis of the input text.
 
