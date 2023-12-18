@@ -16,6 +16,7 @@ from tqdm import tqdm
 
 from bdc.steps.step import Step, StepError
 from config import OPEN_AI_API_KEY
+from database import get_database
 from logger import get_logger
 
 log = get_logger()
@@ -45,10 +46,13 @@ class GPTSummarizer(Step):
     )
 
     extracted_col_name_website_summary = "sales_person_summary"
-    gpt_required_fields = {"website": "google_places_detailed_website"}
+    gpt_required_fields = {
+        "website": "google_places_detailed_website",
+        "place_id": "google_places_place_id",
+    }
 
     added_cols = [extracted_col_name_website_summary]
-    required_cols = ["google_places_website"]
+    required_cols = gpt_required_fields.values()
 
     client = None
 
@@ -64,7 +68,8 @@ class GPTSummarizer(Step):
         tqdm.pandas(desc="Summarizing the website of leads")
         self.df[self.extracted_col_name_website_summary] = self.df.progress_apply(
             lambda lead: self.summarize_the_company_website(
-                lead[self.gpt_required_fields["website"]]
+                lead[self.gpt_required_fields["website"]],
+                lead[self.gpt_required_fields["place_id"]],
             ),
             axis=1,
         )
@@ -73,14 +78,19 @@ class GPTSummarizer(Step):
     def finish(self) -> None:
         pass
 
-    def summarize_the_company_website(self, website):
+    def summarize_the_company_website(self, website, place_id):
         """
         Summarise client website using GPT. Handles exceptions that mightarise from the API call.
         """
 
         if website is None or pd.isna(website):
             return None
-
+        result = get_database().fetch_gpt_result(place_id, self.name)
+        if result:
+            log.info(
+                f"Found cached result for place_id {place_id} in GPT results as {result['result']} from {result['last_update_date']}."
+            )
+            return result["result"]
         html = self.extract_the_raw_html_and_parse(website)
 
         if html is None:
