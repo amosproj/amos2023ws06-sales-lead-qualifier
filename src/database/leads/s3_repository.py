@@ -40,7 +40,7 @@ class S3Repository(Repository):
     DF_OUTPUT = f"s3://{BUCKET}/leads/enriched.csv"
     REVIEWS = f"s3://{BUCKET}/reviews/"
     SNAPSHOTS = f"s3://{BUCKET}/snapshots/"
-    GPT_OPERATIONS = f"s3://{BUCKET}/gpt/"
+    GPT_RESULTS = f"s3://{BUCKET}/gpt/"
 
     def _download(self):
         """
@@ -93,8 +93,7 @@ class S3Repository(Repository):
 
         return obj
 
-    def _file_exists(self, full_path):
-        bucket, key = decode_s3_url(full_path)
+    def _is_object_exists_on_S3(self, bucket, key):
         try:
             s3.head_object(Bucket=bucket, Key=key)
             return True
@@ -217,14 +216,34 @@ class S3Repository(Repository):
     def clean_snapshots(self, prefix):
         pass
 
+    def fetch_gpt_result(self, file_id, operation_name):
+        """
+        Fetches the GPT result for a given file ID and operation name from S3
+        """
+        # Define the file name and path
+        file_name = f"{file_id}_gpt_result.json"
+        full_url_path = f"{self.GPT_RESULTS}{file_name}"
+        bucket, key = decode_s3_url(full_url_path)
+
+        if not self._is_object_exists_on_S3(bucket, key):
+            return None
+        # Read data from s3
+        existing_data = json.loads(self._load_from_s3(bucket, key))
+
+        # check if the element with the operation name exists
+        if operation_name in existing_data:
+            return existing_data[operation_name]
+        else:
+            return None
+
     def save_gpt_result(self, gpt_result, file_id, operation_name, force_refresh=False):
         """
         Saves the GPT result for a given file ID and operation name on S3
         """
         # Define the file name and path
         file_name = f"{file_id}_gpt_result.json"
-        bucket, key = decode_s3_url(self.GPT_RESULTS)
-        key += file_name
+        full_url_path = f"{self.GPT_RESULTS}{file_name}"
+        bucket, key = decode_s3_url(full_url_path)
 
         # Get current date and time
         current_time = self._get_current_time_as_string()
@@ -233,17 +252,15 @@ class S3Repository(Repository):
         data_to_save = {"result": gpt_result, "last_update_date": current_time}
 
         # Check if the file already exists
-        if self._file_exists(full_path) and not force_refresh:
+        if self._is_object_exists_on_S3(bucket, key) and not force_refresh:
             # Load the existing data
-            existing_data = json.loads(self._load_from_s3(*decode_s3_url(full_path)))
+            existing_data = json.loads(self._load_from_s3(bucket, key))
 
             # Update the existing data with the new result
             existing_data[operation_name] = data_to_save
 
             # Save the updated data back to S3
-            self._save_to_s3(json.dumps(existing_data), *decode_s3_url(full_path))
+            self._save_to_s3(json.dumps(existing_data), bucket, key)
         else:
             # Save the new result to S3
-            self._save_to_s3(
-                json.dumps({operation_name: data_to_save}), *decode_s3_url(full_path)
-            )
+            self._save_to_s3(json.dumps({operation_name: data_to_save}), bucket, key)
