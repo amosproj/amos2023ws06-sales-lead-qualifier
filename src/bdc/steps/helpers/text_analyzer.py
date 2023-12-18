@@ -5,6 +5,7 @@ import difflib
 import time
 
 from autocorrect import Speller
+from deep_translator import GoogleTranslator
 from pylanguagetool import api as ltp
 from spellchecker import SpellChecker
 from textblob import TextBlob
@@ -19,6 +20,7 @@ class TextAnalyzer:
     A class that provides text analysis functionalities such as spell checking, correction, and error detection.
     """
 
+    TARGET_LANG = "en"
     _instance = None
 
     def __new__(cls, *args, **kwargs):
@@ -185,6 +187,32 @@ class TextAnalyzer:
                 else:
                     return None
 
+    def translate(self, inp_text, source_lang="auto", target_lang=TARGET_LANG):
+        """
+        Translates the input text to the target language.
+
+        Args:
+            inp_text (str): The input text to translate.
+            source_lang (str, optional): The source language of the input text. Defaults to "auto".
+            target_lang (str, optional): The target language of the input text. Defaults to TARGET_LANG.
+
+        Returns:
+            str: The translated text, or None if an error occurs.
+        """
+        if inp_text is None or len(inp_text) == 0:
+            return None
+
+        if source_lang == self.TARGET_LANG:
+            return inp_text
+
+        try:
+            return GoogleTranslator(source=source_lang, target=target_lang).translate(
+                inp_text
+            )
+        except Exception as e:
+            log.error(f"Error while translating: {str(e)}")
+            return None
+
     def calculate_sentiment_analysis(self, inp_text, lang="en"):
         """
         Calculates the sentiment analysis of the input text.
@@ -200,6 +228,9 @@ class TextAnalyzer:
             return None
 
         try:
+            translated_text = self.translate(inp_text, source_lang=lang)
+            if translated_text is None:
+                return None
             blob = TextBlob(inp_text)
             return blob.sentiment.polarity
         except Exception as e:
