@@ -7,6 +7,7 @@ import time
 from autocorrect import Speller
 from pylanguagetool import api as ltp
 from spellchecker import SpellChecker
+from textblob import TextBlob
 
 from logger import get_logger
 
@@ -183,3 +184,24 @@ class TextAnalyzer:
                     retry_delay *= 2
                 else:
                     return None
+
+    def calculate_sentiment_analysis(self, inp_text, lang="en"):
+        """
+        Calculates the sentiment analysis of the input text.
+
+        Args:
+            inp_text (str): The input text to analyze for sentiment analysis.
+            lang (str, optional): The language of the input text. Defaults to "english".
+
+        Returns:
+            float: The sentiment analysis of the input text, or None if an error occurs.
+        """
+        if inp_text is None or len(inp_text) == 0:
+            return None
+
+        try:
+            blob = TextBlob(inp_text)
+            return blob.sentiment.polarity
+        except Exception as e:
+            log.error(f"Error while calculating sentiment analysis: {str(e)}")
+            return None
