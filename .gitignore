@@ -46,7 +46,7 @@ bin/
 .reuse
 
 # Binary files
-**/data/*.csv
+**/data/**/*.csv
 **/data/*.json
 **/data/*.env
 **/data/*.geojson

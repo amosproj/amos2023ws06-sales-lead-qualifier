@@ -9,7 +9,7 @@
 from sklearn.metrics import mean_squared_error
 
 from bdc import DataCollector
-from bdc.pipeline_dal import Pipeline
+from bdc.pipeline import Pipeline
 from bdc.steps import (
     AnalyzeEmails,
     FacebookGraphAPI,
@@ -22,7 +22,7 @@ from bdc.steps import (
     ScrapeAddress,
     SmartReviewInsightsEnhancer,
 )
-from database import DATABASE_TYPE, get_database
+from database import get_database
 from database.parsers import LeadParser
 from evp import EstimatedValuePredictor
 from evp.data_processing import split_dataset
@@ -186,15 +186,16 @@ def pipeline_demo():
     limit = get_int_input("Set limit for data points to be processed (0=No limit)\n")
     limit = limit if limit > 0 else None
 
-    if limit is not None and DATABASE_TYPE == "S3":
-        choice = input(
-            "The output cannot be limited when uploading to S3.\nThe limit will be removed, and the pipeline will be executed on the full database.\n\nWould you like to continue? (y/n)\n"
-        )
-        
-        if choice != "y" and choice != "Y":
+    if (
+        limit is not None
+        and get_database().DF_OUTPUT == "s3://amos--data--events/leads/enriched.csv"
+    ):
+        if get_yes_no_input(
+            f"The output cannot be limited when uploading to {get_database().DF_OUTPUT}.\nThe limit will be removed, and the pipeline will be executed on the full database.\n\nWould you like to continue? (y/n)\n"
+        ):
+            limit = None
+        else:
             return
-
-        limit = None
 
     steps_info = "\n".join([str(step) for step in steps])
     log.info(
