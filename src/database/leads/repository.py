@@ -2,9 +2,12 @@
 # SPDX-FileCopyrightText: 2023 Sophie Heasman <sophieheasmann@gmail.com>
 
 from abc import ABC, abstractmethod
+from datetime import datetime
 
 
 class Repository(ABC):
+    DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+
     # Database paths for dataframe and reviews have to be set
     @property
     @abstractmethod
@@ -34,6 +37,14 @@ class Repository(ABC):
     def SNAPSHOTS(self):
         """
         Define database path to store snapshots
+        """
+        pass
+
+    @property
+    @abstractmethod
+    def GPT_RESULTS(self):
+        """
+        Define database path to store GPT operations
         """
         pass
 
@@ -112,3 +123,42 @@ class Repository(ABC):
         :return: json contents of desired review
         """
         pass
+
+    @abstractmethod
+    def fetch_gpt_result(self, file_id, operation_name):
+        """
+        Fetches the GPT result for a given file ID and operation name.
+
+        Args:
+            file_id (str): The ID of the file.
+            operation_name (str): The name of the GPT operation.
+
+        Returns:
+            The GPT result for the specified file ID and operation name.
+        """
+        pass
+
+    @abstractmethod
+    def save_gpt_result(self, gpt_result, file_id, operation_name, force_refresh=False):
+        """
+        Saves the GPT result for a given file ID and operation name.
+
+        Args:
+            gpt_result (str): The GPT result to be saved.
+            file_id (str): The ID of the file.
+            operation_name (str): The name of the operation.
+            force_refresh (bool, optional): Whether to force a refresh of the saved result. Defaults to False.
+        """
+        pass
+
+    def _get_current_time_as_string(self):
+        """
+        Get the current time as a string
+        """
+        return datetime.now().strftime(self.DATETIME_FORMAT)
+
+    def _convert_string_time_to_datetime(self, time):
+        """
+        Convert a string time to a datetime object
+        """
+        return datetime.strptime(time, self.DATETIME_FORMAT)
