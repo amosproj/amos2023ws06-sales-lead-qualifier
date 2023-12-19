@@ -124,6 +124,7 @@ class Repository(ABC):
         """
         pass
 
+    @abstractmethod
     def fetch_gpt_result(self, file_id, operation_name):
         """
         Fetches the GPT result for a given file ID and operation name.
@@ -137,6 +138,7 @@ class Repository(ABC):
         """
         pass
 
+    @abstractmethod
     def save_gpt_result(self, gpt_result, file_id, operation_name, force_refresh=False):
         """
         Saves the GPT result for a given file ID and operation name.
