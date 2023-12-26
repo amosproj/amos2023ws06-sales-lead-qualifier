@@ -24,6 +24,7 @@ from bdc.steps import (
 )
 from database import get_database
 from database.parsers import LeadParser
+from demo.console_utils import get_int_input, get_yes_no_input
 from evp import EstimatedValuePredictor
 from evp.data_processing import split_dataset
 from evp.predictors import Predictors
@@ -36,26 +37,6 @@ LEADS_TRAIN_FILE = "data/leads_train.csv"
 LEADS_TEST_FILE = "data/leads_test.csv"
 INPUT_FILE_BDC = "../data/sumup_leads_email.csv"
 OUTPUT_FILE_BDC = "../data/collected_data.json"
-
-
-# Utility Functions
-def get_yes_no_input(prompt: str) -> bool:
-    while True:
-        user_input = input(prompt).strip().lower()
-        if user_input in ["y", "yes"]:
-            return True
-        elif user_input in ["n", "no"]:
-            return False
-        else:
-            print("Invalid input. Please enter (yes/no) or (y/N).")
-
-
-def get_int_input(prompt: str) -> int:
-    while True:
-        try:
-            return int(input(prompt))
-        except ValueError:
-            print("Invalid input. Please enter a valid integer.")
 
 
 # bdc_demo
