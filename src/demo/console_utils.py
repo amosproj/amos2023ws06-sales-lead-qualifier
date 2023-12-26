@@ -14,9 +14,14 @@ def get_yes_no_input(prompt: str) -> bool:
             print("Invalid input. Please enter (yes/no) or (y/N).")
 
 
-def get_int_input(prompt: str) -> int:
+def get_int_input(prompt: str, input_range: range = None) -> int:
     while True:
         try:
-            return int(input(prompt))
+            input_int = int(input(prompt))
+            if input_range is not None and input_int not in input_range:
+                print("Invalid input. Please enter a valid integer.")
+                continue
+            else:
+                return input_int
         except ValueError:
             print("Invalid input. Please enter a valid integer.")

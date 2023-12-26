@@ -6,22 +6,15 @@
 # SPDX-FileCopyrightText: 2023 Ruchita Nathani <Ruchita.nathani@fau.de>
 # SPDX-FileCopyrightText: 2023 Ahmed Sheta <ahmed.sheta@fau.de>
 
+from pipeline_utils import (
+    get_pipeline_additional_steps,
+    get_pipeline_initial_steps,
+    get_pipeline_steps,
+)
 from sklearn.metrics import mean_squared_error
 
 from bdc import DataCollector
 from bdc.pipeline import Pipeline
-from bdc.steps import (
-    AnalyzeEmails,
-    FacebookGraphAPI,
-    GooglePlaces,
-    GooglePlacesDetailed,
-    GPTReviewSentimentAnalyzer,
-    GPTSummarizer,
-    PreprocessPhonenumbers,
-    RegionalAtlas,
-    ScrapeAddress,
-    SmartReviewInsightsEnhancer,
-)
 from database import get_database
 from database.parsers import LeadParser
 from demo.console_utils import get_int_input, get_yes_no_input
@@ -43,7 +36,7 @@ OUTPUT_FILE_BDC = "../data/collected_data.json"
 def bdc_demo():
     dc = DataCollector()
     try:
-        choice = get_int_input("(1) Read CSV\n(2) Dummy API\n")
+        choice = get_int_input("(1) Read CSV\n(2) Dummy API\n", range(1, 3))
         if choice == 1:
             dc.get_data_from_csv(file_path=INPUT_FILE_BDC)
         elif choice == 2:
@@ -75,7 +68,8 @@ def evp_demo():
 
     while True:
         choice = get_int_input(
-            "(1) Train\n(2) Test\n(3) Predict on single lead\n(4) Save model\n(5) Exit\n"
+            "(1) Train\n(2) Test\n(3) Predict on single lead\n(4) Save model\n(5) Exit\n",
+            range(1, 6),
         )
         if choice == 1:
             evp.train(LEADS_TRAIN_FILE)
@@ -102,7 +96,9 @@ def test_evp_model(evp: EstimatedValuePredictor):
 
 def predict_single_lead(evp: EstimatedValuePredictor):
     leads = LeadParser.parse_leads_from_csv(LEADS_TEST_FILE)
-    lead_id = get_int_input(f"Choose a lead_id in range [0, {len(leads) - 1}]\n")
+    lead_id = get_int_input(
+        f"Choose a lead_id in range [0, {len(leads) - 1}]\n", range(len(leads))
+    )
     if 0 <= lead_id < len(leads):
         prediction = evp.estimate_value(leads[lead_id])
         print(
@@ -115,7 +111,9 @@ def predict_single_lead(evp: EstimatedValuePredictor):
 # db_demo
 def db_demo():
     amt_leads = get_database().get_cardinality()
-    lead_id = get_int_input(f"Choose a lead_id in range [1, {amt_leads}]\n")
+    lead_id = get_int_input(
+        f"Choose a lead_id in range [1, {amt_leads}]\n", range(1, amt_leads + 1)
+    )
     if 1 <= lead_id <= amt_leads:
         print(get_database().get_lead_by_id(lead_id))
     else:
@@ -133,28 +131,8 @@ def add_step_if_requested(
 
 # pipeline_demo
 def pipeline_demo():
-    steps = [AnalyzeEmails(force_refresh=True)]
-    additional_steps = [
-        ([ScrapeAddress], "Scrape Address", "(will take a long time)"),
-        ([FacebookGraphAPI], "Facebook Graph API", "(will use token)"),
-        ([PreprocessPhonenumbers], "Phone Number Validation", ""),
-        (
-            [GooglePlaces, GooglePlacesDetailed],
-            "Google API",
-            "(will use token and generate cost!)",
-        ),
-        (
-            [GPTReviewSentimentAnalyzer, GPTSummarizer],
-            "open API Sentiment Analyzer & Summarizer",
-            "(will use token and generate cost!)",
-        ),
-        (
-            [SmartReviewInsightsEnhancer],
-            "Smart Review Insights",
-            "(will take looong time!)",
-        ),
-        ([RegionalAtlas], "Regionalatlas", ""),
-    ]
+    steps = get_pipeline_initial_steps()
+    additional_steps = get_pipeline_additional_steps()
 
     if get_yes_no_input(f"Run Demo pipeline with all steps (y/N)?\n"):
         for step_classes, _, _ in additional_steps:
