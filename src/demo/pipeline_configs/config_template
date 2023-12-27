@@ -1,0 +1,49 @@
+{
+    "description": "This file is used to configure the pipeline. You can copy-paste this file and add .json extension. You can add new steps or remove steps from the pipeline.",
+    "config": {
+
+    "steps": [
+        {
+            "name": "AnalyzeEmails",
+            "force_refresh": true
+        },
+        {
+            "name": "ScrapeAddress",
+            "force_refresh": true
+        },
+        {
+            "name": "FacebookGraphAPI",
+            "force_refresh": true
+        },
+        {
+            "name": "PreprocessPhonenumbers",
+            "force_refresh": true
+        },
+        {
+            "name": "GooglePlaces",
+            "force_refresh": true
+        },
+        {
+            "name": "GooglePlacesDetailed",
+            "force_refresh": true
+        },
+        {
+            "name": "GPTReviewSentimentAnalyzer",
+            "force_refresh": true
+        },
+        {
+            "name": "GPTSummarizer",
+            "force_refresh": true
+        },
+        {
+            "name": "SmartReviewInsightsEnhancer",
+            "force_refresh": true
+        },
+        {
+            "name": "RegionalAtlas",
+            "force_refresh": true
+        }
+    ]
+
+}
+}

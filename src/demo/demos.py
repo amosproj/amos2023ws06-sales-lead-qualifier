@@ -6,18 +6,20 @@
 # SPDX-FileCopyrightText: 2023 Ruchita Nathani <Ruchita.nathani@fau.de>
 # SPDX-FileCopyrightText: 2023 Ahmed Sheta <ahmed.sheta@fau.de>
 
-from pipeline_utils import (
-    get_pipeline_additional_steps,
-    get_pipeline_initial_steps,
-    get_pipeline_steps,
-)
+
 from sklearn.metrics import mean_squared_error
 
 from bdc import DataCollector
 from bdc.pipeline import Pipeline
 from database import get_database
 from database.parsers import LeadParser
-from demo.console_utils import get_int_input, get_yes_no_input
+from demo.console_utils import get_int_input, get_multiple_choice, get_yes_no_input
+from demo.pipeline_utils import (
+    get_all_available_pipeline_json_configs,
+    get_pipeline_additional_steps,
+    get_pipeline_config_from_json,
+    get_pipeline_initial_steps,
+)
 from evp import EstimatedValuePredictor
 from evp.data_processing import split_dataset
 from evp.predictors import Predictors
@@ -120,27 +122,49 @@ def db_demo():
         print("Invalid Choice")
 
 
-def add_step_if_requested(
-    steps, step_classes, step_desc, step_warning_message: str = ""
-):
+def add_step_if_requested(steps, step_class, step_desc, step_warning_message: str = ""):
     if get_yes_no_input(f"Run {step_desc} {step_warning_message}(y/N)?\n"):
         force = get_yes_no_input("Force execution if data is present? (y/N)\n")
-        for cls in step_classes:
-            steps.append(cls(force_refresh=force))
+        steps.append(step_class(force_refresh=force))
 
 
 # pipeline_demo
 def pipeline_demo():
-    steps = get_pipeline_initial_steps()
-    additional_steps = get_pipeline_additional_steps()
+    """
+    Demonstrates the execution of a pipeline.
 
-    if get_yes_no_input(f"Run Demo pipeline with all steps (y/N)?\n"):
-        for step_classes, _, _ in additional_steps:
-            step_instances = [cls(force_refresh=True) for cls in step_classes]
-            steps.extend(step_instances)
-    else:
-        for step_classes, desc, warning_message in additional_steps:
-            add_step_if_requested(steps, step_classes, desc, warning_message)
+    The function prompts the user to select a pipeline configuration or create a custom one.
+    It then sets a limit for the number of data points to be processed, if specified.
+    Finally, it runs the pipeline with the selected configuration and limit.
+
+    Args:
+        None
+
+    Returns:
+        None
+    """
+    continue_with_custom_config = False
+    if get_yes_no_input(f"Do you want to list all available pipeline configs? (y/N)\n"):
+        # Create the formatted string using list comprehension and join
+        all_pipeline_configs = get_all_available_pipeline_json_configs()
+        if len(all_pipeline_configs) > 0:
+            prompt = "Please enter the index of requested pipeline config:\n"
+            choices = all_pipeline_configs + ["Exit"]
+            choice = get_multiple_choice(prompt, choices)
+            if choice != "Exit":
+                steps = get_pipeline_config_from_json(config_name=choice)
+            else:
+                continue_with_custom_config = True
+                print("Exiting...\n")
+        else:
+            print("No pipeline configs found.\n")
+
+    if continue_with_custom_config:
+        print("Continuing with custom pipeline config...\n\n")
+        steps = get_pipeline_initial_steps()
+        additional_steps = get_pipeline_additional_steps()
+        for step_class, desc, warning_message in additional_steps:
+            add_step_if_requested(steps, step_class, desc, warning_message)
 
     limit = get_int_input("Set limit for data points to be processed (0=No limit)\n")
     limit = limit if limit > 0 else None
