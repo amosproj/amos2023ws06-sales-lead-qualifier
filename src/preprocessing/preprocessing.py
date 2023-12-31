@@ -19,7 +19,6 @@ from sklearn.preprocessing import (
 current_dir = os.path.dirname(__file__) if "__file__" in locals() else os.getcwd()
 parent_dir = os.path.join(current_dir, "..")
 file_path = os.path.join(current_dir, "../data/last_snapshot.csv")
-data = pd.read_csv(file_path)
 
 sys.path.append(parent_dir)
 from logger import get_logger
@@ -133,6 +132,7 @@ class Preprocessing:
 
 
 if __name__ == "__main__":
+    data = pd.read_csv(file_path)
     preprocessor = Preprocessing(data)
     df = preprocessor.implement_pipeline()
     preprocessor.save_preprocessed_data()
