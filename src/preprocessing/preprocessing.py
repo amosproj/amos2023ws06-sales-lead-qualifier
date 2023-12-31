@@ -29,8 +29,10 @@ log = get_logger()
 
 
 class Preprocessing:
-    def __init__(self, df):
+    def __init__(self, df, filter_null_data=True):
         self.preprocessed_df = df.copy()
+
+        self.filter_bool = filter_null_data
         # columns that would be added later after one-hot encoding each class
         self.added_classes = []
         self.numerical_data = [
@@ -127,19 +129,23 @@ class Preprocessing:
         mlb = MultiLabelBinarizer()
         encoded_data = mlb.fit_transform(self.preprocessed_df[column])
         self.added_classes.extend(mlb.classes_)
-        encoded_df = pd.DataFrame(
-            encoded_data, columns=mlb.classes_, index=self.preprocessed_df.index
-        )
+        if self.filter_bool:
+            encoded_df = pd.DataFrame(
+                encoded_data, columns=mlb.classes_, index=self.preprocessed_df.index
+            )
+        else:
+            encoded_df = pd.DataFrame(encoded_data, columns=mlb.classes_)
         self.preprocessed_df = pd.concat([self.preprocessed_df, encoded_df], axis=1)
         return self.preprocessed_df
 
     def implement_preprocessing_pipeline(self):
-        self.filter_out_null_data()
+        if self.filter_bool:
+            self.filter_out_null_data()
 
         for data_column in self.numerical_data:
             self.preprocessed_df = self.fill_missing_values(data_column)
-            if data_column in self.data_to_scale:
-                self.preprocessed_df = self.robust_scaling(data_column)
+            # if data_column in self.data_to_scale:
+            #     self.preprocessed_df = self.robust_scaling(data_column)
 
         for data_column in self.categorical_data:
             if data_column == "google_places_detailed_type":
@@ -179,6 +185,6 @@ class Preprocessing:
 
 if __name__ == "__main__":
     data = pd.read_csv(file_path)
-    preprocessor = Preprocessing(data)
+    preprocessor = Preprocessing(data, filter_null_data=True)
     df = preprocessor.implement_preprocessing_pipeline()
     preprocessor.save_preprocessed_data()
