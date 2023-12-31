@@ -3,74 +3,136 @@
 
 
 import os
+import sys
 from ast import literal_eval
 
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder, MultiLabelBinarizer, StandardScaler
+from scipy import stats
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import (
+    LabelEncoder,
+    MinMaxScaler,
+    MultiLabelBinarizer,
+    StandardScaler,
+)
 
-csv_file_path = "../data/last_snapshot.csv"
 current_dir = os.path.dirname(__file__) if "__file__" in locals() else os.getcwd()
+parent_dir = os.path.join(current_dir, "..")
 file_path = os.path.join(current_dir, "../data/last_snapshot.csv")
 data = pd.read_csv(file_path)
 
-numerical_data = [
-    "google_places_user_ratings_total",
-    "google_places_rating",
-    "google_places_price_level",
-    "google_places_confidence",
-    "reviews_sentiment_score",
-    "review_avg_grammatical_score",
-    "review_polarization_score",
-    "review_highest_rating_ratio",
-    "review_lowest_rating_ratio",
-    "review_rating_trend",
-]
+sys.path.append(parent_dir)
+from logger import get_logger
 
-# TODO: google_places_confidence should be incorperated differently somehow, may be as uncertainity
+log = get_logger()
 
-categorical_data = [
-    "number_country",
-    "number_area",
-    "google_places_detailed_type",
-    "review_polarization_type",
-]
 
-#################### encode the google_places_detailed_type data ####################
+class Preprocessing:
+    def __init__(self, df):
+        self.preprocessed_df = df.copy()
+        self.added_classes = None
 
-detailed_type = data["google_places_detailed_type"]
-detailed_type.fillna("", inplace=True)
-detailed_type = detailed_type.apply(lambda x: literal_eval(x) if x != "" else [])
+        self.numerical_data = [
+            "google_places_user_ratings_total",
+            "google_places_rating",
+            "google_places_confidence",
+            "reviews_sentiment_score",
+            "review_avg_grammatical_score",
+            "review_polarization_score",
+            "review_highest_rating_ratio",
+            "review_lowest_rating_ratio",
+            "review_rating_trend",
+        ]
 
-mlb = MultiLabelBinarizer()
-encoded_detailed_type = mlb.fit_transform(detailed_type)
-encoded_detailed_type_df = pd.DataFrame(encoded_detailed_type, columns=mlb.classes_)
+        self.categorical_data = [
+            "number_country",
+            "number_area",
+            "google_places_detailed_type",
+            "review_polarization_type",
+        ]
 
-# print(f"encoded_detailed_type = {encoded_detailed_type}")
-# print(f"encoded_detailed_type_df = {encoded_detailed_type_df}")
+    def fill_missing_values(self, column, strategy="most_frequent"):
+        imputer = SimpleImputer(strategy=strategy)
+        self.preprocessed_df[column] = imputer.fit_transform(
+            self.preprocessed_df[[column]]
+        )
+        return self.preprocessed_df
 
-########################## encode country name data #################################
+    def standard_scaling(self, column):
+        scaler = StandardScaler()
+        self.preprocessed_df[column] = scaler.fit_transform(
+            self.preprocessed_df[[column]]
+        )
+        return self.preprocessed_df
 
-country_name = data["number_area"]
-country_name.fillna("", inplace=True)
-country_encoder = LabelEncoder()
-data["country_encoded"] = country_encoder.fit_transform(country_name)
+    def min_max_scaling(self, column):
+        scaler = MinMaxScaler()
+        self.preprocessed_df[column] = scaler.fit_transform(
+            self.preprocessed_df[[column]]
+        )
+        return self.preprocessed_df
 
-# print(f"data['Country_LabelEncoded'] = {data['Country_LabelEncoded']}")
+    def remove_outliers_zscore(self, column):
+        z_scores = stats.zscore(self.preprocessed_df[[column]])
+        self.preprocessed_df[column] = self.preprocessed_df[
+            (z_scores < 3) & (z_scores > -3)
+        ]
+        return self.preprocessed_df
 
-########################## encode area name data ####################################
+    def single_label_encoding(self, column):
+        # data is a dataframe column of the desired data for pre-processing
+        label_encoder = LabelEncoder()
+        data_encoded = label_encoder.fit_transform(
+            self.preprocessed_df[column].fillna("").astype(str)
+        )
+        data_encoded_df = pd.DataFrame(data_encoded)
+        # self.preprocessed_df = pd.concat([self.preprocessed_df, data_encoded_df], axis=1)
+        self.preprocessed_df[column] = data_encoded_df
+        return self.preprocessed_df
 
-area_name = data["number_country"]
-area_name.fillna("", inplace=True)
-area_encoder = LabelEncoder()
-data["area_encoded"] = area_encoder.fit_transform(area_name)
+    def multiple_label_encoding(self, column):
+        # data is a dataframe column of the desired data for pre-processing
+        self.preprocessed_df[column].fillna("", inplace=True)
+        self.preprocessed_df[column] = self.preprocessed_df[column].apply(
+            lambda x: literal_eval(x) if x != "" else []
+        )
+        mlb = MultiLabelBinarizer()
+        encoded_data = mlb.fit_transform(self.preprocessed_df[column])
+        self.added_classes = mlb.classes_
+        encoded_df = pd.DataFrame(encoded_data, columns=self.added_classes)
+        self.preprocessed_df = pd.concat([self.preprocessed_df, encoded_df], axis=1)
+        return self.preprocessed_df
 
-# print(f"data['area_encoded'] = {data['area_encoded']}")
+    def implement_pipeline(self):
+        for data_column in self.numerical_data:
+            self.preprocessed_df = self.fill_missing_values(data_column)
+            self.preprocessed_df = self.min_max_scaling(data_column)
 
-######################### encode review_polarization_type data ######################
+        for data_column in self.categorical_data:
+            if data_column == "google_places_detailed_type":
+                continue
+            self.preprocessed_df = self.single_label_encoding(data_column)
 
-polarization_type = data["review_polarization_type"]
-polarization_type.fillna("", inplace=True)
-polarization_encoder = LabelEncoder()
-data["review_polarization_type"] = polarization_encoder.fit_transform(polarization_type)
+        self.preprocessed_df = self.multiple_label_encoding(
+            "google_places_detailed_type"
+        )
 
-print(f"data['review_polarization_type'] = {data['review_polarization_type']}")
+        log.info("Preprocessing complete!")
+        return self.preprocessed_df
+
+    def save_preprocessed_data(self):
+        self.categorical_data.remove("google_places_detailed_type")
+        columns_to_save = []
+        columns_to_save.extend(self.numerical_data)
+        columns_to_save.extend(self.categorical_data)
+        columns_to_save.extend(self.added_classes)
+        selected_df = self.preprocessed_df[columns_to_save]
+        save_path = os.path.join(current_dir, "../data/preprocessed_data.csv")
+        selected_df.to_csv(save_path, index=False)
+        log.info(f"Preprocessed file saved at {save_path}")
+
+
+if __name__ == "__main__":
+    preprocessor = Preprocessing(data)
+    df = preprocessor.implement_pipeline()
+    preprocessor.save_preprocessed_data()
