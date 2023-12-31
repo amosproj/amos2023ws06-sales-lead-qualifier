@@ -31,6 +31,7 @@ log = get_logger()
 class Preprocessing:
     def __init__(self, df):
         self.preprocessed_df = df.copy()
+        # columns that would be added later after one-hot encoding each class
         self.added_classes = []
         self.numerical_data = [
             "google_places_rating",
@@ -43,9 +44,10 @@ class Preprocessing:
             "review_lowest_rating_ratio",
             "review_rating_trend",
         ]
-
+        # numerical data that need scaling
         self.data_to_scale = ["google_places_user_ratings_total"]
 
+        # categorical data that needs one-hot encoding
         self.categorical_data = [
             "number_country",
             "number_area",
@@ -53,7 +55,12 @@ class Preprocessing:
             "review_polarization_type",
         ]
 
-    def fill_missing_values(self, column, strategy="most_frequent"):
+    def filter_out_null_data(self):
+        self.preprocessed_df = self.preprocessed_df[
+            self.preprocessed_df["google_places_confidence"].notnull()
+        ]
+
+    def fill_missing_values(self, column, strategy="constant"):
         imputer = SimpleImputer(strategy=strategy)
         self.preprocessed_df[column] = imputer.fit_transform(
             self.preprocessed_df[[column]]
@@ -61,6 +68,7 @@ class Preprocessing:
         return self.preprocessed_df
 
     def standard_scaling(self, column):
+        # scales the data in such that the mean of the data becomes 0 and the standard deviation becomes 1.
         scaler = StandardScaler()
         self.preprocessed_df[column] = scaler.fit_transform(
             self.preprocessed_df[[column]]
@@ -68,6 +76,7 @@ class Preprocessing:
         return self.preprocessed_df
 
     def min_max_scaling(self, column):
+        # scales the data to a given range, usually between 0 and 1.
         scaler = MinMaxScaler()
         self.preprocessed_df[column] = scaler.fit_transform(
             self.preprocessed_df[[column]]
@@ -96,6 +105,7 @@ class Preprocessing:
         return self.preprocessed_df
 
     def single_one_hot_encoding(self, column):
+        # one-hot encoding categorical data and creating columns for the newly created classes
         data_to_encode = self.preprocessed_df[[column]].fillna("").astype(str)
         encoder = OneHotEncoder(sparse=False)
         encoded_data = encoder.fit_transform(data_to_encode)
@@ -109,7 +119,7 @@ class Preprocessing:
         return self.preprocessed_df
 
     def multiple_label_encoding(self, column):
-        # data is a dataframe column of the desired data for pre-processing
+        # one-hot encoding for the columns that has multiple labels as element
         self.preprocessed_df[column].fillna("", inplace=True)
         self.preprocessed_df[column] = self.preprocessed_df[column].apply(
             lambda x: literal_eval(x) if x != "" else []
@@ -117,11 +127,15 @@ class Preprocessing:
         mlb = MultiLabelBinarizer()
         encoded_data = mlb.fit_transform(self.preprocessed_df[column])
         self.added_classes.extend(mlb.classes_)
-        encoded_df = pd.DataFrame(encoded_data, columns=mlb.classes_)
+        encoded_df = pd.DataFrame(
+            encoded_data, columns=mlb.classes_, index=self.preprocessed_df.index
+        )
         self.preprocessed_df = pd.concat([self.preprocessed_df, encoded_df], axis=1)
         return self.preprocessed_df
 
-    def implement_pipeline(self):
+    def implement_preprocessing_pipeline(self):
+        self.filter_out_null_data()
+
         for data_column in self.numerical_data:
             self.preprocessed_df = self.fill_missing_values(data_column)
             if data_column in self.data_to_scale:
@@ -134,7 +148,7 @@ class Preprocessing:
                 self.preprocessed_df = self.single_one_hot_encoding(data_column)
             except ValueError as e:
                 log.error(
-                    f"Failed to hot-one encode data type ({data_column})! Error: {e}"
+                    f"Failed to one-hot encode data type ({data_column})! Error: {e}"
                 )
 
         try:
@@ -143,10 +157,10 @@ class Preprocessing:
             )
         except ValueError as e:
             log.error(
-                f"Failed to hot-one encode data type 'google_places_detailed_type'! Error: {e}"
+                f"Failed to one-hot encode data type 'google_places_detailed_type'! Error: {e}"
             )
 
-        log.info("Preprocessing complete!")
+        # log.info("Preprocessing complete!")
         return self.preprocessed_df
 
     def save_preprocessed_data(self):
@@ -158,13 +172,13 @@ class Preprocessing:
         try:
             save_path = os.path.join(current_dir, "../data/preprocessed_data.csv")
             selected_df.to_csv(save_path, index=False)
-            log.info(f"Preprocessed file saved at {save_path}")
+            log.info(f"Preprocessed data file saved at {save_path}")
         except ValueError as e:
-            log.error(f"Failed to save preprocessed file! Error: {e}")
+            log.error(f"Failed to save preprocessed data file! Error: {e}")
 
 
 if __name__ == "__main__":
     data = pd.read_csv(file_path)
     preprocessor = Preprocessing(data)
-    df = preprocessor.implement_pipeline()
+    df = preprocessor.implement_preprocessing_pipeline()
     preprocessor.save_preprocessed_data()
