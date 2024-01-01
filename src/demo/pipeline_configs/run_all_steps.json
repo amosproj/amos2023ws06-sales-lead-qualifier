@@ -1,5 +1,5 @@
 {
-  "description": "This config runs all steps",
+  "description": "This config runs all steps with force_refresh set to true.",
   "config": {
     "steps": [
       {
