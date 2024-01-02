@@ -70,7 +70,7 @@ class Preprocessing:
                 self.preprocessed_df[[column]]
             )
         else:
-            print(f"The column '{column}' does not exist in the DataFrame.")
+            log.info(f"The column '{column}' does not exist in the DataFrame.")
 
         return self.preprocessed_df
 
@@ -129,7 +129,7 @@ class Preprocessing:
             )
             self.preprocessed_df = pd.concat([self.preprocessed_df, encoded_df], axis=1)
         else:
-            print(f"The column '{column}' does not exist in the DataFrame.")
+            log.info(f"The column '{column}' does not exist in the DataFrame.")
 
         return self.preprocessed_df
 
@@ -151,7 +151,7 @@ class Preprocessing:
                 encoded_df = pd.DataFrame(encoded_data, columns=mlb.classes_)
             self.preprocessed_df = pd.concat([self.preprocessed_df, encoded_df], axis=1)
         else:
-            print(f"The column '{column}' does not exist in the DataFrame.")
+            log.info(f"The column '{column}' does not exist in the DataFrame.")
 
         return self.preprocessed_df
 
