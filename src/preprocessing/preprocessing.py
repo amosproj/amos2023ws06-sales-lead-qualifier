@@ -20,9 +20,10 @@ from sklearn.preprocessing import (
 
 current_dir = os.path.dirname(__file__) if "__file__" in locals() else os.getcwd()
 parent_dir = os.path.join(current_dir, "..")
-file_path = os.path.join(current_dir, "../data/last_snapshot.csv")
+# file_path = os.path.join(current_dir, "../data/last_snapshot.csv")
 
 sys.path.append(parent_dir)
+from database import get_database
 from logger import get_logger
 
 log = get_logger()
@@ -59,83 +60,99 @@ class Preprocessing:
 
     def filter_out_null_data(self):
         self.preprocessed_df = self.preprocessed_df[
-            self.preprocessed_df["google_places_confidence"].notnull()
+            self.preprocessed_df["google_places_rating"].notnull()
         ]
 
     def fill_missing_values(self, column, strategy="constant"):
-        imputer = SimpleImputer(strategy=strategy)
-        self.preprocessed_df[column] = imputer.fit_transform(
-            self.preprocessed_df[[column]]
-        )
+        if column in self.preprocessed_df.columns:
+            imputer = SimpleImputer(strategy=strategy)
+            self.preprocessed_df[column] = imputer.fit_transform(
+                self.preprocessed_df[[column]]
+            )
+        else:
+            print(f"The column '{column}' does not exist in the DataFrame.")
+
         return self.preprocessed_df
 
     def standard_scaling(self, column):
         # scales the data in such that the mean of the data becomes 0 and the standard deviation becomes 1.
-        scaler = StandardScaler()
-        self.preprocessed_df[column] = scaler.fit_transform(
-            self.preprocessed_df[[column]]
-        )
+        if column in self.preprocessed_df.columns:
+            scaler = StandardScaler()
+            self.preprocessed_df[column] = scaler.fit_transform(
+                self.preprocessed_df[[column]]
+            )
         return self.preprocessed_df
 
     def min_max_scaling(self, column):
         # scales the data to a given range, usually between 0 and 1.
-        scaler = MinMaxScaler()
-        self.preprocessed_df[column] = scaler.fit_transform(
-            self.preprocessed_df[[column]]
-        )
+        if column in self.preprocessed_df.columns:
+            scaler = MinMaxScaler()
+            self.preprocessed_df[column] = scaler.fit_transform(
+                self.preprocessed_df[[column]]
+            )
         return self.preprocessed_df
 
     def robust_scaling(self, column):
-        scaler = RobustScaler()
-        self.preprocessed_df[column] = scaler.fit_transform(
-            self.preprocessed_df[[column]]
-        )
+        if column in self.preprocessed_df.columns:
+            scaler = RobustScaler()
+            self.preprocessed_df[column] = scaler.fit_transform(
+                self.preprocessed_df[[column]]
+            )
         return self.preprocessed_df
 
     def normalization(self, column):
-        scaler = Normalizer()
-        self.preprocessed_df[column] = scaler.fit_transform(
-            self.preprocessed_df[[column]]
-        )
+        if column in self.preprocessed_df.columns:
+            scaler = Normalizer()
+            self.preprocessed_df[column] = scaler.fit_transform(
+                self.preprocessed_df[[column]]
+            )
         return self.preprocessed_df
 
     def remove_outliers_zscore(self, column):
+        THRESHOLD = 3
         z_scores = stats.zscore(self.preprocessed_df[[column]])
         self.preprocessed_df[column] = self.preprocessed_df[
-            (z_scores < 3) & (z_scores > -3)
+            (z_scores < THRESHOLD) & (z_scores > -1 * THRESHOLD)
         ]
         return self.preprocessed_df
 
     def single_one_hot_encoding(self, column):
         # one-hot encoding categorical data and creating columns for the newly created classes
-        data_to_encode = self.preprocessed_df[[column]].fillna("").astype(str)
-        encoder = OneHotEncoder(sparse=False)
-        encoded_data = encoder.fit_transform(data_to_encode)
-        encoded_columns = encoder.get_feature_names_out([column])
-        self.added_classes.extend(encoded_columns)
-        encoded_df = pd.DataFrame(
-            encoded_data, columns=encoded_columns, index=self.preprocessed_df.index
-        )
-        self.preprocessed_df = pd.concat([self.preprocessed_df, encoded_df], axis=1)
+        if column in self.preprocessed_df.columns:
+            data_to_encode = self.preprocessed_df[[column]].fillna("").astype(str)
+            encoder = OneHotEncoder(sparse=False)
+            encoded_data = encoder.fit_transform(data_to_encode)
+            encoded_columns = encoder.get_feature_names_out([column])
+            self.added_classes.extend(encoded_columns)
+            encoded_df = pd.DataFrame(
+                encoded_data, columns=encoded_columns, index=self.preprocessed_df.index
+            )
+            self.preprocessed_df = pd.concat([self.preprocessed_df, encoded_df], axis=1)
+        else:
+            print(f"The column '{column}' does not exist in the DataFrame.")
 
         return self.preprocessed_df
 
     def multiple_label_encoding(self, column):
-        # one-hot encoding for the columns that has multiple labels as element
-        self.preprocessed_df[column].fillna("", inplace=True)
-        self.preprocessed_df[column] = self.preprocessed_df[column].apply(
-            lambda x: literal_eval(x) if x != "" else []
-        )
-        mlb = MultiLabelBinarizer()
-        encoded_data = mlb.fit_transform(self.preprocessed_df[column])
-        self.added_classes.extend(mlb.classes_)
-        if self.filter_bool:
-            encoded_df = pd.DataFrame(
-                encoded_data, columns=mlb.classes_, index=self.preprocessed_df.index
+        if column in self.preprocessed_df.columns:
+            # one-hot encoding for the columns that has multiple labels as element
+            self.preprocessed_df[column].fillna("", inplace=True)
+            self.preprocessed_df[column] = self.preprocessed_df[column].apply(
+                lambda x: literal_eval(x) if x != "" else []
             )
+            mlb = MultiLabelBinarizer()
+            encoded_data = mlb.fit_transform(self.preprocessed_df[column])
+            self.added_classes.extend(mlb.classes_)
+            if self.filter_bool:
+                encoded_df = pd.DataFrame(
+                    encoded_data, columns=mlb.classes_, index=self.preprocessed_df.index
+                )
+            else:
+                encoded_df = pd.DataFrame(encoded_data, columns=mlb.classes_)
+            self.preprocessed_df = pd.concat([self.preprocessed_df, encoded_df], axis=1)
         else:
-            encoded_df = pd.DataFrame(encoded_data, columns=mlb.classes_)
-        self.preprocessed_df = pd.concat([self.preprocessed_df, encoded_df], axis=1)
+            print(f"The column '{column}' does not exist in the DataFrame.")
+
         return self.preprocessed_df
 
     def implement_preprocessing_pipeline(self):
@@ -144,8 +161,8 @@ class Preprocessing:
 
         for data_column in self.numerical_data:
             self.preprocessed_df = self.fill_missing_values(data_column)
-            # if data_column in self.data_to_scale:
-            #     self.preprocessed_df = self.robust_scaling(data_column)
+            if data_column in self.data_to_scale:
+                self.preprocessed_df = self.robust_scaling(data_column)
 
         for data_column in self.categorical_data:
             if data_column == "google_places_detailed_type":
@@ -166,25 +183,32 @@ class Preprocessing:
                 f"Failed to one-hot encode data type 'google_places_detailed_type'! Error: {e}"
             )
 
-        # log.info("Preprocessing complete!")
+        log.info("Preprocessing complete!")
         return self.preprocessed_df
 
     def save_preprocessed_data(self):
         columns_to_save = []
         columns_to_save.extend(self.numerical_data)
         columns_to_save.extend(self.added_classes)
-
-        selected_df = self.preprocessed_df[columns_to_save]
+        selected_df = pd.DataFrame()
+        try:
+            for column in columns_to_save:
+                if column in self.preprocessed_df.columns:
+                    selected_df[column] = self.preprocessed_df[column]
+        except ValueError as e:
+            log.error(f"Failed to save the selected columns for preprocessing! {e}")
         try:
             save_path = os.path.join(current_dir, "../data/preprocessed_data.csv")
             selected_df.to_csv(save_path, index=False)
             log.info(f"Preprocessed data file saved at {save_path}")
         except ValueError as e:
-            log.error(f"Failed to save preprocessed data file! Error: {e}")
+            log.error(f"Failed to save preprocessed data file! {e}")
 
 
 if __name__ == "__main__":
-    data = pd.read_csv(file_path)
+    data_repo = get_database()
+    data_path = data_repo.get_output_path()
+    data = pd.read_csv(data_path)
     preprocessor = Preprocessing(data, filter_null_data=True)
     df = preprocessor.implement_preprocessing_pipeline()
     preprocessor.save_preprocessed_data()
