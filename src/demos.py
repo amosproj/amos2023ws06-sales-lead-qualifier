@@ -213,12 +213,9 @@ def pipeline_demo():
 
 
 def preprocessing_demo():
-    data_repo = get_database()
-    data_path = data_repo.get_output_path()
-    data = pd.read_csv(data_path)
     if get_yes_no_input("Filter out the API-irrelevant data? (y/n)"):
-        preprocessor = Preprocessing(data, filter_null_data=True)
+        preprocessor = Preprocessing(filter_null_data=True)
     else:
-        preprocessor = Preprocessing(data, filter_null_data=False)
+        preprocessor = Preprocessing(filter_null_data=False)
     df = preprocessor.implement_preprocessing_pipeline()
     preprocessor.save_preprocessed_data()

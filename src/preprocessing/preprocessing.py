@@ -24,12 +24,21 @@ sys.path.append(parent_dir)
 from database import get_database
 from logger import get_logger
 
+sys.path.append(current_dir)
 log = get_logger()
 
 
 class Preprocessing:
-    def __init__(self, df, filter_null_data=True):
-        self.preprocessed_df = df.copy()
+    def __init__(self, filter_null_data=True):
+        data_repo = get_database()
+        data_path = data_repo.get_output_path()
+        data = pd.read_csv(data_path)
+        self.preprocessed_df = data.copy()
+        # created the new output path based on which repo used
+        path_components = data_path.split("\\")
+        path_components.pop()
+        path_components.append("preprocessed_data.csv")
+        self.prerocessed_data_output_path = "/".join(path_components)
 
         self.filter_bool = filter_null_data
         # columns that would be added later after one-hot encoding each class
@@ -196,8 +205,9 @@ class Preprocessing:
         except ValueError as e:
             log.error(f"Failed to save the selected columns for preprocessing! {e}")
         try:
-            save_path = os.path.join(current_dir, "../data/preprocessed_data.csv")
-            selected_df.to_csv(save_path, index=False)
-            log.info(f"Preprocessed data file saved at {save_path}")
+            selected_df.to_csv(self.prerocessed_data_output_path, index=False)
+            log.info(
+                f"Preprocessed data file saved at {self.prerocessed_data_output_path}"
+            )
         except ValueError as e:
             log.error(f"Failed to save preprocessed data file! {e}")
