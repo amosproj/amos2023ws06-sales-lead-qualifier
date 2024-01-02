@@ -20,8 +20,6 @@ from sklearn.preprocessing import (
 
 current_dir = os.path.dirname(__file__) if "__file__" in locals() else os.getcwd()
 parent_dir = os.path.join(current_dir, "..")
-# file_path = os.path.join(current_dir, "../data/last_snapshot.csv")
-
 sys.path.append(parent_dir)
 from database import get_database
 from logger import get_logger
@@ -203,12 +201,3 @@ class Preprocessing:
             log.info(f"Preprocessed data file saved at {save_path}")
         except ValueError as e:
             log.error(f"Failed to save preprocessed data file! {e}")
-
-
-if __name__ == "__main__":
-    data_repo = get_database()
-    data_path = data_repo.get_output_path()
-    data = pd.read_csv(data_path)
-    preprocessor = Preprocessing(data, filter_null_data=True)
-    df = preprocessor.implement_preprocessing_pipeline()
-    preprocessor.save_preprocessed_data()
