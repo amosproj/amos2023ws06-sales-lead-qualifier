@@ -35,7 +35,7 @@ class Preprocessing:
         data = pd.read_csv(data_path)
         self.preprocessed_df = data.copy()
         # created the new output path based on which repo used
-        path_components = data_path.split("\\")
+        path_components = data_path.split("\\" if "\\" in data_path else "/")
         path_components.pop()
         path_components.append("preprocessed_data.csv")
         self.prerocessed_data_output_path = "/".join(path_components)
