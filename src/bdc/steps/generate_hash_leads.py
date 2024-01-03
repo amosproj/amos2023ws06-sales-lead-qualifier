@@ -6,6 +6,7 @@ import hashlib
 import pandas as pd
 
 from bdc.steps.step import Step
+from database import get_database
 
 # from logger import get_logger
 #
@@ -13,12 +14,13 @@ from bdc.steps.step import Step
 
 
 class GenerateHashLeads(Step):
+    name = "Generate_Hash_Leads"
     required_cols = ["Email", "First Name", "Last Name", "Company / Account", "Phone"]
 
     def load_data(self):
         pass
 
-    def hash_lead(lead_data):
+    def hash_lead(self, lead_data):
         # Concatenate key lead information
         data_to_hash = (
             str(lead_data["First Name"])
@@ -33,7 +35,7 @@ class GenerateHashLeads(Step):
 
         return hash
 
-    def create_or_load_lookup_table():
+    def create_or_load_lookup_table(self):
         try:
             # If the lookup table exists, load it
             lookup_table = pd.read_csv("./data/lookup_table.csv")
@@ -53,11 +55,11 @@ class GenerateHashLeads(Step):
         return lookup_table
 
     def run(self):
-        # Read data from CSV
-        csv_file_path = "./data/sumup_leads_email.csv"
-        data_frame = pd.read_csv(csv_file_path)
-
         lookup_table = self.create_or_load_lookup_table()
+
+        # Copy original dataframe to create a separate lookup table
+        data_frame = get_database().get_dataframe()
+
         # Apply the hash function to each row and create a new column 'HashedData'
         data_frame["HashedData"] = data_frame.apply(self.hash_lead, axis=1)
         existing_hashes = lookup_table["HashedData"].tolist()
@@ -75,5 +77,7 @@ class GenerateHashLeads(Step):
         lookup_table.to_csv("./data/lookup_table.csv", index=False)
 
         print("Processing complete.")
+        return self.df
 
-    # log.info(f"Hashed data saved to {hashed_csv_file_path}")
+    def finish(self):
+        pass
