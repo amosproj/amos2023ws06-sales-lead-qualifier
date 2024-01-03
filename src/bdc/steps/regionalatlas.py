@@ -96,19 +96,16 @@ class RegionalAtlas(Step):
 
     def run(self) -> DataFrame:
         tqdm.pandas(desc="Getting social data")
-        print(f"1self.df in Regional Atlas = {self.df}")
 
         # Add the new fields to the df
         self.df[self.added_cols[:-1]] = self.df.progress_apply(
             lambda lead: pd.Series(self.get_data_from_address(lead)), axis=1
         )
-        print(f"2self.df in Regional Atlas = {self.df}")
 
         tqdm.pandas(desc="Computing Regional Score")
         self.df[f"{self.name.lower()}_regional_score"] = self.df.progress_apply(
             lambda lead: pd.Series(self.calculate_regional_score(lead)), axis=1
         )
-        print(f"3self.df in Regional Atlas = {self.df}")
         return self.df
 
     def finish(self) -> None:
