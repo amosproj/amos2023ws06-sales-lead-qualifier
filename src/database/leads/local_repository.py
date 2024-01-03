@@ -80,7 +80,7 @@ class LocalRepository(Repository):
 
     def create_snapshot(self, df, prefix, name):
         full_path = (
-            f"{self.SNAPSHOTS}{prefix.replace('/','_')}{name.lower()}_snapshot.csv"
+            f"{self.SNAPSHOTS}/{prefix.replace('/','_')}{name.lower()}_snapshot.csv"
         )
         df.to_csv(full_path, index=False)
 
