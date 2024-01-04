@@ -247,4 +247,7 @@ class RegionalAtlas(Step):
             pop_density * employment_rate * income_per_inhabitant
         ) / 1000000
 
-        return regional_score if pd.notnull(regional_score) else None
+        if pd.notnull(regional_score):
+            return regional_score
+        else:
+            raise ValueError("Regional score is null")
