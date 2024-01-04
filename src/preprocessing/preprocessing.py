@@ -29,20 +29,33 @@ log = get_logger()
 
 
 class Preprocessing:
-    def __init__(self, filter_null_data=True):
+    def __init__(self, filter_null_data=True, historical_data=False):
         data_repo = get_database()
         data_path = data_repo.get_output_path()
-        data = pd.read_csv(data_path)
+        log.info(f"Data path = {data_path}")
+        if historical_data:
+            input_path_components = data_path.split("\\" if "\\" in data_path else "/")
+            input_path_components.pop()
+            input_path_components.pop()
+            input_path_components.append("historical_data/100k_historic_enriched.csv")
+            input_path = "/".join(input_path_components)
+            data = pd.read_csv(input_path)
+        else:
+            data = pd.read_csv(data_path)
         self.preprocessed_df = data.copy()
         # created the new output path based on which repo used
         path_components = data_path.split("\\" if "\\" in data_path else "/")
         path_components.pop()
-        path_components.append("preprocessed_data.csv")
+        if historical_data:
+            path_components.pop()
+            path_components.append("preprocessed_data_files/preprocessed_data.csv")
+        else:
+            path_components.append("preprocessed_data.csv")
         self.prerocessed_data_output_path = "/".join(path_components)
 
         self.filter_bool = filter_null_data
         # columns that would be added later after one-hot encoding each class
-        self.added_classes = []
+        self.added_features = []
         self.numerical_data = [
             "google_places_rating",
             "google_places_user_ratings_total",
@@ -59,11 +72,13 @@ class Preprocessing:
 
         # categorical data that needs one-hot encoding
         self.categorical_data = [
-            "number_country",
-            "number_area",
+            # "number_country",
+            # "number_area",
             "google_places_detailed_type",
             "review_polarization_type",
         ]
+
+        self.class_labels = "MerchantSizeByDPV"
 
     def filter_out_null_data(self):
         self.preprocessed_df = self.preprocessed_df[
@@ -123,6 +138,16 @@ class Preprocessing:
         ]
         return self.preprocessed_df
 
+    def class_label_encoding(self, column):
+        size_mapping = {"XS": 0, "S": 1, "M": 2, "L": 3, "XL": 4}
+        if column in self.preprocessed_df.columns:
+            self.preprocessed_df[column] = self.preprocessed_df[column].map(
+                size_mapping
+            )
+        else:
+            log.info(f"Class labels {column} does not exist in the dataframe!")
+        return self.preprocessed_df
+
     def single_one_hot_encoding(self, column):
         # one-hot encoding categorical data and creating columns for the newly created classes
         if column in self.preprocessed_df.columns:
@@ -130,7 +155,7 @@ class Preprocessing:
             encoder = OneHotEncoder(sparse=False)
             encoded_data = encoder.fit_transform(data_to_encode)
             encoded_columns = encoder.get_feature_names_out([column])
-            self.added_classes.extend(encoded_columns)
+            self.added_features.extend(encoded_columns)
             encoded_df = pd.DataFrame(
                 encoded_data, columns=encoded_columns, index=self.preprocessed_df.index
             )
@@ -149,7 +174,7 @@ class Preprocessing:
             )
             mlb = MultiLabelBinarizer()
             encoded_data = mlb.fit_transform(self.preprocessed_df[column])
-            self.added_classes.extend(mlb.classes_)
+            self.added_features.extend(mlb.classes_)
             if self.filter_bool:
                 encoded_df = pd.DataFrame(
                     encoded_data, columns=mlb.classes_, index=self.preprocessed_df.index
@@ -190,13 +215,20 @@ class Preprocessing:
                 f"Failed to one-hot encode data type 'google_places_detailed_type'! Error: {e}"
             )
 
+        try:
+            self.preprocessed_df = self.class_label_encoding(self.class_labels)
+        except ValueError as e:
+            log.error(f"Failed to label the classes '{self.class_labels}'! Error: {e}")
+
         log.info("Preprocessing complete!")
+
         return self.preprocessed_df
 
     def save_preprocessed_data(self):
         columns_to_save = []
         columns_to_save.extend(self.numerical_data)
-        columns_to_save.extend(self.added_classes)
+        columns_to_save.extend(self.added_features)
+        columns_to_save.append(self.class_labels)
         selected_df = pd.DataFrame()
         try:
             for column in columns_to_save:
@@ -207,7 +239,7 @@ class Preprocessing:
         try:
             selected_df.to_csv(self.prerocessed_data_output_path, index=False)
             log.info(
-                f"Preprocessed data file saved at {self.prerocessed_data_output_path}"
+                f"Preprocessed dataframe of shape {self.preprocessed_df.shape} is saved at {self.prerocessed_data_output_path}"
             )
         except ValueError as e:
             log.error(f"Failed to save preprocessed data file! {e}")

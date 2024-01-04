@@ -214,8 +214,17 @@ def pipeline_demo():
 
 def preprocessing_demo():
     if get_yes_no_input("Filter out the API-irrelevant data? (y/n)"):
-        preprocessor = Preprocessing(filter_null_data=True)
+        filter_bool = True
     else:
-        preprocessor = Preprocessing(filter_null_data=False)
+        filter_bool = False
+    if get_yes_no_input(
+        "Run on historical data ? (y/n)\nNote: DATABASE_TYPE should be S3!"
+    ):
+        historical_bool = True
+    else:
+        historical_bool = False
+    preprocessor = Preprocessing(
+        filter_null_data=filter_bool, historical_data=historical_bool
+    )
     df = preprocessor.implement_preprocessing_pipeline()
     preprocessor.save_preprocessed_data()
