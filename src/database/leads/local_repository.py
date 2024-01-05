@@ -3,6 +3,7 @@
 
 import json
 import os
+from pathlib import Path
 
 import pandas as pd
 
@@ -86,3 +87,29 @@ class LocalRepository(Repository):
 
     def clean_snapshots(self, prefix):
         pass
+
+    def save_lookup_table(self, lookup_table, step):
+        lookup_path = Path(self.BASE_PATH + f"/../../data/lookup_tables/{step}.csv")
+        lookup_table.to_csv(str(lookup_path), index=False)
+
+    def create_or_load_lookup_table(self, step):
+        lookup_path = Path(self.BASE_PATH + f"/../../data/lookup_tables/{step}.csv")
+        if not lookup_path.resolve().parent.exists():
+            lookup_path.resolve().parent.mkdir(parents=True)
+        try:
+            # If the lookup table exists, load it
+            lookup_table = pd.read_csv(str(lookup_path))
+        except FileNotFoundError:
+            # If the lookup table doesn't exist, create an empty one
+            lookup_table = pd.DataFrame(
+                columns=[
+                    "HashedData",
+                    "First Name",
+                    "Last Name",
+                    "Company / Account",
+                    "Phone",
+                    "Email",
+                ]
+            )
+            lookup_table.to_csv(str(lookup_path), index=False)
+        return lookup_table

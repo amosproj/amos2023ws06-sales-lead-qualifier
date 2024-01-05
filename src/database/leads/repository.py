@@ -112,3 +112,18 @@ class Repository(ABC):
         :return: json contents of desired review
         """
         pass
+
+    @abstractmethod
+    def save_lookup_table(self, lookup_table, step):
+        """
+        Save the lookup table for hashes for a given step
+        """
+        pass
+
+    @abstractmethod
+    def create_or_load_lookup_table(self, step):
+        """
+        Create or load the lookup table of hashes for a given step
+        :return: lookup table as a pandas DataFrame
+        """
+        pass
