@@ -7,6 +7,7 @@ import facebook
 import requests
 from tqdm import tqdm
 
+from bdc.steps.generate_hash_leads import GenerateHashLeads
 from bdc.steps.step import Step
 from config import FACEBOOK_APP_ID, FACEBOOK_APP_SECRET
 from logger import get_logger
@@ -35,18 +36,41 @@ class FacebookGraphAPI(Step):
 
     def run(self):
         # choosing company name as search query if email is not in commercial domain, otherwise choose first and last names
+        # self.df["search-query"] = self.df.apply(
+        #     lambda row: row["Company / Account"]
+        #     if row["domain"] is not None
+        #     else row["First Name"] + " " + row["Last Name"],
+        #     axis=1,
+        # )
+        generate_hash = GenerateHashLeads()
         self.df["search-query"] = self.df.apply(
-            lambda row: row["Company / Account"]
+            lambda row: generate_hash.hash_check(
+                row, row["Company / Account"], self.name, ["search-query"], row
+            )
             if row["domain"] is not None
             else row["First Name"] + " " + row["Last Name"],
             axis=1,
         )
+
         self.df["data-fields"] = self.df.apply(
-            lambda row: ["category", "about", "location", "website"]
+            lambda row: generate_hash.hash_check(
+                row,
+                ["category", "about", "location", "website"],
+                self.name,
+                ["data-fields"],
+                row,
+            )
             if row["domain"] is not None
             else ["email", "location"],
             axis=1,
         )
+
+        # self.df["data-fields"] = self.df.apply(
+        #     lambda row: ["category", "about", "location", "website"]
+        #     if row["domain"] is not None
+        #     else ["email", "location"],
+        #     axis=1,
+        # )
 
         tqdm.pandas(desc="Searching Facebook Graph API")
         try:

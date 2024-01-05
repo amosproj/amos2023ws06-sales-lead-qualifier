@@ -13,6 +13,7 @@ from pandas import DataFrame
 from sklearn.linear_model import LinearRegression
 from tqdm import tqdm
 
+from bdc.steps.generate_hash_leads import GenerateHashLeads
 from bdc.steps.helpers import TextAnalyzer
 from bdc.steps.step import Step, StepError
 from config import OPEN_AI_API_KEY
@@ -132,10 +133,23 @@ class GPTReviewSentimentAnalyzer(Step):
             DataFrame: The DataFrame with the sentiment scores added.
         """
         tqdm.pandas(desc="Running sentiment analysis on reviews")
+
         self.df[self.extracted_col_name] = self.df[
             self.gpt_required_fields["place_id"]
-        ].progress_apply(lambda place_id: self.run_sentiment_analysis(place_id))
-        return self.df
+        ].progress_apply(
+            lambda place_id: GenerateHashLeads.hash_check(
+                place_id,
+                self.run_sentiment_analysis,
+                self.name,
+                self.gpt_required_fields["place_id"],
+                place_id,
+            )
+        )
+
+        # self.df[self.extracted_col_name] = self.df[
+        #     self.gpt_required_fields["place_id"]
+        # ].progress_apply(lambda place_id: self.run_sentiment_analysis(place_id))
+        # return self.df
 
     def finish(self) -> None:
         """
@@ -370,8 +384,21 @@ class SmartReviewInsightsEnhancer(Step):
 
         # Apply the enhancement function
         self.df[self.added_cols] = self.df.progress_apply(
-            lambda lead: pd.Series(self._enhance_review_insights(lead)), axis=1
+            lambda lead: pd.Series(
+                GenerateHashLeads.hash_check(
+                    lead,
+                    self._enhance_review_insights,
+                    self.name,
+                    self.added_cols,
+                    lead,
+                )
+            ),
+            axis=1,
         )
+
+        # self.df[self.added_cols] = self.df.progress_apply(
+        #     lambda lead: pd.Series(self._enhance_review_insights(lead)), axis=1
+        # )
         return self.df
 
     def finish(self) -> None:

@@ -15,6 +15,7 @@ from googlemaps.exceptions import ApiError, HTTPError, Timeout, TransportError
 from requests import RequestException
 from tqdm import tqdm
 
+from bdc.steps.generate_hash_leads import GenerateHashLeads
 from bdc.steps.step import Step, StepError
 from config import GOOGLE_PLACES_API_KEY
 from logger import get_logger
@@ -97,11 +98,26 @@ class GooglePlaces(Step):
     def run(self) -> pd.DataFrame:
         # Call find_places API
         tqdm.pandas(desc="Getting info from Find Places API")
+
+        # generate_hash = GenerateHashLeads()
         self.df[
             [f"{self.name.lower()}_{field}" for field in self.df_fields]
         ] = self.df.progress_apply(
-            lambda lead: self.get_data_from_google_api(lead), axis=1
+            lambda lead: GenerateHashLeads.hash_check(
+                lead,
+                self.get_data_from_google_api,
+                self.name,
+                [f"{self.name.lower()}_{field}" for field in self.df_fields],
+                lead,
+            ),
+            axis=1,
         )
+
+        # self.df[
+        #     [f"{self.name.lower()}_{field}" for field in self.df_fields]
+        # ] = self.df.progress_apply(
+        #     lambda lead: self.get_data_from_google_api(lead), axis=1
+        # )
 
         return self.df
 
