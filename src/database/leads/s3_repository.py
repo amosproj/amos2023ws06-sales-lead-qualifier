@@ -38,8 +38,10 @@ class S3Repository(Repository):
     BUCKET = "amos--data--events"
     DF_INPUT = f"s3://{BUCKET}/leads/enriched.csv"
     DF_OUTPUT = f"s3://{BUCKET}/leads/enriched.csv"
+    # DF_OUTPUT = f"s3://{BUCKET}/leads/test.csv"
     REVIEWS = f"s3://{BUCKET}/reviews/"
     SNAPSHOTS = f"s3://{BUCKET}/snapshots/"
+    LOOKUP_TABLES = f"s3://{BUCKET}/lookup_tables/"
 
     def _download(self):
         """
@@ -196,3 +198,41 @@ class S3Repository(Repository):
 
     def clean_snapshots(self, prefix):
         pass
+
+    def save_lookup_table(self, lookup_table, step):
+        full_path = f"{self.LOOKUP_TABLES}{step}.csv"
+        bucket, key = decode_s3_url(full_path)
+
+        csv_buffer = StringIO()
+        lookup_table.to_csv(csv_buffer, index=False)
+        self._save_to_s3(csv_buffer.getvalue(), bucket, key)
+
+    def create_or_load_lookup_table(self, step):
+        file_name = f"{step}.csv"
+        bucket, key = decode_s3_url(self.LOOKUP_TABLES)
+        key += file_name
+
+        lookup_table = self._fetch_object_s3(bucket, key)
+        if lookup_table is None or "Body" not in lookup_table:
+            log.error(
+                f"Couldn't find lookup table in S3 bucket {bucket} and key {key} will create it"
+            )
+            lookup_table = pd.DataFrame(
+                columns=[
+                    "HashedData",
+                    "First Name",
+                    "Last Name",
+                    "Company / Account",
+                    "Phone",
+                    "Email",
+                ]
+            )
+            self.save_lookup_table(lookup_table, step)
+            return lookup_table
+
+        source = lookup_table["Body"]
+
+        try:
+            return pd.read_csv(source)
+        except FileNotFoundError:
+            log.error("Error: Could not find Lookup Table.")
