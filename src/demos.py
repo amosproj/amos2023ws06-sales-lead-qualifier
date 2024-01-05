@@ -155,7 +155,6 @@ def add_step_if_requested(
 def pipeline_demo():
     steps = [AnalyzeEmails(force_refresh=True)]
     additional_steps = [
-        ([GenerateHashLeads], "Hash Creation and redundant check", ""),
         ([ScrapeAddress], "Scrape Address", "(will take a long time)"),
         ([FacebookGraphAPI], "Facebook Graph API", "(will use token)"),
         ([PreprocessPhonenumbers], "Phone Number Validation", ""),

@@ -2,24 +2,22 @@
 # SPDX-FileCopyrightText: 2023 Ruchita Nathani <ruchita.nathani@fau.de>
 
 import hashlib
+import os
 
 import pandas as pd
 
 from bdc.steps.step import Step
 from database import get_database
+from logger import get_logger
 
-# from logger import get_logger
-#
-# log = get_logger()
+log = get_logger()
 
 
-class GenerateHashLeads(Step):
-    name = "Generate_Hash_Leads"
-    required_cols = ["Email", "First Name", "Last Name", "Company / Account", "Phone"]
+class GenerateHashLeads:
+    BASE_PATH = os.path.dirname(__file__)
 
-    def load_data(self):
-        pass
-
+    # def load_data(self):
+    #     pass
     def hash_lead(self, lead_data):
         # Concatenate key lead information
         data_to_hash = (
@@ -35,10 +33,42 @@ class GenerateHashLeads(Step):
 
         return hash
 
-    def create_or_load_lookup_table(self):
+    def hash_check(self, lead_data, data_fill, step, fields_tofill, *args, **kwargs):
+        lead_hash = self.hash_lead(lead_data)
+        lookup_table = self.create_or_load_lookup_table(step)
+        if lead_hash in lookup_table["HashedData"].tolist():
+            # If the hash exists in the lookup table, return the corresponding data
+            log.info(f"Hash {lead_hash} already exists in the lookup table.")
+            breakpoint()
+            return lead_data[fields_tofill]
+        new_value = {
+            "HashedData": lead_hash,
+            "First Name": lead_data["First Name"],
+            "Last Name": lead_data["Last Name"],
+            "Company / Account": lead_data["Company / Account"],
+            "Phone": lead_data["Phone"],
+            "Email": lead_data["Email"],
+        }
+        lookup_table.loc[len(lookup_table)] = new_value
+        self.save_lookup_table(lookup_table, step)
+
+        return data_fill(*args, **kwargs)
+
+    def save_lookup_table(self, lookup_table, step):
+        lookup = os.path.abspath(
+            os.path.join(self.BASE_PATH, f"../../data/{step}_lookup_table.csv")
+        )
+        lookup_table.to_csv(lookup, index=False)
+
+    def create_or_load_lookup_table(self, step):
+        lookup = os.path.abspath(
+            os.path.join(self.BASE_PATH, f"../../data/{step}_lookup_table.csv")
+        )
         try:
             # If the lookup table exists, load it
-            lookup_table = pd.read_csv("./data/lookup_table.csv")
+            # lookup_table = pd.read_csv("./data/lookup_table.csv")
+
+            lookup_table = pd.read_csv(lookup)
         except FileNotFoundError:
             # If the lookup table doesn't exist, create an empty one
             lookup_table = pd.DataFrame(
@@ -51,7 +81,7 @@ class GenerateHashLeads(Step):
                     "Email",
                 ]
             )
-            lookup_table.to_csv("./data/lookup_table.csv", index=False)
+            lookup_table.to_csv(lookup, index=False)
         return lookup_table
 
     def run(self):
@@ -66,7 +96,7 @@ class GenerateHashLeads(Step):
         leads_to_process = data_frame[~data_frame["HashedData"].isin(existing_hashes)]
 
         for index, lead in leads_to_process.iterrows():
-            print(f"Processing lead with hash: {lead['HashedData']}")
+            log.info(f"Processing lead with hash: {lead['HashedData']}")
 
             # Update the lookup table with the processed lead
             lookup_table = pd.concat(
@@ -74,10 +104,10 @@ class GenerateHashLeads(Step):
             )
 
         # Save the updated lookup table
-        lookup_table.to_csv("./data/lookup_table.csv", index=False)
+        lookup_table.to_csv(self.lookup, index=False)
 
-        print("Processing complete.")
+        log.info(f"Processing complete.")
         return self.df
 
-    def finish(self):
-        pass
+    # def finish(self):
+    #     pass
