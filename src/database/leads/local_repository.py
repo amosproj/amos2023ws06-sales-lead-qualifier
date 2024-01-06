@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Sophie Heasman <sophieheasmann@gmail.com>
 
+import csv
 import json
 import os
 from pathlib import Path
@@ -88,21 +89,14 @@ class LocalRepository(Repository):
     def clean_snapshots(self, prefix):
         pass
 
-    def save_lookup_table(self, lookup_table, step):
-        lookup_path = Path(self.BASE_PATH + f"/../../data/lookup_tables/{step}.csv")
-        lookup_table.to_csv(str(lookup_path), index=False)
-
-    def create_or_load_lookup_table(self, step):
-        lookup_path = Path(self.BASE_PATH + f"/../../data/lookup_tables/{step}.csv")
-        if not lookup_path.resolve().parent.exists():
-            lookup_path.resolve().parent.mkdir(parents=True)
-        try:
-            # If the lookup table exists, load it
-            lookup_table = pd.read_csv(str(lookup_path))
-        except FileNotFoundError:
-            # If the lookup table doesn't exist, create an empty one
-            lookup_table = pd.DataFrame(
-                columns=[
+    def save_lookup_table(self, lookup_table: dict, step_name: str) -> None:
+        lookup_path = Path(
+            self.BASE_PATH + f"/../../data/lookup_tables/{step_name}.csv"
+        )
+        with open(str(lookup_path), mode="w", newline="", encoding="utf-8") as fh:
+            csv_writer = csv.writer(fh)
+            csv_writer.writerow(
+                [
                     "HashedData",
                     "First Name",
                     "Last Name",
@@ -110,6 +104,30 @@ class LocalRepository(Repository):
                     "Phone",
                     "Email",
                 ]
-            )
-            lookup_table.to_csv(str(lookup_path), index=False)
+            )  # Write the header
+
+            for hashed_data, other_columns in lookup_table.items():
+                csv_writer.writerow([hashed_data] + other_columns)
+
+    def load_lookup_table(self, step_name: str) -> dict:
+        lookup_path = Path(
+            self.BASE_PATH + f"/../../data/lookup_tables/{step_name}.csv"
+        )
+        if not lookup_path.resolve().parent.exists():
+            lookup_path.resolve().parent.mkdir(parents=True)
+
+        lookup_table = {}
+        try:
+            with open(str(lookup_path), mode="r", encoding="utf-8") as fh:
+                csv_reader = csv.reader(fh)
+                headers = next(csv_reader)  # Read the header row
+
+                for row in csv_reader:
+                    hashed_data = row[0]
+                    other_columns = row[1:]
+                    lookup_table[hashed_data] = other_columns
+        except FileNotFoundError:
+            # if the file is not present then there is no lookup table => return empty dict
+            pass
+
         return lookup_table

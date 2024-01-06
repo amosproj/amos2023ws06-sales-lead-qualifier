@@ -31,10 +31,19 @@ class LeadHashGenerator:
 
         return hash
 
-    def hash_check(self, lead_data, data_fill, step, fields_tofill, *args, **kwargs):
+    def hash_check(
+        self,
+        lead_data: pd.Series,
+        data_fill_function: callable,
+        step_name: str,
+        fields_tofill: list[str],
+        *args,
+        **kwargs,
+    ):
         lead_hash = self.hash_lead(lead_data)
-        lookup_table = get_database().create_or_load_lookup_table(step)
-        if lead_hash in lookup_table["HashedData"].tolist():
+        lookup_table = get_database().load_lookup_table(step_name)
+
+        if lead_hash in lookup_table:
             # If the hash exists in the lookup table, return the corresponding data
             log.info(f"Hash {lead_hash} already exists in the lookup table.")
             try:
@@ -44,16 +53,15 @@ class LeadHashGenerator:
                 log.info(
                     f"Hash is present but data fields {fields_tofill} were not found."
                 )
-                return data_fill(*args, **kwargs)
-        new_value = {
-            "HashedData": lead_hash,
-            "First Name": lead_data["First Name"],
-            "Last Name": lead_data["Last Name"],
-            "Company / Account": lead_data["Company / Account"],
-            "Phone": lead_data["Phone"],
-            "Email": lead_data["Email"],
-        }
-        lookup_table.loc[len(lookup_table)] = new_value
-        get_database().save_lookup_table(lookup_table, step)
+                return data_fill_function(*args, **kwargs)
 
-        return data_fill(*args, **kwargs)
+        lookup_table[lead_hash] = [
+            lead_data["First Name"],
+            lead_data["Last Name"],
+            lead_data["Company / Account"],
+            lead_data["Phone"],
+            lead_data["Email"],
+        ]
+        get_database().save_lookup_table(lookup_table, step_name)
+
+        return data_fill_function(*args, **kwargs)

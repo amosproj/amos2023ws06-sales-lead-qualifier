@@ -114,14 +114,14 @@ class Repository(ABC):
         pass
 
     @abstractmethod
-    def save_lookup_table(self, lookup_table, step):
+    def save_lookup_table(self, lookup_table: dict, step_name: str) -> None:
         """
         Save the lookup table for hashes for a given step
         """
         pass
 
     @abstractmethod
-    def create_or_load_lookup_table(self, step):
+    def load_lookup_table(self, step_name: str) -> dict:
         """
         Create or load the lookup table of hashes for a given step
         :return: lookup table as a pandas DataFrame
