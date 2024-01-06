@@ -13,7 +13,6 @@ from bdc.pipeline import Pipeline
 from bdc.steps import (
     AnalyzeEmails,
     FacebookGraphAPI,
-    GenerateHashLeads,
     GooglePlaces,
     GooglePlacesDetailed,
     GPTReviewSentimentAnalyzer,

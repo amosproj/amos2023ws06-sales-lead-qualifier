@@ -10,7 +10,7 @@ from geopandas.tools import sjoin
 from pandas import DataFrame
 from tqdm import tqdm
 
-from bdc.steps.generate_hash_leads import GenerateHashLeads
+from bdc.steps.helpers import get_lead_hash_generator
 from bdc.steps.step import Step, StepError
 from logger import get_logger
 
@@ -99,13 +99,12 @@ class RegionalAtlas(Step):
         tqdm.pandas(desc="Getting social data")
 
         # Add the new fields to the df
-        generate_hash = GenerateHashLeads()
         self.df[self.added_cols[:-1]] = self.df.progress_apply(
             lambda lead: pd.Series(
-                generate_hash.hash_check(
+                get_lead_hash_generator().hash_check(
                     lead,
                     self.get_data_from_address,
-                    self.name,
+                    self.name + "_Location-Data",
                     self.added_cols[:-1],
                     lead,
                 )
@@ -121,10 +120,10 @@ class RegionalAtlas(Step):
 
         self.df[self.added_cols[:-1]] = self.df.progress_apply(
             lambda lead: pd.Series(
-                generate_hash.hash_check(
+                get_lead_hash_generator().hash_check(
                     lead,
                     self.calculate_regional_score,
-                    self.name,
+                    self.name + "_Regional-Score",
                     self.added_cols[:-1],
                     lead,
                 )

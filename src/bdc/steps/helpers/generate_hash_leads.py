@@ -13,11 +13,9 @@ from logger import get_logger
 log = get_logger()
 
 
-class GenerateHashLeads:
+class LeadHashGenerator:
     BASE_PATH = os.path.dirname(__file__)
 
-    # def load_data(self):
-    #     pass
     def hash_lead(self, lead_data):
         # Concatenate key lead information
         data_to_hash = (

@@ -4,7 +4,7 @@
 import pandas as pd
 from email_validator import EmailNotValidError, validate_email
 
-from bdc.steps.generate_hash_leads import GenerateHashLeads
+from bdc.steps.helpers import get_lead_hash_generator
 from bdc.steps.step import Step
 from logger import get_logger
 
@@ -116,12 +116,11 @@ class AnalyzeEmails(Step):
         #     lambda lead: extract_custom_domain(str(lead["Email"])), axis=1
         # )
 
-        generate_hash = GenerateHashLeads()
         self.df[["domain", "email_valid"]] = self.df.apply(
-            lambda lead: generate_hash.hash_check(
+            lambda lead: get_lead_hash_generator().hash_check(
                 lead,
                 extract_custom_domain,
-                self.name + "_1",
+                self.name + "_Custom-Domains",
                 ["domain", "email_valid"],
                 str(lead["Email"]),
             ),
@@ -129,10 +128,10 @@ class AnalyzeEmails(Step):
         )
 
         self.df[["first_name_in_account", "last_name_in_account"]] = self.df.apply(
-            lambda lead: generate_hash.hash_check(
+            lambda lead: get_lead_hash_generator().hash_check(
                 lead,
                 analyze_email_account,
-                self.name + "_2",
+                self.name + "_Email-Accounts",
                 ["first_name_in_account", "last_name_in_account"],
                 lead,
             ),
@@ -142,6 +141,7 @@ class AnalyzeEmails(Step):
         # self.df[["first_name_in_account", "last_name_in_account"]] = self.df.apply(
         #     lambda lead: analyze_email_account(lead), axis=1
         # )
+
         # remove commercial domains
         self.df["domain"].replace(commercial_domains, None, inplace=True)
         return self.df

@@ -15,7 +15,7 @@ from googlemaps.exceptions import ApiError, HTTPError, Timeout, TransportError
 from requests import RequestException
 from tqdm import tqdm
 
-from bdc.steps.generate_hash_leads import GenerateHashLeads
+from bdc.steps.helpers import get_lead_hash_generator
 from bdc.steps.step import Step, StepError
 from config import GOOGLE_PLACES_API_KEY
 from database import get_database
@@ -77,7 +77,7 @@ class GooglePlacesDetailed(Step):
         self.df[
             [f"{self.name.lower()}_{field}" for field in self.df_fields]
         ] = self.df.progress_apply(
-            lambda lead: GenerateHashLeads.hash_check(
+            lambda lead: get_lead_hash_generator().hash_check(
                 lead,
                 self.get_data_from_detailed_google_api,
                 self.name,

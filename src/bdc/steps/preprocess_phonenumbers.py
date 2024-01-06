@@ -8,7 +8,7 @@ import phonenumbers
 from phonenumbers import geocoder
 from tqdm import tqdm
 
-from bdc.steps.generate_hash_leads import GenerateHashLeads
+from bdc.steps.helpers import get_lead_hash_generator
 from bdc.steps.step import Step
 from logger import get_logger
 
@@ -46,10 +46,9 @@ class PreprocessPhonenumbers(Step):
     def run(self):
         tqdm.pandas(desc="Preprocessing Phone numbers")
 
-        generate_hash = GenerateHashLeads()
         self.df[self.added_cols] = self.df.progress_apply(
             lambda lead: pd.Series(
-                generate_hash.hash_check(
+                get_lead_hash_generator().hash_check(
                     lead, self.process_row, self.name, self.added_cols, lead
                 )
             ),
