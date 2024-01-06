@@ -16,6 +16,7 @@ log = get_logger()
 
 class LeadHashGenerator:
     BASE_PATH = os.path.dirname(__file__)
+    _curr_lookup_table = ("", None)
 
     def hash_lead(self, lead_data):
         # Concatenate key lead information
@@ -42,7 +43,13 @@ class LeadHashGenerator:
         **kwargs,
     ):
         lead_hash = self.hash_lead(lead_data)
-        lookup_table = get_database().load_lookup_table(step_name)
+        if self._curr_lookup_table[0] != step_name:
+            self._curr_lookup_table = (
+                step_name,
+                get_database().load_lookup_table(step_name),
+            )
+
+        lookup_table = self._curr_lookup_table[1]
 
         if lead_hash in lookup_table:
             # If the hash exists in the lookup table, return the corresponding data
@@ -57,6 +64,7 @@ class LeadHashGenerator:
                 lookup_table[lead_hash] = lookup_table[lead_hash][:-1] + [
                     datetime.now().strftime("%Y-%m-%d_%H:%M:%S"),
                 ]
+                get_database().save_lookup_table(lookup_table, step_name)
                 return data_fill_function(*args, **kwargs)
 
         lookup_table[lead_hash] = [
