@@ -54,6 +54,9 @@ class LeadHashGenerator:
                 log.info(
                     f"Hash is present but data fields {fields_tofill} were not found."
                 )
+                lookup_table[lead_hash] = lookup_table[lead_hash][:-1] + [
+                    datetime.now().strftime("%Y-%m-%d_%H:%M:%S"),
+                ]
                 return data_fill_function(*args, **kwargs)
 
         lookup_table[lead_hash] = [
