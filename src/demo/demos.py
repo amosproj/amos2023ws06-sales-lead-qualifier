@@ -161,9 +161,17 @@ def pipeline_demo():
 
     if continue_with_custom_config:
         print("Continuing with custom pipeline config...\n\n")
-        steps = get_pipeline_initial_steps()
-        additional_steps = get_pipeline_additional_steps()
-        for step_class, desc, warning_message in additional_steps:
+        steps = []
+        # get default steps and optional steps attrs
+        initial_steps_attr = get_pipeline_initial_steps()
+        additional_steps_attr = get_pipeline_additional_steps()
+
+        # create step instances from default steps attrs and add them to steps list
+        for step_class, desc, warning_message in initial_steps_attr:
+            steps.append(step_class(force_refresh=True))
+
+        # add optional steps to steps list if requested
+        for step_class, desc, warning_message in additional_steps_attr:
             add_step_if_requested(steps, step_class, desc, warning_message)
 
     limit = get_int_input("Set limit for data points to be processed (0=No limit)\n")

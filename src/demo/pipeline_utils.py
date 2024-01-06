@@ -43,7 +43,6 @@ _additional_pipeline_steps = [
     (PreprocessPhonenumbers, "Phone Number Validation", ""),
     (
         GooglePlaces,
-        GooglePlacesDetailed,
         "Google API",
         "(will use token and generate cost!)",
     ),
