@@ -3,7 +3,7 @@
 
 import os
 
-from demos import bdc_demo, db_demo, evp_demo, pipeline_demo
+from demo import bdc_demo, db_demo, evp_demo, pipeline_demo
 from logger import get_logger
 
 abspath = os.path.abspath(__file__)
