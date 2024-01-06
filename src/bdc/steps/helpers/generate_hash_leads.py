@@ -3,6 +3,7 @@
 
 import hashlib
 import os
+from datetime import datetime
 
 import pandas as pd
 
@@ -61,6 +62,7 @@ class LeadHashGenerator:
             lead_data["Company / Account"],
             lead_data["Phone"],
             lead_data["Email"],
+            datetime.now().strftime("%Y-%m-%d_%H:%M:%S"),
         ]
         get_database().save_lookup_table(lookup_table, step_name)
 

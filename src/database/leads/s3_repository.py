@@ -214,6 +214,7 @@ class S3Repository(Repository):
                 "Company / Account",
                 "Phone",
                 "Email",
+                "Last Updated",
             ]
         )
         # Write data rows

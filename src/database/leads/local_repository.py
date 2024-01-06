@@ -103,6 +103,7 @@ class LocalRepository(Repository):
                     "Company / Account",
                     "Phone",
                     "Email",
+                    "Last Updated",
                 ]
             )  # Write the header
 
