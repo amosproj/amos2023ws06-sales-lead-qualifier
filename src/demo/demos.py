@@ -143,7 +143,7 @@ def pipeline_demo():
     Returns:
         None
     """
-    continue_with_custom_config = False
+    continue_with_custom_config = True
     if get_yes_no_input(f"Do you want to list all available pipeline configs? (y/N)\n"):
         # Create the formatted string using list comprehension and join
         all_pipeline_configs = get_all_available_pipeline_json_configs()
@@ -153,8 +153,8 @@ def pipeline_demo():
             choice = get_multiple_choice(prompt, choices)
             if choice != "Exit":
                 steps = get_pipeline_config_from_json(config_name=choice)
+                continue_with_custom_config = False
             else:
-                continue_with_custom_config = True
                 print("Exiting...\n")
         else:
             print("No pipeline configs found.\n")
