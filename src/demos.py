@@ -6,6 +6,7 @@
 # SPDX-FileCopyrightText: 2023 Ruchita Nathani <Ruchita.nathani@fau.de>
 # SPDX-FileCopyrightText: 2023 Ahmed Sheta <ahmed.sheta@fau.de>
 
+import pandas as pd
 from sklearn.metrics import mean_squared_error
 
 from bdc import DataCollector
@@ -28,6 +29,7 @@ from evp import EstimatedValuePredictor
 from evp.data_processing import split_dataset
 from evp.predictors import Predictors
 from logger import get_logger
+from preprocessing import Preprocessing
 
 log = get_logger()
 
@@ -208,3 +210,21 @@ def pipeline_demo():
     )
 
     pipeline.run()
+
+
+def preprocessing_demo():
+    if get_yes_no_input("Filter out the API-irrelevant data? (y/n)"):
+        filter_bool = True
+    else:
+        filter_bool = False
+    if get_yes_no_input(
+        "Run on historical data ? (y/n)\nNote: DATABASE_TYPE should be S3!"
+    ):
+        historical_bool = True
+    else:
+        historical_bool = False
+    preprocessor = Preprocessing(
+        filter_null_data=filter_bool, historical_data=historical_bool
+    )
+    df = preprocessor.implement_preprocessing_pipeline()
+    preprocessor.save_preprocessed_data()
