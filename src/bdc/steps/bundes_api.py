@@ -1,7 +1,8 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Berkay Bozkurt <resitberkaybozkurt@gmail.com>
 
-from deutschland.bundesanzeiger import Bundesanzeiger
+import html
+
 from pandas import DataFrame
 from tqdm import tqdm
 
