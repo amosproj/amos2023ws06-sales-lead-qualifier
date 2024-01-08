@@ -1,8 +1,10 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Sophie Heasman <sophieheasmann@gmail.com>
 
+import csv
 import json
 import os
+from pathlib import Path
 from datetime import datetime
 
 import pandas as pd
@@ -83,12 +85,56 @@ class LocalRepository(Repository):
 
     def create_snapshot(self, df, prefix, name):
         full_path = (
-            f"{self.SNAPSHOTS}{prefix.replace('/','_')}{name.lower()}_snapshot.csv"
+            f"{self.SNAPSHOTS}/{prefix.replace('/','_')}{name.lower()}_snapshot.csv"
         )
         df.to_csv(full_path, index=False)
 
     def clean_snapshots(self, prefix):
         pass
+
+    def save_lookup_table(self, lookup_table: dict, step_name: str) -> None:
+        lookup_path = Path(
+            self.BASE_PATH + f"/../../data/lookup_tables/{step_name}.csv"
+        )
+        with open(str(lookup_path), mode="w", newline="", encoding="utf-8") as fh:
+            csv_writer = csv.writer(fh)
+            csv_writer.writerow(
+                [
+                    "HashedData",
+                    "First Name",
+                    "Last Name",
+                    "Company / Account",
+                    "Phone",
+                    "Email",
+                    "Last Updated",
+                ]
+            )  # Write the header
+
+            for hashed_data, other_columns in lookup_table.items():
+                csv_writer.writerow([hashed_data] + other_columns)
+
+    def load_lookup_table(self, step_name: str) -> dict:
+        lookup_path = Path(
+            self.BASE_PATH + f"/../../data/lookup_tables/{step_name}.csv"
+        )
+        if not lookup_path.resolve().parent.exists():
+            lookup_path.resolve().parent.mkdir(parents=True)
+
+        lookup_table = {}
+        try:
+            with open(str(lookup_path), mode="r", encoding="utf-8") as fh:
+                csv_reader = csv.reader(fh)
+                headers = next(csv_reader)  # Read the header row
+
+                for row in csv_reader:
+                    hashed_data = row[0]
+                    other_columns = row[1:]
+                    lookup_table[hashed_data] = other_columns
+        except FileNotFoundError:
+            # if the file is not present then there is no lookup table => return empty dict
+            pass
+
+        return lookup_table
 
     def save_gpt_result(self, gpt_result, file_id, operation_name, force_refresh=False):
         """

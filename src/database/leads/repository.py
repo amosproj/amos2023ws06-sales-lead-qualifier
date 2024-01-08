@@ -125,6 +125,13 @@ class Repository(ABC):
         pass
 
     @abstractmethod
+    def save_lookup_table(self, lookup_table: dict, step_name: str) -> None:
+        """
+        Save the lookup table for hashes for a given step
+        """
+        pass
+    
+    @abstractmethod
     def fetch_gpt_result(self, file_id, operation_name):
         """
         Fetches the GPT result for a given file ID and operation name.
@@ -138,6 +145,14 @@ class Repository(ABC):
         """
         pass
 
+    @abstractmethod
+    def load_lookup_table(self, step_name: str) -> dict:
+        """
+        Create or load the lookup table of hashes for a given step
+        :return: lookup table as a pandas DataFrame
+        """
+        pass
+        
     @abstractmethod
     def save_gpt_result(self, gpt_result, file_id, operation_name, force_refresh=False):
         """

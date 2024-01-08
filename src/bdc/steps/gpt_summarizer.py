@@ -14,6 +14,7 @@ from pandas import DataFrame
 from requests import RequestException
 from tqdm import tqdm
 
+from bdc.steps.helpers import get_lead_hash_generator
 from bdc.steps.step import Step, StepError
 from config import OPEN_AI_API_KEY
 from database import get_database
@@ -66,13 +67,25 @@ class GPTSummarizer(Step):
 
     def run(self) -> DataFrame:
         tqdm.pandas(desc="Summarizing the website of leads")
+
         self.df[self.extracted_col_name_website_summary] = self.df.progress_apply(
-            lambda lead: self.summarize_the_company_website(
+            lambda lead: get_lead_hash_generator().hash_check(
+                lead,
+                self.summarize_the_company_website,
+                self.name,
+                self.extracted_col_name_website_summary,
                 lead[self.gpt_required_fields["website"]],
                 lead[self.gpt_required_fields["place_id"]],
             ),
             axis=1,
         )
+
+        # self.df[self.extracted_col_name_website_summary] = self.df.progress_apply(
+        #     lambda lead: self.summarize_the_company_website(
+        #         lead[self.gpt_required_fields["website"]]
+        #     ),
+        #     axis=1,
+        # )
         return self.df
 
     def finish(self) -> None:
