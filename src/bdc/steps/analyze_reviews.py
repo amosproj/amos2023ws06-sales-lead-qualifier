@@ -97,6 +97,7 @@ class GPTReviewSentimentAnalyzer(Step):
     name = "GPT-Review-Sentiment-Analyzer"
     model = "gpt-4"
     model_encoding_name = "cl100k_base"
+    text_analyzer = TextAnalyzer()
     MAX_PROMPT_TOKENS = 4096
     no_answer = "None"
     gpt_required_fields = {"place_id": "google_places_place_id"}
@@ -150,9 +151,6 @@ class GPTReviewSentimentAnalyzer(Step):
         return self.df
 
     def finish(self) -> None:
-        """
-        Finishes the sentiment analysis step.
-        """
         pass
 
     def run_sentiment_analysis(self, place_id):
@@ -168,11 +166,26 @@ class GPTReviewSentimentAnalyzer(Step):
         # if there is no reviews_path, then return without API call.
         if place_id is None or pd.isna(place_id):
             return None
+        cached_result = get_database().fetch_gpt_result(place_id, self.name)
+        if cached_result:
+            return cached_result["result"]
         reviews = get_database().fetch_review(place_id)
+        avg_score = self.textblob_calculate_avg_sentiment_score(reviews)
+        get_database().save_gpt_result(avg_score, place_id, self.name)
+        return avg_score
+
+    def gpt_calculate_avg_sentiment_score(self, reviews):
+        """
+        Calculates the average sentiment score for a list of reviews using GPT.
+
+        Args:
+            reviews (list): A list of review texts.
+
+        Returns:
+            float: The average sentiment score.
+
+        """
         review_texts = self.extract_text_from_reviews(reviews)
-        if len(review_texts) == 0:
-            return None
-        review_ratings = [review.get("rating", None) for review in reviews]
         # batch reviews so that we do not exceed the token limit of gpt4
         review_batches = self.batch_reviews(review_texts, self.MAX_PROMPT_TOKENS)
         scores = 0
@@ -180,8 +193,35 @@ class GPTReviewSentimentAnalyzer(Step):
         for review_batch in review_batches:
             sentiment_score = self.gpt_sentiment_analyze_review(review_batch)
             scores += sentiment_score or 0
-        scores
-        return scores / len(review_batches)
+        avg_score = scores / len(review_batches)
+        return avg_score
+
+    def textblob_calculate_avg_sentiment_score(self, reviews):
+        """
+        Calculates the average sentiment score for a list of reviews using TextBlob sentiment analysis.
+
+        Args:
+            reviews (list): A list of dictionaries containing review text and language information.
+        Returns:
+            float: The average sentiment score for the reviews.
+        """
+        reviews_langs = [
+            {
+                "text": review.get("text", ""),
+                "lang": review.get("original_language", "en"),
+            }
+            for review in reviews
+        ]
+        if len(reviews_langs) == 0:
+            return None
+        scores = 0
+        for review in reviews_langs:
+            score = self.text_analyzer.calculate_sentiment_analysis_score(
+                review["text"], review["lang"]
+            )
+            scores += score or 0
+        avg_score = scores / len(reviews_langs)
+        return avg_score
 
     def gpt_sentiment_analyze_review(self, review_list):
         """

@@ -17,6 +17,7 @@ from tqdm import tqdm
 from bdc.steps.helpers import get_lead_hash_generator
 from bdc.steps.step import Step, StepError
 from config import OPEN_AI_API_KEY
+from database import get_database
 from logger import get_logger
 
 log = get_logger()
@@ -46,10 +47,13 @@ class GPTSummarizer(Step):
     )
 
     extracted_col_name_website_summary = "sales_person_summary"
-    gpt_required_fields = {"website": "google_places_detailed_website"}
+    gpt_required_fields = {
+        "website": "google_places_detailed_website",
+        "place_id": "google_places_place_id",
+    }
 
     added_cols = [extracted_col_name_website_summary]
-    required_cols = ["google_places_website"]
+    required_cols = gpt_required_fields.values()
 
     client = None
 
@@ -71,6 +75,7 @@ class GPTSummarizer(Step):
                 self.name,
                 self.extracted_col_name_website_summary,
                 lead[self.gpt_required_fields["website"]],
+                lead[self.gpt_required_fields["place_id"]],
             ),
             axis=1,
         )
@@ -86,13 +91,16 @@ class GPTSummarizer(Step):
     def finish(self) -> None:
         pass
 
-    def summarize_the_company_website(self, website):
+    def summarize_the_company_website(self, website, place_id):
         """
         Summarise client website using GPT. Handles exceptions that mightarise from the API call.
         """
 
         if website is None or pd.isna(website):
             return None
+        company_summary = get_database().fetch_gpt_result(place_id, self.name)
+        if company_summary:
+            return company_summary["result"]
 
         html = self.extract_the_raw_html_and_parse(website)
 
@@ -127,7 +135,7 @@ class GPTSummarizer(Step):
 
                     if company_summary == self.no_answer:
                         return None
-
+                    get_database().save_gpt_result(company_summary, place_id, self.name)
                     return company_summary
                 else:
                     log.info("No summary data found in the response.")
