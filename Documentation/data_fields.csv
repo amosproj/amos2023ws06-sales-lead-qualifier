@@ -1,0 +1,57 @@
+column_id,description,source
+domain,Custom domain (if any),calculated
+email_valid,Indicator if E-Mail is valid,calculated
+first_name_in_account,Indicator if first name is part of the E-Mail Account,calculated
+last_name_in_account,Indicator if last name is part of the E-Mail Account,calculated
+email,Normalized version of the E-Mail,calculated
+category,,
+reviews_sentiment_score,Sentiment score between -1 and 1 for the reviews,GPT/calculated
+sales_person_summary,A summary of the website to support a salesperson in their call,GPT
+google_places_place_id,Place ID used by Google,Google Places API
+google_places_business_status,Business Status,Google Places API
+google_places_formatted_address,Formatted address,Google Places API
+google_places_name,Business Name,Google Places API
+google_places_user_ratings_total,Total number of ratings,Google Places API
+google_places_rating,Average star rating,Google Places API
+google_places_price_level,Price level (1-3),Google Places API
+google_places_candidate_count_mail,Number of results from E-Mail based search,calculated
+google_places_candidate_count_phone,Number of results from Phone based search,calculated
+google_places_place_id_matches_phone_search,Indicator weather phone based and E-Mail based search gave the same result,calculated
+google_places_confidence,Indicator of confidence in the Google result,calculated
+google_places_detailed_website,Link to business website,Google Places (detailed) API
+google_places_detailed_type,Type of business,Google Places (detailed) API
+number_formatted,Phone number (formatted),calculated
+number_country,Country derived from phone number,calculated
+number_area,Area derived from phone number,calculated
+number_valid,Indicator weather a phone number is valid,calculated
+number_possible,Indicator weather a phone number is possible,calculated
+regional_atlas_pop_density,Population density,Regional Atlas
+regional_atlas_pop_development,Population development,Regional Atlas
+regional_atlas_age_0,,Regional Atlas
+regional_atlas_age_1,,Regional Atlas
+regional_atlas_age_2,,Regional Atlas
+regional_atlas_age_3,,Regional Atlas
+regional_atlas_age_4,,Regional Atlas
+regional_atlas_pop_avg_age,Average population age,Regional Atlas
+regional_atlas_per_service_sector,,Regional Atlas
+regional_atlas_per_trade,,Regional Atlas
+regional_atlas_employment_rate,Employment rate,Regional Atlas
+regional_atlas_unemployment_rate,Unemployment rate,Regional Atlas
+regional_atlas_per_long_term_unemployment,Long term unemployment,Regional Atlas
+regional_atlas_investments_p_employee,Investments per employee,Regional Atlas
+regional_atlas_gross_salary_p_employee,Gross salary per employee,Regional Atlas
+regional_atlas_disp_income_p_inhabitant,Income per inhabitant,Regional Atlas
+regional_atlas_tot_income_p_taxpayer,Income per taxpayer,Regional Atlas
+regional_atlas_gdp_p_employee,GDP per employee,Regional Atlas
+regional_atlas_gdp_development,GDP development,Regional Atlas
+regional_atlas_gdp_p_inhabitant,GDP per inhabitant,Regional Atlas
+regional_atlas_gdp_p_workhours,GDP per workhours,Regional Atlas
+regional_atlas_pop_avg_age_zensus,Average population age (from zensus),Regional Atlas
+regional_atlas_regional_score,Regional score,calculated
+address_ver_1,?,?
+review_avg_grammatical_score,,calculated
+review_polarization_type,,calculated
+review_polarization_score,,calculated
+review_highest_rating_ratio,,calculated
+review_lowest_rating_ratio,,calculated
+review_rating_trend,,calculated

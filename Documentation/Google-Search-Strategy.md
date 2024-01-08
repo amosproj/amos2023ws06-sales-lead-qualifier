@@ -21,7 +21,7 @@ we try to combine the search methods and derive the most probable result.
 
 ### Available Search Methods
 
-1. Fulltext Search
+1. Fulltext Search (used with components of the E-Mail address)
 2. Phone Number Search
 
 ## Search Strategy
