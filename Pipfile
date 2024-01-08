@@ -38,6 +38,8 @@ pyspellchecker = "==0.7.2"
 autocorrect = "==2.6.1"
 textblob = "==0.17.1"
 deep-translator = "==1.11.4"
+fsspec = "2023.12.2"
+s3fs = "2023.12.2"
 
 [requires]
 python_version = "3.10"
