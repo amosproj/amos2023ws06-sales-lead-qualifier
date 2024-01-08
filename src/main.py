@@ -28,12 +28,14 @@ DEMOS = {
 }
 PROMPT = "Choose demo:\n"
 
+EXIT = "Exit"
+
 if __name__ == "__main__":
-    options = list(DEMOS.keys()) + ["Exit"]
+    options = list(DEMOS.keys()) + [EXIT]
     while True:
         try:
             choice = get_multiple_choice(PROMPT, options)
-            if choice == "Exit":
+            if choice == EXIT:
                 break
             DEMOS[choice]()
         except ValueError:
