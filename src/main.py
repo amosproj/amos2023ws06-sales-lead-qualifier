@@ -3,7 +3,8 @@
 
 import os
 
-from demo import bdc_demo, db_demo, evp_demo, pipeline_demo
+from demos import bdc_demo, db_demo, evp_demo, pipeline_demo, preprocessing_demo
+
 from logger import get_logger
 
 abspath = os.path.abspath(__file__)
@@ -15,7 +16,11 @@ log = get_logger()
 if __name__ == "__main__":
     while True:
         try:
-            choice = int(input("(1) BDC\n(2) EVP\n(3) DB\n(4) Pipeline\n(5) Exit\n"))
+            choice = int(
+                input(
+                    "(1) BDC\n(2) EVP\n(3) DB\n(4) Pipeline\n(5) Data preprocessing\n(6) Exit\n"
+                )
+            )
             match choice:
                 case 1:
                     bdc_demo()
@@ -27,6 +32,8 @@ if __name__ == "__main__":
                 case 4:
                     pipeline_demo()
                 case 5:
+                    preprocessing_demo()
+                case 6:
                     break
         except ValueError:
             print("Invalid choice")
