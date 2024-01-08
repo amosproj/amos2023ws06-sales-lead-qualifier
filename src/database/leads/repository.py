@@ -128,6 +128,8 @@ class Repository(ABC):
     def save_lookup_table(self, lookup_table: dict, step_name: str) -> None:
         """
         Save the lookup table for hashes for a given step
+        """
+        pass
     
     @abstractmethod
     def fetch_gpt_result(self, file_id, operation_name):
