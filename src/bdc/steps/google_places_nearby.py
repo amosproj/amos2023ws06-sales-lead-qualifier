@@ -23,7 +23,7 @@ from logger import get_logger
 log = get_logger()
 
 
-class GooglePlacesDetailed(Step):
+class GooglePlacesNearby(Step):
     """
     The GooglePlacesDetailed step will try to gather detailed information for a given google business entry, identified
     by the place ID. This information could be the website link, the review text and the business type. Reviews will
@@ -35,10 +35,10 @@ class GooglePlacesDetailed(Step):
         required_cols: List of fields that are required to be existent in the input dataframe before performing this step
     """
 
-    name = "Google_Places_Detailed"
+    name = "Google_Places_Nearby"
 
     # fields that are expected as an output of the df.apply lambda function
-    df_fields = ["website", "type", "coordinates"]
+    df_fields = ["no_similar_businesses"]
 
     # Weirdly the expression [f"{name}_{field}" for field in df_fields] gives an error as name is not in the scope of the iterator
     added_cols = [
@@ -49,13 +49,16 @@ class GooglePlacesDetailed(Step):
         )
     ]
 
-    required_cols = ["google_places_place_id"]
+    required_cols = [
+        "google_places_detailed_coordinates",
+        "google_places_detailed_type",
+    ]
 
     # fields that are accessed directly from the api
-    api_fields = ["website", "type", "reviews"]
+    api_fields = []
 
     # Output fields are not necessarily the same as input fields
-    api_fields_output = ["website"]
+    api_fields_output = []
 
     gmaps = None
 
@@ -70,11 +73,11 @@ class GooglePlacesDetailed(Step):
 
     def run(self) -> pd.DataFrame:
         # Call places API
-        tqdm.pandas(desc="Getting info from Places API")
+        tqdm.pandas(desc="Getting info from Nearby Places API")
         self.df[
             [f"{self.name.lower()}_{field}" for field in self.df_fields]
         ] = self.df.progress_apply(
-            lambda lead: self.get_data_from_detailed_google_api(lead), axis=1
+            lambda lead: self.get_data_from_nearby_google_api(lead), axis=1
         )
 
         return self.df
@@ -82,65 +85,63 @@ class GooglePlacesDetailed(Step):
     def finish(self) -> None:
         pass
 
-    def get_data_from_detailed_google_api(self, lead_row):
+    def get_data_from_nearby_google_api(self, lead_row):
         error_return_value = pd.Series([None] * len(self.df_fields))
 
-        place_id = lead_row["google_places_place_id"]
+        types = lead_row["google_places_detailed_type"]
+        coords = lead_row["google_places_detailed_coordinates"]
 
-        if place_id is None or pd.isna(place_id):
+        if types is None or pd.isna(types) or coords is None or pd.isna(coords):
             return error_return_value
 
-        # Call for the detailed API using specified fields
-        try:
-            # Fetch place details including reviews
-            response = self.gmaps.place(
-                place_id,
-                fields=self.api_fields,
-                language="original",
-                reviews_no_translations=True,
-            )
+        types = [
+            business_type
+            for business_type in types.split()
+            if business_type not in ["point_of_interest", "establishment"]
+        ]
+        coords = coords.split()
 
-            # Check response status
-            if response.get("status") != HTTPStatus.OK.name:
-                log.warning(
-                    f"Failed to fetch data. Status code: {response.get('status')}"
+        # Call for the nearby API using specified fields
+        results = list()
+        number_of_places = 0
+
+        for business_type in types:
+            try:
+                # Fetch place details including reviews
+                response = self.gmaps.places_nearby(
+                    location=(coords[0], coords[1]),
+                    radius=1000,
+                    type=business_type,
+                    language="original",
                 )
-                return error_return_value
 
-        except RequestException as e:
-            log.error(f"Error: {str(e)}")
+                # Check response status
+                if response.get("status") != HTTPStatus.OK.name:
+                    log.warning(
+                        f"Failed to fetch data. Status code: {response.get('status')}"
+                    )
+                    return error_return_value
 
-        except (ApiError, HTTPError, Timeout, TransportError) as e:
-            error_message = (
-                str(e.message)
-                if hasattr(e, "message") and e.message is not None
-                else str(e)
-            )
-            log.warning(f"Error: {error_message}")
+            except RequestException as e:
+                log.error(f"Error: {str(e)}")
 
-        # Retrieve reviews
-        reviews = []
+            except (ApiError, HTTPError, Timeout, TransportError) as e:
+                error_message = (
+                    str(e.message)
+                    if hasattr(e, "message") and e.message is not None
+                    else str(e)
+                )
+                log.warning(f"Error: {error_message}")
 
-        if "result" in response and "reviews" in response["result"]:
-            reviews = response["result"]["reviews"]
-
-        get_database().save_review(reviews, place_id)
-
-        # Retrieve and filter types
-        type_string = ""
-
-        if "result" in response and "types" in response["result"]:
-            for business_type in response["result"]["types"]:
-                type_string += f"{business_type} "
-            type_string.strip()
+            results.append(response["results"])
+            number_of_places += len(response["results"])
 
         results_list = [
-            response["result"][field] if field in response["result"] else None
+            response["results"][field] if field in response["results"] else None
             for field in self.api_fields_output
         ]
 
-        results_list.append(type_string)
-        # retrieve location from api call
-        results_list.append("-33.866489 151.1958561")
+        results_list.append(number_of_places)
+        # Save nearby places in json - implement in repository
 
         return pd.Series(results_list)

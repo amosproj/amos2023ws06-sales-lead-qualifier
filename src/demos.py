@@ -16,6 +16,7 @@ from bdc.steps import (
     FacebookGraphAPI,
     GooglePlaces,
     GooglePlacesDetailed,
+    GooglePlacesNearby,
     GPTReviewSentimentAnalyzer,
     GPTSummarizer,
     PreprocessPhonenumbers,
@@ -160,7 +161,7 @@ def pipeline_demo():
         ([FacebookGraphAPI], "Facebook Graph API", "(will use token)"),
         ([PreprocessPhonenumbers], "Phone Number Validation", ""),
         (
-            [GooglePlaces, GooglePlacesDetailed],
+            [GooglePlaces, GooglePlacesDetailed, GooglePlacesNearby],
             "Google API",
             "(will use token and generate cost!)",
         ),
