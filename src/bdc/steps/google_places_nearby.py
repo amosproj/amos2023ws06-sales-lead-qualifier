@@ -50,8 +50,8 @@ class GooglePlacesNearby(Step):
     ]
 
     required_cols = [
-        "google_places_detailed_coordinates",
-        "google_places_detailed_type",
+        "google_places_detailed_latitude",
+        "google_places_detailed_longitude",
     ]
 
     # fields that are accessed directly from the api
@@ -88,53 +88,46 @@ class GooglePlacesNearby(Step):
     def get_data_from_nearby_google_api(self, lead_row):
         error_return_value = pd.Series([None] * len(self.df_fields))
 
-        types = lead_row["google_places_detailed_type"]
-        coords = lead_row["google_places_detailed_coordinates"]
+        lat = lead_row["google_places_detailed_latitude"]
+        lng = lead_row["google_places_detailed_longitude"]
 
-        if types is None or pd.isna(types) or coords is None or pd.isna(coords):
+        if lat is None or pd.isna(lat) or lng is None or pd.isna(lng):
             return error_return_value
 
-        types = [
-            business_type
-            for business_type in types.split()
-            if business_type not in ["point_of_interest", "establishment"]
-        ]
-        coords = coords.split()
+        coords = (lat, lng)
 
         # Call for the nearby API using specified fields
-        results = list()
+        results = []
         number_of_places = 0
 
-        for business_type in types:
-            try:
-                # Fetch place details including reviews
-                response = self.gmaps.places_nearby(
-                    location=(coords[0], coords[1]),
-                    radius=1000,
-                    type=business_type,
-                    language="original",
+        try:
+            # Fetch place details including reviews
+            response = self.gmaps.places_nearby(
+                location=coords,
+                radius=100,
+                language="original",
+            )
+
+            # Check response status
+            if response.get("status") != HTTPStatus.OK.name:
+                log.warning(
+                    f"Failed to fetch data. Status code: {response.get('status')}"
                 )
+                return error_return_value
 
-                # Check response status
-                if response.get("status") != HTTPStatus.OK.name:
-                    log.warning(
-                        f"Failed to fetch data. Status code: {response.get('status')}"
-                    )
-                    return error_return_value
+        except RequestException as e:
+            log.error(f"Error: {str(e)}")
 
-            except RequestException as e:
-                log.error(f"Error: {str(e)}")
+        except (ApiError, HTTPError, Timeout, TransportError) as e:
+            error_message = (
+                str(e.message)
+                if hasattr(e, "message") and e.message is not None
+                else str(e)
+            )
+            log.warning(f"Error: {error_message}")
 
-            except (ApiError, HTTPError, Timeout, TransportError) as e:
-                error_message = (
-                    str(e.message)
-                    if hasattr(e, "message") and e.message is not None
-                    else str(e)
-                )
-                log.warning(f"Error: {error_message}")
-
-            results.append(response["results"])
-            number_of_places += len(response["results"])
+        results.append(response["results"])
+        number_of_places += len(response["results"])
 
         results_list = [
             response["results"][field] if field in response["results"] else None
@@ -142,6 +135,7 @@ class GooglePlacesNearby(Step):
         ]
 
         results_list.append(number_of_places)
-        # Save nearby places in json - implement in repository
+
+        get_database().save_nearby_places(results, lead_row["google_places_place_id"])
 
         return pd.Series(results_list)

@@ -40,6 +40,7 @@ class S3Repository(Repository):
     DF_OUTPUT = f"s3://{BUCKET}/leads/enriched.csv"
     REVIEWS = f"s3://{BUCKET}/reviews/"
     SNAPSHOTS = f"s3://{BUCKET}/snapshots/"
+    NEARBY_PLACES = f"s3://{BUCKET}/nearby-places/"
     GPT_RESULTS = f"s3://{BUCKET}/gpt-results/"
 
     def _download(self):
@@ -264,3 +265,27 @@ class S3Repository(Repository):
         else:
             # Save the new result to S3
             self._save_to_s3(json.dumps({operation_name: data_to_save}), bucket, key)
+
+    def save_nearby_places(self, json_contents, place_id, force_refresh=False):
+        """
+        Upload information about places nearby to specified path
+        :param json: json contents of the information to be uploaded
+        """
+        # Write the data to a JSON file
+        file_name = place_id + "_reviews.json"
+        bucket, key = decode_s3_url(self.NEARBY_PLACES)
+        key += file_name
+
+        try:
+            # HeadObject throws an exception if the file doesn't exist
+            s3.head_object(Bucket=bucket, Key=key)
+            log.info(f"The file with key '{key}' exists in the bucket '{bucket}'.")
+
+        except Exception as e:
+            log.info(
+                f"The file with key '{key}' does not exist in the bucket '{bucket}'."
+            )
+            # Upload the JSON string to S3
+            reviews_str = json.dumps(json_contents)
+            s3.put_object(Body=reviews_str, Bucket=bucket, Key=key)
+            log.info("nearby places information uploaded to s3")

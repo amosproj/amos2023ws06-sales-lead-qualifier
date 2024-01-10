@@ -53,6 +53,7 @@ bin/
 !**/data/merged_geo.geojson
 **/data/reviews/*.json
 **/data/gpt-results/*.json
+**/data/nearby-places/*.json
 
 # Env files
 *.env

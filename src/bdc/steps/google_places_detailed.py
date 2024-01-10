@@ -38,7 +38,7 @@ class GooglePlacesDetailed(Step):
     name = "Google_Places_Detailed"
 
     # fields that are expected as an output of the df.apply lambda function
-    df_fields = ["website", "type", "coordinates"]
+    df_fields = ["website", "type", "latitude", "longitude"]
 
     # Weirdly the expression [f"{name}_{field}" for field in df_fields] gives an error as name is not in the scope of the iterator
     added_cols = [
@@ -52,7 +52,7 @@ class GooglePlacesDetailed(Step):
     required_cols = ["google_places_place_id"]
 
     # fields that are accessed directly from the api
-    api_fields = ["website", "type", "reviews"]
+    api_fields = ["website", "type", "reviews", "geometry"]
 
     # Output fields are not necessarily the same as input fields
     api_fields_output = ["website"]
@@ -134,13 +134,19 @@ class GooglePlacesDetailed(Step):
                 type_string += f"{business_type} "
             type_string.strip()
 
+        # Retrieve coordinates
+        coords = list()
+
+        if "result" in response and "geometry" in response["result"]:
+            coords = response["result"]["geometry"]["location"]
+
         results_list = [
             response["result"][field] if field in response["result"] else None
             for field in self.api_fields_output
         ]
 
         results_list.append(type_string)
-        # retrieve location from api call
-        results_list.append("-33.866489 151.1958561")
+        results_list.append(coords["lat"])
+        results_list.append(coords["lng"])
 
         return pd.Series(results_list)

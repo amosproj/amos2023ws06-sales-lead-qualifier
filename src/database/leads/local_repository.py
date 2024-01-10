@@ -24,6 +24,9 @@ class LocalRepository(Repository):
     )
     REVIEWS = os.path.abspath(os.path.join(BASE_PATH, "../../data/reviews/"))
     SNAPSHOTS = os.path.abspath(os.path.join(BASE_PATH, "../../data/snapshots/"))
+    NEARBY_PLACES = os.path.abspath(
+        os.path.join(BASE_PATH, "../../data/nearby-places/")
+    )
     GPT_RESULTS = os.path.abspath(os.path.join(BASE_PATH, "../../data/gpt-results/"))
 
     def _download(self):
@@ -55,7 +58,7 @@ class LocalRepository(Repository):
         :param review: json contents of the review to be uploaded
         """
         # Write the data to a JSON file
-        file_name = place_id + "_gpt_results.json"
+        file_name = place_id + "_reviews.json"
         json_file_path = os.path.join(self.REVIEWS, file_name)
 
         if os.path.exists(json_file_path):
@@ -70,7 +73,7 @@ class LocalRepository(Repository):
         Fetch review for specified place_id
         :return: json contents of desired review
         """
-        file_name = place_id + "_gpt_results.json"
+        file_name = place_id + "_reviews.json"
         reviews_path = os.path.join(self.REVIEWS, file_name)
         try:
             with open(reviews_path, "r", encoding="utf-8") as reviews_json:
@@ -149,3 +152,19 @@ class LocalRepository(Repository):
             log.warning(f"Error loading GPT results from path {json_file_path}.")
             # Return empty string if any exception occurred or status is not OK
             return ""
+
+    def save_nearby_places(self, json_contents, place_id, force_refresh=False):
+        """
+        Upload information about places nearby to specified path
+        :param json: json contents of the information to be uploaded
+        """
+        # Write the data to a JSON file
+        file_name = place_id + "_nearby_places.json"
+        json_file_path = os.path.join(self.NEARBY_PLACES, file_name)
+
+        if os.path.exists(json_file_path):
+            log.info(f"Reviews for {place_id} already exist")
+            return
+
+        with open(json_file_path, "w", encoding="utf-8") as json_file:
+            json.dump(json_contents, json_file, ensure_ascii=False, indent=4)

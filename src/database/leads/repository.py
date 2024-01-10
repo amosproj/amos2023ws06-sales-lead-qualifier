@@ -42,6 +42,14 @@ class Repository(ABC):
 
     @property
     @abstractmethod
+    def NEARBY_PLACES(self):
+        """
+        Define database path to store nearby places information
+        """
+        pass
+
+    @property
+    @abstractmethod
     def GPT_RESULTS(self):
         """
         Define database path to store GPT operations
@@ -148,6 +156,14 @@ class Repository(ABC):
             file_id (str): The ID of the file.
             operation_name (str): The name of the operation.
             force_refresh (bool, optional): Whether to force a refresh of the saved result. Defaults to False.
+        """
+        pass
+
+    @abstractmethod
+    def save_nearby_places(self, json, place_id, force_refresh=False):
+        """
+        Upload information about places nearby to specified path
+        :param json: json contents of the information to be uploaded
         """
         pass
 
