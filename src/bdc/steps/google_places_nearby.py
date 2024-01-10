@@ -25,9 +25,8 @@ log = get_logger()
 
 class GooglePlacesNearby(Step):
     """
-    The GooglePlacesDetailed step will try to gather detailed information for a given google business entry, identified
-    by the place ID. This information could be the website link, the review text and the business type. Reviews will
-    be saved to a separate location based on the persistence settings this could be local or AWS S3.
+    The GooglePlacesNearby step will try to gather a list of nearby shops with a 100 metre radius, then save the list as
+    a json file. This file can potentially be used for analysis on what the most common type of business in that area is.
 
     Attributes:
         name: Name of this step, used for logging
