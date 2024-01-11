@@ -13,7 +13,7 @@ from pandas import DataFrame
 from sklearn.linear_model import LinearRegression
 from tqdm import tqdm
 
-from bdc.steps.helpers import TextAnalyzer
+from bdc.steps.helpers import TextAnalyzer, get_lead_hash_generator
 from bdc.steps.step import Step, StepError
 from config import OPEN_AI_API_KEY
 from database import get_database
@@ -133,9 +133,21 @@ class GPTReviewSentimentAnalyzer(Step):
             DataFrame: The DataFrame with the sentiment scores added.
         """
         tqdm.pandas(desc="Running sentiment analysis on reviews")
-        self.df[self.extracted_col_name] = self.df[
-            self.gpt_required_fields["place_id"]
-        ].progress_apply(lambda place_id: self.run_sentiment_analysis(place_id))
+
+        self.df[self.extracted_col_name] = self.df.progress_apply(
+            lambda lead: get_lead_hash_generator().hash_check(
+                lead,
+                self.run_sentiment_analysis,
+                self.name,
+                self.extracted_col_name,
+                lead[self.gpt_required_fields["place_id"]],
+            ),
+            axis=1,
+        )
+
+        # self.df[self.extracted_col_name] = self.df[
+        #     self.gpt_required_fields["place_id"]
+        # ].progress_apply(lambda place_id: self.run_sentiment_analysis(place_id))
         return self.df
 
     def finish(self) -> None:
@@ -410,8 +422,21 @@ class SmartReviewInsightsEnhancer(Step):
 
         # Apply the enhancement function
         self.df[self.added_cols] = self.df.progress_apply(
-            lambda lead: pd.Series(self._enhance_review_insights(lead)), axis=1
+            lambda lead: pd.Series(
+                get_lead_hash_generator().hash_check(
+                    lead,
+                    self._enhance_review_insights,
+                    self.name,
+                    self.added_cols,
+                    lead,
+                )
+            ),
+            axis=1,
         )
+
+        # self.df[self.added_cols] = self.df.progress_apply(
+        #     lambda lead: pd.Series(self._enhance_review_insights(lead)), axis=1
+        # )
         return self.df
 
     def finish(self) -> None:

@@ -7,6 +7,7 @@ import facebook
 import requests
 from tqdm import tqdm
 
+from bdc.steps.helpers import get_lead_hash_generator
 from bdc.steps.step import Step
 from config import FACEBOOK_APP_ID, FACEBOOK_APP_SECRET
 from logger import get_logger
@@ -35,12 +36,15 @@ class FacebookGraphAPI(Step):
 
     def run(self):
         # choosing company name as search query if email is not in commercial domain, otherwise choose first and last names
+        # Note: no need to hash the creation of "search-query" and "data-fields" as they
+        # are only used here and execute a constant operation
         self.df["search-query"] = self.df.apply(
             lambda row: row["Company / Account"]
             if row["domain"] is not None
             else row["First Name"] + " " + row["Last Name"],
             axis=1,
         )
+
         self.df["data-fields"] = self.df.apply(
             lambda row: ["category", "about", "location", "website"]
             if row["domain"] is not None

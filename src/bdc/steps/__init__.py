@@ -6,6 +6,7 @@ from .analyze_reviews import GPTReviewSentimentAnalyzer, SmartReviewInsightsEnha
 from .google_places import GooglePlaces
 from .google_places_detailed import GooglePlacesDetailed
 from .gpt_summarizer import GPTSummarizer
+from .hash_generator import HashGenerator
 from .preprocess_phonenumbers import PreprocessPhonenumbers
 from .regionalatlas import RegionalAtlas
 from .scrape_address import ScrapeAddress

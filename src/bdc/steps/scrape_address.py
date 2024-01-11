@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 from requests import RequestException
 from tqdm import tqdm
 
+from bdc.steps.helpers import get_lead_hash_generator
 from bdc.steps.step import Step
 from logger import get_logger
 
@@ -42,9 +43,15 @@ class ScrapeAddress(Step):
         tqdm.pandas(desc="Getting addresses from custom domains...")
         # Approach 1: use the custom domain and parse this website
         self.df["address_ver_1"] = self.df[self.df["domain"].notna()].progress_apply(
-            lambda lead: scrape_for_address(lead["domain"]), axis=1
+            lambda lead: get_lead_hash_generator().hash_check(
+                lead, scrape_for_address, self.name, ["address_ver_1"], lead["domain"]
+            ),
+            axis=1,
         )
 
+        # self.df["address_ver_1"] = self.df[self.df["domain"].notna()].progress_apply(
+        #     lambda lead: scrape_for_address(lead["domain"]), axis=1
+        # )
         return self.df
 
     def finish(self):
