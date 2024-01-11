@@ -130,11 +130,6 @@ class RegionalAtlas(Step):
             ),
             axis=1,
         )
-
-        # self.df[f"{self.name.lower()}_regional_score"] = self.df.progress_apply(
-        #     lambda lead: pd.Series(self.calculate_regional_score(lead)), axis=1
-        # )
-
         return self.df
 
     def finish(self) -> None:
