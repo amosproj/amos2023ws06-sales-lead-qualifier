@@ -15,6 +15,7 @@ from bdc.steps import (
     GooglePlacesDetailed,
     GPTReviewSentimentAnalyzer,
     GPTSummarizer,
+    HashGenerator,
     PreprocessPhonenumbers,
     RegionalAtlas,
     ScrapeAddress,
@@ -24,6 +25,7 @@ from bdc.steps import (
 DEFAULT_PIPELINE_PATH = os.path.join(os.path.dirname(__file__), "pipeline_configs/")
 
 STEP_STR_TO_CLASS = {
+    "HashGenerator": HashGenerator,
     "AnalyzeEmails": AnalyzeEmails,
     "FacebookGraphAPI": FacebookGraphAPI,
     "GooglePlaces": GooglePlaces,
@@ -69,7 +71,10 @@ _additional_pipeline_steps = [
     (RegionalAtlas, "Regionalatlas", ""),
 ]
 
-_initial_pipeline_steps = [(AnalyzeEmails, "Analyze Emails", "")]
+_initial_pipeline_steps = [
+    (HashGenerator, "Hash Generator", ""),
+    (AnalyzeEmails, "Analyze Emails", ""),
+]
 # Please do not write above lists! Use the functions below instead.
 
 
