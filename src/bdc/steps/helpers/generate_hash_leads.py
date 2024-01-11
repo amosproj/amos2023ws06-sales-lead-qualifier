@@ -29,9 +29,9 @@ class LeadHashGenerator:
         )
 
         # Hash the concatenated string using SHA-256
-        hash = hashlib.sha256(data_to_hash.encode()).hexdigest()
+        lead_hash = hashlib.sha256(data_to_hash.encode()).hexdigest()
 
-        return hash
+        return lead_hash
 
     def hash_check(
         self,
@@ -42,7 +42,10 @@ class LeadHashGenerator:
         *args,
         **kwargs,
     ):
-        lead_hash = self.hash_lead(lead_data)
+        if "lead_hash" in lead_data.to_list() and not pd.isna(lead_data["lead_hash"]):
+            lead_hash = lead_data["lead_hash"]
+        else:
+            lead_hash = self.hash_lead(lead_data)
         if self._curr_lookup_table[0] != step_name:
             self._curr_lookup_table = (
                 step_name,

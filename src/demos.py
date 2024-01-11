@@ -18,6 +18,7 @@ from bdc.steps import (
     GooglePlacesDetailed,
     GPTReviewSentimentAnalyzer,
     GPTSummarizer,
+    HashGenerator,
     PreprocessPhonenumbers,
     RegionalAtlas,
     ScrapeAddress,
@@ -154,8 +155,10 @@ def add_step_if_requested(
 
 # pipeline_demo
 def pipeline_demo():
-    steps = [AnalyzeEmails(force_refresh=True)]
+    steps = []
     additional_steps = [
+        ([HashGenerator], "Hash Generator", "(Hash required for all other steps)"),
+        ([AnalyzeEmails], "Analyze Emails", "(was executed automatically before)"),
         ([ScrapeAddress], "Scrape Address", "(will take a long time)"),
         ([FacebookGraphAPI], "Facebook Graph API", "(will use token)"),
         ([PreprocessPhonenumbers], "Phone Number Validation", ""),
