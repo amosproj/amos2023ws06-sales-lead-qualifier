@@ -10,6 +10,7 @@ from geopandas.tools import sjoin
 from pandas import DataFrame
 from tqdm import tqdm
 
+from bdc.steps.helpers import get_lead_hash_generator
 from bdc.steps.step import Step, StepError
 from logger import get_logger
 
@@ -99,14 +100,36 @@ class RegionalAtlas(Step):
 
         # Add the new fields to the df
         self.df[self.added_cols[:-1]] = self.df.progress_apply(
-            lambda lead: pd.Series(self.get_data_from_address(lead)), axis=1
+            lambda lead: pd.Series(
+                get_lead_hash_generator().hash_check(
+                    lead,
+                    self.get_data_from_address,
+                    self.name + "_Location-Data",
+                    self.added_cols[:-1],
+                    lead,
+                )
+            ),
+            axis=1,
         )
+
+        # self.df[self.added_cols[:-1]] = self.df.progress_apply(
+        #     lambda lead: pd.Series(self.get_data_from_address(lead)), axis=1
+        # )
 
         tqdm.pandas(desc="Computing Regional Score")
-        self.df[f"{self.name.lower()}_regional_score"] = self.df.progress_apply(
-            lambda lead: pd.Series(self.calculate_regional_score(lead)), axis=1
-        )
 
+        self.df[self.added_cols[:-1]] = self.df.progress_apply(
+            lambda lead: pd.Series(
+                get_lead_hash_generator().hash_check(
+                    lead,
+                    self.calculate_regional_score,
+                    self.name + "_Regional-Score",
+                    self.added_cols[:-1],
+                    lead,
+                )
+            ),
+            axis=1,
+        )
         return self.df
 
     def finish(self) -> None:
@@ -230,17 +253,25 @@ class RegionalAtlas(Step):
         :return: float | None - The computed score if the necessary fields are present for the lead. None otherwise.
         """
 
-        if (
-            lead[f"{self.name.lower()}_pop_density"] is None
-            or lead[f"{self.name.lower()}_employment_rate"] is None
-            or lead[f"{self.name.lower()}_disp_income_p_inhabitant"] is None
-        ):
-            return None
+        pop_density_col = f"{self.name.lower()}_pop_density"
+        employment_rate_col = f"{self.name.lower()}_employment_rate"
+        income_col = f"{self.name.lower()}_disp_income_p_inhabitant"
+
+        pop_density = lead[pop_density_col]
+        employment_rate = lead[employment_rate_col]
+        income_per_inhabitant = lead[income_col]
+
+        pop_density = pop_density if pd.notnull(pop_density) else 0
+        employment_rate = employment_rate if pd.notnull(employment_rate) else 0
+        income_per_inhabitant = (
+            income_per_inhabitant if pd.notnull(income_per_inhabitant) else 0
+        )
 
         regional_score = (
-            lead[f"{self.name.lower()}_pop_density"]
-            * lead[f"{self.name.lower()}_employment_rate"]
-            * lead[f"{self.name.lower()}_disp_income_p_inhabitant"]
+            pop_density * employment_rate * income_per_inhabitant
         ) / 1000000
 
-        return regional_score
+        if pd.notnull(regional_score):
+            return regional_score
+        else:
+            raise ValueError("Regional score is null")

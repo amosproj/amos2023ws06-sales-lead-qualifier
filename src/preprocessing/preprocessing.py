@@ -32,7 +32,6 @@ class Preprocessing:
     def __init__(self, filter_null_data=True, historical_data=False):
         data_repo = get_database()
         data_path = data_repo.get_output_path()
-        log.info(f"Data path = {data_path}")
         if historical_data:
             input_path_components = data_path.split("\\" if "\\" in data_path else "/")
             input_path_components.pop()
@@ -40,7 +39,9 @@ class Preprocessing:
             input_path_components.append("historical_data/100k_historic_enriched.csv")
             input_path = "/".join(input_path_components)
             data = pd.read_csv(input_path)
+            log.debug(f"Data path = {input_path}")
         else:
+            log.debug(f"Data path = {data_path}")
             data = pd.read_csv(data_path)
         self.preprocessed_df = data.copy()
         # created the new output path based on which repo used
@@ -66,6 +67,29 @@ class Preprocessing:
             "review_highest_rating_ratio",
             "review_lowest_rating_ratio",
             "review_rating_trend",
+            "regional_atlas_pop_density",
+            "regional_atlas_pop_development",
+            "regional_atlas_age_0",
+            "regional_atlas_age_1",
+            "regional_atlas_age_2",
+            "regional_atlas_age_3",
+            "regional_atlas_age_4",
+            "regional_atlas_pop_avg_age",
+            "regional_atlas_per_service_sector",
+            "regional_atlas_per_trade",
+            "regional_atlas_employment_rate",
+            "regional_atlas_unemployment_rate",
+            "regional_atlas_per_long_term_unemployment",
+            "regional_atlas_investments_p_employee",
+            "regional_atlas_gross_salary_p_employee",
+            "regional_atlas_disp_income_p_inhabitant",
+            "regional_atlas_tot_income_p_taxpayer",
+            "regional_atlas_gdp_p_employee",
+            "regional_atlas_gdp_development",
+            "regional_atlas_gdp_p_inhabitant",
+            "regional_atlas_gdp_p_workhours",
+            "regional_atlas_pop_avg_age_zensus",
+            "regional_atlas_regional_score",
         ]
         # numerical data that need scaling
         self.data_to_scale = ["google_places_user_ratings_total"]
