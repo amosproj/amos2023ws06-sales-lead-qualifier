@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 data_path = "s3://amos--data--features/preprocessed_data_files/preprocessed_data.csv"
 df = pd.read_csv(data_path)
 
-# Assuming 'features' is a list of feature columns and 'target' is the target column
+
 features = df.drop("MerchantSizeByDPV", axis=1)
 class_labels = df["MerchantSizeByDPV"]
 
@@ -22,17 +22,16 @@ X_val, X_test, y_val, y_test = train_test_split(
     X_temp, y_temp, test_size=0.5, random_state=42
 )
 
-# Train the model on the training set
+# train the model on the training set
 model = RandomForestClassifier(n_estimators=100, random_state=42)
 model.fit(X_train, y_train)
 
-# Make predictions on the testing set (unseen data during training)
+# inference
 y_test_pred = model.predict(X_test)
 
-# Calculate F1 score on the testing set
+# calculate F1 score on the testing set
 f1_test = f1_score(y_test, y_test_pred, average="weighted")
 print(f"F1 Score on Testing Set: {f1_test:.4f}")
 
-# Optionally, print other metrics for the testing set
 print("Classification Report on Testing Set:")
 print(classification_report(y_test, y_test_pred))

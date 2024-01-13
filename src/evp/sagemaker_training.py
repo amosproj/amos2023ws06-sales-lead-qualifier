@@ -20,7 +20,7 @@ s3.download_file(s3_bucket, s3_key, "preprocessed_data.csv")
 
 df = pd.read_csv("preprocessed_data.csv")
 
-script_path = "your_script.py"
+script_path = ""
 sklearn_estimator = SKLearn(
     entry_point=script_path,
     role=role,
@@ -31,8 +31,3 @@ sklearn_estimator = SKLearn(
 
 # train the model on SageMaker
 sklearn_estimator.fit({"train": "s3://{}/{}".format(s3_bucket, s3_key)})
-
-# deploy the trained model
-predictor = sklearn_estimator.deploy(
-    instance_type="ml.m5.large", endpoint_name="your-endpoint-name"
-)
