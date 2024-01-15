@@ -33,12 +33,54 @@ OFFENREGISTER_OBJECTIVES_URL = (
 
 
 class CompanyDataRetriever:
+    """
+    A class that retrieves company data from various sources based on given parameters.
+
+    Methods:
+        _find_from_Positions_by_firstName_and_lastName(last_name: str, first_name: str) -> dict:
+            Retrieves company data from Positions table based on the last name and first name of a person.
+
+        _find_row_by_companyId(url: str, company_id: str) -> dict:
+            Finds and retrieves the row data for a given company ID from a specified URL.
+
+        _find_from_Capital_by_companyId(company_id: str) -> dict:
+            Retrieves company data from the Capital database using the provided company ID.
+
+        _find_from_Addresses_by_companyId(company_id: str) -> dict:
+            Retrieves the row from the Addresses table based on the given company ID.
+
+        _find_from_Objectives_by_companyId(company_id: str) -> dict:
+            Retrieves the row from Objectives by the given company ID.
+
+        _find_from_Names_by_companyId(company_id: str) -> dict:
+            Retrieves company data by company ID from the offerenregister.de website.
+
+        find_companyName_by_lastName_firstName(last_name: str, first_name: str) -> str:
+            Finds the company name by the last name and first name of a person.
+
+        find_companyCapitals_by_lastName_firstName(last_name: str, first_name: str) -> tuple:
+            Retrieves the capital amount and currency of a company based on the last name and first name of a person.
+
+        find_companyObjective_by_lastName_firstName(last_name: str, first_name: str) -> str or None:
+            Finds the company objective based on the last name and first name of a person.
+    """
+
     def __init__(self) -> None:
         pass
 
     def _find_from_Positions_by_firstName_and_lastName(
         self, last_name: str, first_name: str
     ) -> dict:
+        """
+        Retrieves company data from Positions by using the first name and last name of a person.
+
+        Args:
+            last_name (str): The last name of the person.
+            first_name (str): The first name of the person.
+
+        Returns:
+            dict: A dictionary containing class name and value pairs of the retrieved data.
+        """
         url = OFFENRENREGISTER_POSITIONS_URL.format(first_name, last_name)
         response = requests.get(url)
 
@@ -88,6 +130,17 @@ class CompanyDataRetriever:
             return None
 
     def _find_row_by_companyId(self, url, company_id) -> dict:
+        """
+        Finds and retrieves the row data for a given company ID from a specified URL.
+
+        Args:
+            url (str): The URL to retrieve the data from.
+            company_id (str): The ID of the company to search for.
+
+        Returns:
+            dict: A dictionary containing the class name and value pairs for the first row of the table,
+                  or None if the request fails or the company ID is not valid.
+        """
         if company_id:
             url = url.format(company_id)
             response = requests.get(url)
@@ -105,7 +158,6 @@ class CompanyDataRetriever:
 
                 # Access the tbody element
                 tbody = table.tbody
-
                 # Find all tr elements within the tbody
                 rows = tbody.find_all("tr")
 
@@ -142,18 +194,64 @@ class CompanyDataRetriever:
             return None
 
     def _find_from_Capital_by_companyId(self, company_id: str) -> dict:
+        """
+        Retrieves company data from the Capital database using the provided company ID.
+
+        Args:
+            company_id (str): The ID of the company to retrieve data for.
+
+        Returns:
+            dict: A dictionary containing the retrieved company data.
+        """
         return self._find_row_by_companyId(OFFENREGISTER_CAPITAL_URL, company_id)
 
     def _find_from_Addresses_by_companyId(self, company_id: str) -> dict:
+        """
+        Retrieves the row from the Addresses table based on the given company ID.
+
+        Args:
+            company_id (str): The ID of the company.
+
+        Returns:
+            dict: The row from the Addresses table that matches the given company ID.
+        """
         return self._find_row_by_companyId(OFFENREGISTER_ADDRESSES_URL, company_id)
 
     def _find_from_Objectives_by_companyId(self, company_id: str) -> dict:
+        """
+        Retrieves the row from Objectives by the given company ID.
+
+        Args:
+            company_id (str): The ID of the company.
+
+        Returns:
+            dict: The row containing the company data from Objectives.
+        """
         return self._find_row_by_companyId(OFFENREGISTER_OBJECTIVES_URL, company_id)
 
     def _find_from_Names_by_companyId(self, company_id: str) -> dict:
+        """
+        Retrieves company data by company ID from the offerenregister.de website.
+
+        Args:
+            company_id (str): The ID of the company to retrieve data for.
+
+        Returns:
+            dict: A dictionary containing the retrieved company data.
+        """
         return self._find_row_by_companyId(OFFENREGISTER_NAMES_URL, company_id)
 
     def find_companyName_by_lastName_firstName(self, last_name, first_name):
+        """
+        Finds the company name by the last name and first name of a person.
+
+        Args:
+            last_name (str): The last name of the person.
+            first_name (str): The first name of the person.
+
+        Returns:
+            str: The name of the company if found, None otherwise.
+        """
         pos_row = self._find_from_Positions_by_firstName_and_lastName(
             last_name, first_name
         )
@@ -166,6 +264,16 @@ class CompanyDataRetriever:
         return None
 
     def find_companyCapitals_by_lastName_firstName(self, last_name, first_name):
+        """
+        Retrieves the capital amount and currency of a company based on the last name and first name of a person.
+
+        Args:
+            last_name (str): The last name of the person.
+            first_name (str): The first name of the person.
+
+        Returns:
+            tuple: A tuple containing the capital amount and currency of the company. If the company or capital information is not found, returns (None, None).
+        """
         pos_row = self._find_from_Positions_by_firstName_and_lastName(
             last_name, first_name
         )
@@ -180,6 +288,16 @@ class CompanyDataRetriever:
         return None, None
 
     def find_companyObjective_by_lastName_firstName(self, last_name, first_name):
+        """
+        Finds the company objective based on the last name and first name of a person.
+
+        Args:
+            last_name (str): The last name of the person.
+            first_name (str): The first name of the person.
+
+        Returns:
+            str or None: The company objective if found, None otherwise.
+        """
         pos_row = self._find_from_Positions_by_firstName_and_lastName(
             last_name, first_name
         )
