@@ -4,8 +4,9 @@
 import csv
 import json
 import os
-from pathlib import Path
+import pickle
 from datetime import datetime
+from pathlib import Path
 
 import pandas as pd
 
@@ -24,9 +25,16 @@ class LocalRepository(Repository):
     DF_OUTPUT = os.path.abspath(
         os.path.join(BASE_PATH, "../../data/leads_enriched.csv")
     )
+    DF_PREPROCESSED_INPUT = os.path.abspath(
+        os.path.join(BASE_PATH, "../../data/preprocessed_data_files/")
+    )
     REVIEWS = os.path.abspath(os.path.join(BASE_PATH, "../../data/reviews/"))
     SNAPSHOTS = os.path.abspath(os.path.join(BASE_PATH, "../../data/snapshots/"))
     GPT_RESULTS = os.path.abspath(os.path.join(BASE_PATH, "../../data/gpt-results/"))
+    ML_MODELS = os.path.abspath(os.path.join(BASE_PATH, "../../data/models/"))
+    CLASSIFICATION_REPORTS = os.path.abspath(
+        os.path.join(BASE_PATH, "../../data/classification_reports/")
+    )
 
     def _download(self):
         """
@@ -118,8 +126,7 @@ class LocalRepository(Repository):
             self.BASE_PATH + f"/../../data/lookup_tables/{step_name}.csv"
         )
         if not lookup_path.resolve().parent.exists():
-            lookup_path.resolve().parent.mkdir(parents=True)
-
+            lookup_path.resolve().parent.mkdir(parents=True, exist_ok=True)
         lookup_table = {}
         try:
             with open(str(lookup_path), mode="r", encoding="utf-8") as fh:
@@ -195,3 +202,55 @@ class LocalRepository(Repository):
             log.warning(f"Error loading GPT results from path {json_file_path}.")
             # Return empty string if any exception occurred or status is not OK
             return ""
+
+    def load_ml_model(self, model_name: str):
+        model_file_path = os.path.join(self.ML_MODELS, model_name)
+        try:
+            model = pickle.load(open(model_file_path, "rb"))
+        except FileNotFoundError:
+            log.error(f"Could not find model file {model_file_path}")
+            model = None
+
+        return model
+
+    def save_ml_model(self, model, model_name: str):
+        if not os.path.exists(self.ML_MODELS):
+            Path(self.ML_MODELS).mkdir(parents=True, exist_ok=True)
+        model_file_path = os.path.join(self.ML_MODELS, model_name)
+        if os.path.exists(model_file_path):
+            log.warning(f"Overwriting model at {model_file_path}")
+        try:
+            pickle.dump(model, open(model_file_path, "wb"))
+        except Exception as e:
+            log.error(f"Could not save model at {model_file_path}! Error: {str(e)}")
+
+    def load_classification_report(self, model_name: str):
+        report_file_path = os.path.join(
+            self.CLASSIFICATION_REPORTS, "report_" + model_name
+        )
+        try:
+            report = pickle.load(open(report_file_path, "rb"))
+        except FileNotFoundError:
+            log.error(f"Could not find report file {report_file_path}")
+            report = None
+
+        return report
+
+    def save_classification_report(self, report, model_name: str):
+        if not os.path.exists(self.CLASSIFICATION_REPORTS):
+            Path(self.CLASSIFICATION_REPORTS).mkdir(parents=True, exist_ok=True)
+        report_file_path = os.path.join(
+            self.CLASSIFICATION_REPORTS, "report_" + model_name
+        )
+        if os.path.exists(report_file_path):
+            log.warning(f"Overwriting report at {report_file_path}")
+        try:
+            pickle.dump(report, open(report_file_path, "wb"))
+        except Exception as e:
+            log.error(f"Could not save report at {report_file_path}! Error: {str(e)}")
+
+    def load_preprocessed_data(self, file_name: str = "preprocessed_data.csv"):
+        try:
+            return pd.read_csv(os.path.join(self.DF_PREPROCESSED_INPUT, file_name))
+        except FileNotFoundError:
+            log.error("Error: Could not find input file for preprocessed data.")

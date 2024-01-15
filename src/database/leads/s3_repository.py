@@ -4,6 +4,7 @@
 import csv
 import hashlib
 import json
+import pickle
 from datetime import datetime
 from io import StringIO
 
@@ -36,13 +37,18 @@ def decode_s3_url(url):
 
 
 class S3Repository(Repository):
-    BUCKET = "amos--data--events"
-    DF_INPUT = f"s3://{BUCKET}/leads/enriched.csv"
-    DF_OUTPUT = f"s3://{BUCKET}/leads/enriched.csv"
-    REVIEWS = f"s3://{BUCKET}/reviews/"
-    SNAPSHOTS = f"s3://{BUCKET}/snapshots/"
-    LOOKUP_TABLES = f"s3://{BUCKET}/lookup_tables/"
-    GPT_RESULTS = f"s3://{BUCKET}/gpt-results/"
+    EVENTS_BUCKET = "amos--data--events"
+    FEATURES_BUCKET = "amos--data--features"
+    MODELS_BUCKET = "amos--models"
+    DF_INPUT = f"s3://{EVENTS_BUCKET}/leads/enriched.csv"
+    DF_OUTPUT = f"s3://{EVENTS_BUCKET}/leads/enriched.csv"
+    DF_PREPROCESSED_INPUT = f"s3://{FEATURES_BUCKET}/preprocessed_data_files/"
+    REVIEWS = f"s3://{EVENTS_BUCKET}/reviews/"
+    SNAPSHOTS = f"s3://{EVENTS_BUCKET}/snapshots/"
+    LOOKUP_TABLES = f"s3://{EVENTS_BUCKET}/lookup_tables/"
+    GPT_RESULTS = f"s3://{EVENTS_BUCKET}/gpt-results/"
+    ML_MODELS = f"s3://{MODELS_BUCKET}/models/"
+    CLASSIFICATION_REPORTS = f"s3://{MODELS_BUCKET}/classification_reports"
 
     def _download(self):
         """
@@ -315,3 +321,93 @@ class S3Repository(Repository):
         else:
             # Save the new result to S3
             self._save_to_s3(json.dumps({operation_name: data_to_save}), bucket, key)
+
+    def load_ml_model(self, model_name: str):
+        file_name = f"{model_name}"
+        bucket, key = decode_s3_url(self.ML_MODELS)
+        key += file_name
+
+        model_s3_obj = self._fetch_object_s3(bucket, key)
+        if model_s3_obj is None or "Body" not in model_s3_obj:
+            log.info(f"Couldn't find model in S3 bucket {bucket} and key {key}.")
+            return None
+
+        try:
+            # Read the pickled model directly from S3 Body
+            model = pickle.loads(model_s3_obj["Body"].read())
+            return model
+        except Exception as e:
+            log.error(f"Error loading model '{model_name}': {e}")
+            return None
+
+    def save_ml_model(self, model, model_name: str):
+        full_path = f"{self.ML_MODELS}{model_name}"
+        bucket, key = decode_s3_url(full_path)
+
+        model_serialized = pickle.dumps(model)
+
+        self._save_to_s3(model_serialized, bucket, key)
+
+    def load_classification_report(self, model_name: str):
+        file_path = f"{self.CLASSIFICATION_REPORTS}report_{model_name}"
+        bucket, key = decode_s3_url(file_path)
+
+        report_s3_obj = self._fetch_object_s3(bucket, key)
+
+        if not report_s3_obj or "Body" not in report_s3_obj:
+            log.error(f"Could not find report file at S3 bucket {bucket} and key {key}")
+            return None
+
+        try:
+            report = pickle.loads(report_s3_obj["Body"].read())
+            log.info(f"Report for '{model_name}' loaded successfully.")
+            return report
+        except Exception as e:
+            log.error(f"Error loading report for '{model_name}': {e}")
+            return None
+
+    def save_classification_report(self, report, model_name: str):
+        file_path = f"{self.CLASSIFICATION_REPORTS}report_{model_name}"
+        bucket, key = decode_s3_url(file_path)
+
+        if not self._s3_bucket_exists(bucket):
+            log.error(f"S3 bucket '{bucket}' does not exist.")
+            return
+
+        try:
+            # Serialize and save the report to S3
+            report_serialized = pickle.dumps(report)
+            self._save_to_s3(report_serialized, bucket, key)
+
+        except Exception as e:
+            log.error(f"Could not save report for '{model_name}' to S3: {e}")
+
+    def load_preprocessed_data(self, file_name: str = "preprocessed_data.csv"):
+        file_path = self.DF_PREPROCESSED_INPUT + file_name
+        if not file_path.startswith("s3://"):
+            log.error(
+                "S3 location has to be defined like this: s3://<BUCKET>/<OBJECT_KEY>"
+            )
+            return
+
+        source = None
+        remote_dataset = None
+
+        try:
+            bucket, obj_key = decode_s3_url(file_path)
+            remote_dataset = self._fetch_object_s3(bucket, obj_key)
+        except IndexError:
+            log.error(
+                "S3 location has to be defined like this: s3://<BUCKET>/<OBJECT_KEY>"
+            )
+
+        if remote_dataset is None or "Body" not in remote_dataset:
+            log.error(f"Couldn't find dataset in S3 bucket {bucket} and key {obj_key}")
+            return
+        else:
+            source = remote_dataset["Body"]
+
+        try:
+            return pd.read_csv(source)
+        except FileNotFoundError:
+            log.error("Error: Could not find input file for Pipeline.")

@@ -79,6 +79,7 @@ for epoch in range(epochs):
         print(f"F1 Score on Testing Set: {f1_test:.4f}")
 
         print("Classification Report on Testing Set:")
+        c = classification_report(y_test, y_pred)
         print(classification_report(y_test, y_pred))
 
 

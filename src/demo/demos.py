@@ -7,7 +7,7 @@
 # SPDX-FileCopyrightText: 2023 Ahmed Sheta <ahmed.sheta@fau.de>
 
 
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import classification_report, mean_squared_error
 
 from bdc import DataCollector
 from bdc.pipeline import Pipeline
@@ -21,8 +21,7 @@ from demo.pipeline_utils import (
     get_pipeline_initial_steps,
 )
 from evp import EstimatedValuePredictor
-from evp.data_processing import split_dataset
-from evp.predictors import Predictors
+from evp.predictors import MerchantSizeByDPV, Predictors
 from logger import get_logger
 from preprocessing import Preprocessing
 
@@ -52,22 +51,15 @@ def bdc_demo():
 
 # evp demo
 def evp_demo():
+    data = get_database().load_preprocessed_data()
+
     evp = EstimatedValuePredictor(
-        model_type=Predictors.LinearRegression,
-        model_path=input("Provide model path\n")
+        data=data,
+        model_type=Predictors.RandomForest,
+        model_name=input("Provide model path\n")
         if get_yes_no_input("Load model from file? (y/N)\n")
         else None,
     )
-
-    if get_yes_no_input("Split dataset (y/N)\n"):
-        split_dataset(
-            "data/leads_enriched.csv",
-            "data/leads",
-            0.8,
-            0.1,
-            0.1,
-            add_labels=get_yes_no_input("Add dummy labels (the lead value) (y/N)\n"),
-        )
 
     while True:
         choice = get_int_input(
@@ -75,13 +67,13 @@ def evp_demo():
             range(1, 6),
         )
         if choice == 1:
-            evp.train(LEADS_TRAIN_FILE)
+            evp.train()
         elif choice == 2:
             test_evp_model(evp)
         elif choice == 3:
             predict_single_lead(evp)
         elif choice == 4:
-            evp.save_models(input("Provide model path\n"))
+            evp.save_model()
         elif choice == 5:
             break
         else:
@@ -89,23 +81,21 @@ def evp_demo():
 
 
 def test_evp_model(evp: EstimatedValuePredictor):
-    leads = LeadParser.parse_leads_from_csv(LEADS_TEST_FILE)
-    predictions = [evp.estimate_value(lead) for lead in leads]
-    true_labels = [lead.lead_value for lead in leads]
-    print(
-        f"EVP has a mean squared error of {mean_squared_error(true_labels, predictions)} on the test set."
-    )
+    predictions = evp.predict(evp.X_test)
+    true_labels = evp.y_test
+
+    print(classification_report(true_labels, predictions))
 
 
 def predict_single_lead(evp: EstimatedValuePredictor):
-    leads = LeadParser.parse_leads_from_csv(LEADS_TEST_FILE)
+    leads = evp.X_test
     lead_id = get_int_input(
         f"Choose a lead_id in range [0, {len(leads) - 1}]\n", range(len(leads))
     )
     if 0 <= lead_id < len(leads):
-        prediction = evp.estimate_value(leads[lead_id])
+        prediction = evp.predict([leads[lead_id]])
         print(
-            f"Lead has predicted value of {prediction} and true value of {leads[lead_id].lead_value}"
+            f"Lead has predicted value of {prediction} and true value of {evp.y_test[lead_id]}"
         )
     else:
         print("Invalid Choice")
