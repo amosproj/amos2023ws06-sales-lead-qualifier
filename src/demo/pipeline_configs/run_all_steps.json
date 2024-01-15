@@ -1,0 +1,51 @@
+{
+  "description": "This config runs all steps with force_refresh set to true.",
+  "config": {
+    "steps": [
+      {
+        "name": "HashGenerator",
+        "force_refresh": true
+      },
+      {
+        "name": "AnalyzeEmails",
+        "force_refresh": true
+      },
+      {
+        "name": "ScrapeAddress",
+        "force_refresh": true
+      },
+      {
+        "name": "FacebookGraphAPI",
+        "force_refresh": true
+      },
+      {
+        "name": "PreprocessPhonenumbers",
+        "force_refresh": true
+      },
+      {
+        "name": "GooglePlaces",
+        "force_refresh": true
+      },
+      {
+        "name": "GooglePlacesDetailed",
+        "force_refresh": true
+      },
+      {
+        "name": "GPTReviewSentimentAnalyzer",
+        "force_refresh": true
+      },
+      {
+        "name": "GPTSummarizer",
+        "force_refresh": true
+      },
+      {
+        "name": "SmartReviewInsightsEnhancer",
+        "force_refresh": true
+      },
+      {
+        "name": "RegionalAtlas",
+        "force_refresh": true
+      }
+    ]
+  }
+}
