@@ -33,7 +33,9 @@ EXIT = "Exit"
 
 if __name__ == "__main__":
     cdp = CompanyDataRetriever()
-    cdp.find_companyId_by_firstName_and_lastName("Souissi", "Rim")
+    # name = cdp.find_companyName_by_lastName_firstName("Souissi", "Rim")
+    obj = cdp.find_companyObjective_by_lastName_firstName("Souissi", "Rim")
+    log.info(obj)
     options = list(DEMOS.keys()) + [EXIT]
     while True:
         try:
