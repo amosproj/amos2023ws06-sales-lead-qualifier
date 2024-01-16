@@ -19,6 +19,7 @@ class Predictors(Enum):
 
 
 class MerchantSizeByDPV(Enum):
+    Invalid = -1
     XS = 0
     S = 1
     M = 2
@@ -29,7 +30,12 @@ class MerchantSizeByDPV(Enum):
 class Classifier(ABC):
     @abstractmethod
     def __init__(self, model_name: str = None, *args, **kwargs) -> None:
-        pass
+        self.epochs = "untrained"
+        self.f1_test = "untrained"
+        self.classification_report = {
+            "epochs": self.epochs,
+            "weighted avg": {"f1-score": self.f1_test},
+        }
 
     @abstractmethod
     def predict(self, X) -> list[MerchantSizeByDPV]:
@@ -42,7 +48,7 @@ class Classifier(ABC):
         pass
 
     @abstractmethod
-    def save(self, model_name: str) -> None:
+    def save(self) -> None:
         pass
 
     @abstractmethod
@@ -58,10 +64,8 @@ class RandomForest(Classifier):
         class_weight=None,
         random_state=42,
     ) -> None:
+        super().__init__()
         self.random_state = random_state
-        self.epochs = 1
-        self.f1_test = None
-        self.classification_report = None
         if model_name is not None:
             self.load(model_name)
             if self.model is None:
@@ -100,9 +104,18 @@ class RandomForest(Classifier):
             y_test, y_pred, output_dict=True
         )
         self.classification_report["epochs"] = epochs
+        self.epochs = epochs
         self.f1_test = f1_test
 
-    def save(self, model_name: str) -> None:
+    def save(self) -> None:
+        model_type = type(self).__name__
+        try:
+            f1_string = f"{self.f1_test:.4f}"
+        except:
+            f1_string = self.f1_test
+        model_name = (
+            f"{model_type.lower()}_epochs({self.epochs})_f1({f1_string})_model.pkl"
+        )
         get_database().save_ml_model(self.model, model_name)
         get_database().save_classification_report(
             self.classification_report, model_name

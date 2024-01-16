@@ -4,10 +4,10 @@
 import csv
 import json
 import os
-import pickle
 from datetime import datetime
 from pathlib import Path
 
+import joblib
 import pandas as pd
 
 from logger import get_logger
@@ -206,7 +206,7 @@ class LocalRepository(Repository):
     def load_ml_model(self, model_name: str):
         model_file_path = os.path.join(self.ML_MODELS, model_name)
         try:
-            model = pickle.load(open(model_file_path, "rb"))
+            model = joblib.load(open(model_file_path, "rb"))
         except FileNotFoundError:
             log.error(f"Could not find model file {model_file_path}")
             model = None
@@ -220,7 +220,7 @@ class LocalRepository(Repository):
         if os.path.exists(model_file_path):
             log.warning(f"Overwriting model at {model_file_path}")
         try:
-            pickle.dump(model, open(model_file_path, "wb"))
+            joblib.dump(model, open(model_file_path, "wb"))
         except Exception as e:
             log.error(f"Could not save model at {model_file_path}! Error: {str(e)}")
 
@@ -229,7 +229,7 @@ class LocalRepository(Repository):
             self.CLASSIFICATION_REPORTS, "report_" + model_name
         )
         try:
-            report = pickle.load(open(report_file_path, "rb"))
+            report = joblib.load(open(report_file_path, "rb"))
         except FileNotFoundError:
             log.error(f"Could not find report file {report_file_path}")
             report = None
@@ -245,7 +245,7 @@ class LocalRepository(Repository):
         if os.path.exists(report_file_path):
             log.warning(f"Overwriting report at {report_file_path}")
         try:
-            pickle.dump(report, open(report_file_path, "wb"))
+            joblib.dump(report, open(report_file_path, "wb"))
         except Exception as e:
             log.error(f"Could not save report at {report_file_path}! Error: {str(e)}")
 

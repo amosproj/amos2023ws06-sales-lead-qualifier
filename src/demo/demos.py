@@ -53,10 +53,18 @@ def bdc_demo():
 def evp_demo():
     data = get_database().load_preprocessed_data()
 
+    model_type_choices = [e for e in Predictors]
+    print("Which model type do you want to load")
+    for i, p in enumerate(Predictors):
+        print(f"({i}) : {p.value}")
+
+    choice = get_int_input("", range(0, len(model_type_choices)))
+    model_type = model_type_choices[choice]
+
     evp = EstimatedValuePredictor(
         data=data,
-        model_type=Predictors.RandomForest,
-        model_name=input("Provide model path\n")
+        model_type=model_type,
+        model_name=input("Provide model file name\n")
         if get_yes_no_input("Load model from file? (y/N)\n")
         else None,
     )
@@ -82,6 +90,9 @@ def evp_demo():
 
 def test_evp_model(evp: EstimatedValuePredictor):
     predictions = evp.predict(evp.X_test)
+    if len(predictions) == 1 and predictions[0] == MerchantSizeByDPV.Invalid:
+        log.info("Untrained model results in no displayable data")
+        return
     true_labels = evp.y_test
 
     print(classification_report(true_labels, predictions))
@@ -94,6 +105,9 @@ def predict_single_lead(evp: EstimatedValuePredictor):
     )
     if 0 <= lead_id < len(leads):
         prediction = evp.predict([leads[lead_id]])
+        if prediction[0] == MerchantSizeByDPV.Invalid:
+            log.info("Untrained model results in no displayable data")
+            return
         print(
             f"Lead has predicted value of {prediction} and true value of {evp.y_test[lead_id]}"
         )

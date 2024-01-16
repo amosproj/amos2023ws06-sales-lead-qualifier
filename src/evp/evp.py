@@ -69,11 +69,16 @@ class EstimatedValuePredictor:
         )
 
     def save_model(self) -> None:
-        model_type = type(self.lead_classifier).__name__
-        model_name = f"{model_type.lower()}_epochs({self.lead_classifier.epochs})_f1({self.lead_classifier.f1_test:.4f})_model.pkl"
-        self.lead_classifier.save(model_name=model_name)
+        self.lead_classifier.save()
 
     def predict(self, X) -> list[MerchantSizeByDPV]:
         # use the models to predict required values
+        if (
+            self.lead_classifier.classification_report["epochs"] == "untrained"
+            or self.lead_classifier.classification_report["weighted avg"]["f1-score"]
+            == "untrained"
+        ):
+            log.error("Cannot make predictions with untrained model!")
+            return [MerchantSizeByDPV.Invalid]
         merchant_size = self.lead_classifier.predict(X)
         return merchant_size
