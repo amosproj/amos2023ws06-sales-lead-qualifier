@@ -1,6 +1,9 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Ahmed Sheta <ahmed.sheta@fau.de>
 
+"""
+NOTE THIS IS A TEST FILE AND IS NOT IN USE BY THE DEMO PROCESS
+"""
 
 import os
 
