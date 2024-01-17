@@ -10,6 +10,7 @@ from geopandas.tools import sjoin
 from pandas import DataFrame
 from tqdm import tqdm
 
+from bdc.steps.helpers import get_lead_hash_generator
 from bdc.steps.step import Step, StepError
 from logger import get_logger
 
@@ -99,12 +100,35 @@ class RegionalAtlas(Step):
 
         # Add the new fields to the df
         self.df[self.added_cols[:-1]] = self.df.progress_apply(
-            lambda lead: pd.Series(self.get_data_from_address(lead)), axis=1
+            lambda lead: pd.Series(
+                get_lead_hash_generator().hash_check(
+                    lead,
+                    self.get_data_from_address,
+                    self.name + "_Location-Data",
+                    self.added_cols[:-1],
+                    lead,
+                )
+            ),
+            axis=1,
         )
 
+        # self.df[self.added_cols[:-1]] = self.df.progress_apply(
+        #     lambda lead: pd.Series(self.get_data_from_address(lead)), axis=1
+        # )
+
         tqdm.pandas(desc="Computing Regional Score")
-        self.df[f"{self.name.lower()}_regional_score"] = self.df.progress_apply(
-            lambda lead: pd.Series(self.calculate_regional_score(lead)), axis=1
+
+        self.df[self.added_cols[:-1]] = self.df.progress_apply(
+            lambda lead: pd.Series(
+                get_lead_hash_generator().hash_check(
+                    lead,
+                    self.calculate_regional_score,
+                    self.name + "_Regional-Score",
+                    self.added_cols[:-1],
+                    lead,
+                )
+            ),
+            axis=1,
         )
         return self.df
 
