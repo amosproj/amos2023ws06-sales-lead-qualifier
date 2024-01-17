@@ -66,9 +66,13 @@ class RandomForest(Classifier):
     ) -> None:
         super().__init__()
         self.random_state = random_state
+        self.model = None
         if model_name is not None:
             self.load(model_name)
             if self.model is None:
+                log.info(
+                    f"Loading model '{model_name}' failed. Initializing new untrained model!"
+                )
                 self._init_new_model(
                     n_estimators=n_estimators, class_weight=class_weight
                 )
@@ -122,9 +126,13 @@ class RandomForest(Classifier):
         )
 
     def load(self, model_name: str) -> None:
-        self.model = get_database().load_ml_model(model_name)
-        self.classification_report = get_database().load_classification_report(
+        loaded_model = get_database().load_ml_model(model_name)
+        loaded_classification_report = get_database().load_classification_report(
             model_name
         )
+        if loaded_model is not None:
+            self.model = loaded_model
+        if loaded_classification_report is not None:
+            self.classification_report = loaded_classification_report
         self.epochs = self.classification_report["epochs"]
         self.f1_test = self.classification_report["weighted avg"]["f1-score"]
