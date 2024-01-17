@@ -57,7 +57,7 @@ model = RandomForestClassifier(
 )
 
 
-epochs = 10
+epochs = 1
 batch_size = 10000
 for epoch in range(epochs):
     with tqdm(total=len(X_train), desc=f"Epoch {epoch + 1}/{epochs}") as pbar:

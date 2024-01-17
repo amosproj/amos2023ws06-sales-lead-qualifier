@@ -1,10 +1,6 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Ahmed Sheta <ahmed.sheta@fau.de>
 
-"""
-NOTE THIS IS A TEST FILE AND IS NOT IN USE BY THE DEMO PROCESS
-"""
-
 
 import boto3
 import pandas as pd
@@ -24,13 +20,17 @@ s3.download_file(s3_bucket, s3_key, "preprocessed_data.csv")
 
 df = pd.read_csv("preprocessed_data.csv")
 
-script_path = ""
+script_path = "ml_model.py"
+
+model_dir = "s3://{}/model".format("amos--models")
+
 sklearn_estimator = SKLearn(
     entry_point=script_path,
     role=role,
     train_instance_count=1,
     train_instance_type="ml.m5.large",
     sagemaker_session=boto3.Session(region_name=region),
+    output_path=model_dir,
 )
 
 # train the model on SageMaker
