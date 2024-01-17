@@ -24,6 +24,23 @@ def get_yes_no_input(prompt: str) -> bool:
             print("Invalid input. Please enter (yes/no) or (y/N).")
 
 
+def get_string_input(prompt: str) -> str:
+    """
+    Prompts the user with a given prompt and returns a non-empty string.
+    The input is case-sensitive and will be stripped from spaces.
+
+    Args:
+        prompt (str): The prompt to display to the user.
+
+    Returns:
+        str: Entered non-empty, stripped string
+    """
+    while True:
+        user_input = input(prompt).strip()
+        if user_input != "":
+            return user_input
+
+
 def get_int_input(prompt: str, input_range: range = None) -> int:
     """
     Prompts the user for an integer input and validates it.
