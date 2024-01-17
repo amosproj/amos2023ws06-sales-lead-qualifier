@@ -130,7 +130,7 @@ class Repository(ABC):
         Save the lookup table for hashes for a given step
         """
         pass
-    
+
     @abstractmethod
     def fetch_gpt_result(self, file_id, operation_name):
         """
@@ -152,7 +152,7 @@ class Repository(ABC):
         :return: lookup table as a pandas DataFrame
         """
         pass
-        
+
     @abstractmethod
     def save_gpt_result(self, gpt_result, file_id, operation_name, force_refresh=False):
         """
@@ -177,3 +177,52 @@ class Repository(ABC):
         Convert a string time to a datetime object
         """
         return datetime.strptime(time, self.DATETIME_FORMAT)
+
+    @abstractmethod
+    def load_ml_model(self, model_name: str):
+        """
+        Load a ML model from a file with a given name
+
+        Args:
+            model_name (str): File name
+        """
+        pass
+
+    @abstractmethod
+    def save_ml_model(self, model, model_name: str):
+        """
+        Save a given ML model to a file with a given name
+
+        Args:
+            model: Model to save
+            model_name (str): File name
+        """
+        pass
+
+    @abstractmethod
+    def load_classification_report(self, model_name: str):
+        """
+        Load a given classification report to a file with a given name
+
+        Args:
+            model_name (str): Model name that created the report
+        """
+        pass
+
+    @abstractmethod
+    def save_classification_report(self, report, model_name: str):
+        """
+        Save a given classification report to a file with a given name
+
+        Args:
+            report: The classification report to save
+            model_name (str): Model name that created the report
+        """
+        pass
+
+    @abstractmethod
+    def load_preprocessed_data(self, file_name: str):
+        """
+        Load the preprocessed data from the given file
+        """
+        pass
