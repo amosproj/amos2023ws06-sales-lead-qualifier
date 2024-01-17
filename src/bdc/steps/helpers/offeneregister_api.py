@@ -3,7 +3,6 @@
 
 import requests
 from bs4 import BeautifulSoup
-from deutschland.bundesanzeiger import Bundesanzeiger
 
 from logger import get_logger
 
@@ -32,7 +31,7 @@ OFFENREGISTER_OBJECTIVES_URL = (
 )
 
 
-class CompanyDataRetriever:
+class OffeneRegisterAPI:
     """
     A class that retrieves company data from various sources based on given parameters.
 
@@ -308,5 +307,17 @@ class CompanyDataRetriever:
             if objective_row:
                 log.info(objective_row)
                 return objective_row.get("col-objective")
+            return None
+        return None
+
+    def find_companyAddress_by_lastName_firstName(self, last_name, first_name):
+        pos_row = self._find_from_Positions_by_firstName_and_lastName(
+            last_name, first_name
+        )
+        if pos_row:
+            company_id = pos_row.get("col-companyId")
+            address_row = self._find_from_Addresses_by_companyId(company_id)
+            if address_row:
+                return address_row.get("col-fullAddress")
             return None
         return None

@@ -3,7 +3,7 @@
 
 import os
 
-from bdc.steps.helpers.company_data_retriever import CompanyDataRetriever
+from bdc.steps.helpers.offeneregister_api import CompanyDataRetriever
 from demo import (
     bdc_demo,
     db_demo,

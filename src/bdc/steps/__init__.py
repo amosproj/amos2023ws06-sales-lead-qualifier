@@ -10,4 +10,5 @@ from .hash_generator import HashGenerator
 from .preprocess_phonenumbers import PreprocessPhonenumbers
 from .regionalatlas import RegionalAtlas
 from .scrape_address import ScrapeAddress
+from .search_offeneregister import SearchOffeneRegister
 from .social_media_api import FacebookGraphAPI
