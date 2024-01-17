@@ -11,6 +11,10 @@ pytest = "==7.4.0"
 pre-commit = "==3.5.0"
 flake8 = "==6.0.0"
 pytest-env = "==1.0.1"
+matplotlib = "==3.8.2"
+plotly = "==5.18.0"
+geopy = "==2.4.1"
+notebook = "==7.0.6"
 
 [packages]
 numpy = "==1.26.1"

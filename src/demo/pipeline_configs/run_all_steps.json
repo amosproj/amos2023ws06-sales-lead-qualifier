@@ -3,6 +3,10 @@
   "config": {
     "steps": [
       {
+        "name": "HashGenerator",
+        "force_refresh": true
+      },
+      {
         "name": "AnalyzeEmails",
         "force_refresh": true
       },
