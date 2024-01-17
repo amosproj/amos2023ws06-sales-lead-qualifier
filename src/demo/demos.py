@@ -13,7 +13,12 @@ from bdc import DataCollector
 from bdc.pipeline import Pipeline
 from database import get_database
 from database.parsers import LeadParser
-from demo.console_utils import get_int_input, get_multiple_choice, get_yes_no_input
+from demo.console_utils import (
+    get_int_input,
+    get_multiple_choice,
+    get_string_input,
+    get_yes_no_input,
+)
 from demo.pipeline_utils import (
     get_all_available_pipeline_json_configs,
     get_pipeline_additional_steps,
@@ -61,12 +66,12 @@ def evp_demo():
     choice = get_int_input("", range(0, len(model_type_choices)))
     model_type = model_type_choices[choice]
 
+    model_name = None
+    if get_yes_no_input("Load model from file? (y/N)\n"):
+        model_name = get_string_input("Provide model file name\n")
+
     evp = EstimatedValuePredictor(
-        data=data,
-        model_type=model_type,
-        model_name=input("Provide model file name\n")
-        if get_yes_no_input("Load model from file? (y/N)\n")
-        else None,
+        data=data, model_type=model_type, model_name=model_name
     )
 
     while True:
