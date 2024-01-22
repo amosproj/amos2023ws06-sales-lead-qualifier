@@ -8,15 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.utils import class_weight, resample
 
 from database.models import Lead
-from evp.predictors import (
-    XGB,
-    Classifier,
-    KNNClassifier,
-    MerchantSizeByDPV,
-    NaiveBayesClassifier,
-    Predictors,
-    RandomForest,
-)
+from evp.predictors import XGB, Classifier, MerchantSizeByDPV, Predictors, RandomForest
 from logger import get_logger
 
 log = get_logger()
@@ -36,21 +28,10 @@ class EstimatedValuePredictor:
         test_size=0.1,
         model_type: Predictors = Predictors.RandomForest,
         model_name: str = None,
-        limit_classes: bool = False,
         **model_args,
     ) -> None:
         self.df = data
-        self.num_classes = 5
         features = self.df.drop("MerchantSizeByDPV", axis=1).to_numpy()
-        if limit_classes:
-            self.num_classes = 3
-            self.df["new_labels"] = np.where(
-                self.df["MerchantSizeByDPV"] == 0,
-                0,
-                np.where(self.df["MerchantSizeByDPV"] == 4, 2, 1),
-            )
-            self.df = self.df.drop("MerchantSizeByDPV", axis=1)
-            self.df = self.df.rename(columns={"new_labels": "MerchantSizeByDPV"})
         self.class_labels = self.df["MerchantSizeByDPV"].to_numpy()
         # split the data into training (80%), validation (10%), and testing (10%) sets
         self.X_train, X_temp, self.y_train, y_temp = train_test_split(
@@ -82,15 +63,6 @@ class EstimatedValuePredictor:
                     model_name=model_name,
                     **model_args,
                 )
-            case Predictors.NaiveBayes:
-                self.lead_classifier = NaiveBayesClassifier(
-                    model_name=model_name,
-                    **model_args,
-                )
-            case Predictors.KNN:
-                self.lead_classifier = KNNClassifier(
-                    model_name=model_name, **model_args
-                )
             case default:
                 log.error(
                     f"Error: EVP initialized with unsupported model type {model_type}!"
@@ -107,7 +79,7 @@ class EstimatedValuePredictor:
         )
 
     def save_model(self) -> None:
-        self.lead_classifier.save(num_classes=self.num_classes)
+        self.lead_classifier.save()
 
     def predict(self, X) -> list[MerchantSizeByDPV]:
         # use the models to predict required values
