@@ -9,8 +9,29 @@ from bdc.steps.helpers import OffeneRegisterAPI, get_lead_hash_generator
 from bdc.steps.step import Step
 from logger import get_logger
 
+log = get_logger()
+
 
 class SearchOffeneRegister(Step):
+    """
+    This class represents a step in the sales lead qualification process that searches for company-related data
+    using the OffeneRegisterAPI.
+
+    Attributes:
+        name (str): The name of the step.
+        required_cols (list): The list of required columns in the input DataFrame.
+        added_cols (list): The list of columns to be added to the input DataFrame.
+        offeneregisterAPI (OffeneRegisterAPI): An instance of the OffeneRegisterAPI class.
+
+    Methods:
+        verify(): Verifies if the step is ready to run.
+        finish(): Performs any necessary cleanup or finalization steps.
+        load_data(): Loads any required data for the step.
+        run(): Executes the step and returns the modified DataFrame.
+        _extract_company_related_data(lead): Extracts company-related data for a given lead.
+
+    """
+
     name = "OffeneRegister"
     required_cols = ["Last Name", "First Name"]
     added_cols = [
@@ -26,7 +47,10 @@ class SearchOffeneRegister(Step):
         return super().verify()
 
     def finish(self):
-        pass
+        log.info("Search Offeneregister finished with the summary below:")
+        for col in self.added_cols:
+            col_perc = self.df[col].notna().sum() / len(self.df[col]) * 100
+            log.info(f"Percentage of {col} (of all): {col_perc:.2f}%")
 
     def load_data(self):
         pass
@@ -46,9 +70,19 @@ class SearchOffeneRegister(Step):
             ),
             axis=1,
         )
-        pass
+        return self.df
 
     def _extract_company_related_data(self, lead):
+        """
+        Extracts company-related data for a given lead.
+
+        Args:
+            lead (pd.Series): The lead data.
+
+        Returns:
+            pd.Series: A Series containing the extracted company-related data.
+
+        """
         last_name = lead["Last Name"]
         first_name = lead["First Name"]
         if last_name is None or first_name is None:

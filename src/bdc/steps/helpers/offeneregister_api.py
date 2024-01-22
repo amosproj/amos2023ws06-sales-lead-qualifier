@@ -11,23 +11,23 @@ log = get_logger()
 OFFENREGISTER_BASE_URL = "https://db.offeneregister.de/"
 OFFENRENREGISTER_POSITIONS_URL = (
     OFFENREGISTER_BASE_URL
-    + "openregister/Positions?firstName__contains={}&lastName__contains={}"
+    + "openregister/Positions?firstName__exact={}&lastName__exact={}"
 )
 
 OFFENREGISTER_CAPITAL_URL = (
-    OFFENREGISTER_BASE_URL + "openregister/Capital?companyId__contains={}"
+    OFFENREGISTER_BASE_URL + "openregister/Capital?companyId__exact={}"
 )
 
 OFFENREGISTER_ADDRESSES_URL = (
-    OFFENREGISTER_BASE_URL + "openregister/Addresses?companyId__contains={}"
+    OFFENREGISTER_BASE_URL + "openregister/Addresses?companyId__exact={}"
 )
 
 OFFENREGISTER_NAMES_URL = (
-    OFFENREGISTER_BASE_URL + "openregister/Names?companyId__contains={}"
+    OFFENREGISTER_BASE_URL + "openregister/Names?companyId__exact={}"
 )
 
 OFFENREGISTER_OBJECTIVES_URL = (
-    OFFENREGISTER_BASE_URL + "openregister/Objectives?companyId__contains={}"
+    OFFENREGISTER_BASE_URL + "openregister/Objectives?companyId__exact={}"
 )
 
 
@@ -85,67 +85,7 @@ class OffeneRegisterAPI:
 
         # Check if the request was successful
         if response.status_code == 200:
-            # get table with class name rows-and-columns
-            soup = BeautifulSoup(response.text, "html.parser")
-
-            # Find the div with the specified class name
-            div = soup.find("div", {"class": "table-wrapper"})
-
-            # Find the table within the div
-            table = div.find("table", {"class": "rows-and-columns"})
-
-            # Access the tbody element
-            tbody = table.tbody
-
-            # Find all tr elements within the tbody
-            rows = tbody.find_all("tr")
-
-            # Print the number of tr elements
-            # Get the first row
-            first_row = rows[0]
-
-            # Find all td elements within the first row
-            columns = first_row.find_all("td")
-
-            # Create a dictionary to store class name and value pairs
-            col_dict = {}
-
-            # Iterate over each column
-            for column in columns:
-                # Get the class name of the column
-                class_name = column.get("class")[0] if column.get("class") else None
-
-                # Get the text within the column
-                value = column.text
-
-                # Add the class name and value pair to the dictionary
-                if class_name:
-                    col_dict[class_name] = value
-
-            # Print the dictionary
-            return col_dict
-        else:
-            log.warn(f"Request failed with status code {response.status_code}")
-            return None
-
-    def _find_row_by_companyId(self, url, company_id) -> dict:
-        """
-        Finds and retrieves the row data for a given company ID from a specified URL.
-
-        Args:
-            url (str): The URL to retrieve the data from.
-            company_id (str): The ID of the company to search for.
-
-        Returns:
-            dict: A dictionary containing the class name and value pairs for the first row of the table,
-                  or None if the request fails or the company ID is not valid.
-        """
-        if company_id:
-            url = url.format(company_id)
-            response = requests.get(url)
-
-            # Check if the request was successful
-            if response.status_code == 200:
+            try:
                 # get table with class name rows-and-columns
                 soup = BeautifulSoup(response.text, "html.parser")
 
@@ -157,6 +97,7 @@ class OffeneRegisterAPI:
 
                 # Access the tbody element
                 tbody = table.tbody
+
                 # Find all tr elements within the tbody
                 rows = tbody.find_all("tr")
 
@@ -183,8 +124,77 @@ class OffeneRegisterAPI:
                         col_dict[class_name] = value
 
                 # Print the dictionary
-                log.info(col_dict)
                 return col_dict
+            except Exception as e:
+                log.warn(f"Exception occurred: {e}")
+                return None
+        else:
+            log.warn(f"Request failed with status code {response.status_code}")
+            return None
+
+    def _find_row_by_companyId(self, url, company_id) -> dict:
+        """
+        Finds and retrieves the row data for a given company ID from a specified URL.
+
+        Args:
+            url (str): The URL to retrieve the data from.
+            company_id (str): The ID of the company to search for.
+
+        Returns:
+            dict: A dictionary containing the class name and value pairs for the first row of the table,
+                  or None if the request fails or the company ID is not valid.
+        """
+        if company_id:
+            url = url.format(company_id)
+            response = requests.get(url)
+
+            # Check if the request was successful
+            if response.status_code == 200:
+                try:
+                    # get table with class name rows-and-columns
+                    soup = BeautifulSoup(response.text, "html.parser")
+
+                    # Find the div with the specified class name
+                    div = soup.find("div", {"class": "table-wrapper"})
+
+                    # Find the table within the div
+                    table = div.find("table", {"class": "rows-and-columns"})
+
+                    # Access the tbody element
+                    tbody = table.tbody
+                    # Find all tr elements within the tbody
+                    rows = tbody.find_all("tr")
+
+                    # Print the number of tr elements
+                    # Get the first row
+                    first_row = rows[0]
+
+                    # Find all td elements within the first row
+                    columns = first_row.find_all("td")
+
+                    # Create a dictionary to store class name and value pairs
+                    col_dict = {}
+
+                    # Iterate over each column
+                    for column in columns:
+                        # Get the class name of the column
+                        class_name = (
+                            column.get("class")[0] if column.get("class") else None
+                        )
+
+                        # Get the text within the column
+                        value = column.text
+
+                        # Add the class name and value pair to the dictionary
+                        if class_name:
+                            col_dict[class_name] = value
+
+                    # Print the dictionary
+                    log.info(col_dict)
+                    return col_dict
+                except Exception as e:
+                    log.warn(f"Exception occurred: {e}")
+                    return None
             else:
                 log.warn(f"Request failed with status code {response.status_code}")
                 return None
@@ -251,14 +261,18 @@ class OffeneRegisterAPI:
         Returns:
             str: The name of the company if found, None otherwise.
         """
+        log.debug(f"Finding company name for {first_name} {last_name}")
         pos_row = self._find_from_Positions_by_firstName_and_lastName(
             last_name, first_name
         )
         if pos_row:
             company_id = pos_row.get("col-companyId")
+            log.debug(f"Company id: {company_id}")
             name_row = self._find_from_Names_by_companyId(company_id)
             if name_row:
-                return name_row.get("col-name")
+                company_name = name_row.get("col-name")
+                log.debug(f"Company name: {company_name}")
+                return company_name
             return None
         return None
 
@@ -273,16 +287,22 @@ class OffeneRegisterAPI:
         Returns:
             tuple: A tuple containing the capital amount and currency of the company. If the company or capital information is not found, returns (None, None).
         """
+        log.debug(f"Finding company capital for {first_name} {last_name}")
         pos_row = self._find_from_Positions_by_firstName_and_lastName(
             last_name, first_name
         )
         if pos_row:
             company_id = pos_row.get("col-companyId")
+            log.debug(f"Company id: {company_id}")
             capital_row = self._find_from_Capital_by_companyId(company_id)
             if capital_row:
-                return capital_row.get("col-capitalAmount"), capital_row.get(
-                    "col-capitalCurrency"
+                cap_amount, cap_currency = (
+                    capital_row.get("col-capitalAmount"),
+                    capital_row.get("col-capitalCurrency"),
                 )
+                log.debug(f"Capital amount: {cap_amount}")
+                log.debug(f"Capital currency: {cap_currency}")
+                return cap_amount, cap_currency
             return None, None
         return None, None
 
@@ -297,16 +317,18 @@ class OffeneRegisterAPI:
         Returns:
             str or None: The company objective if found, None otherwise.
         """
+        log.debug(f"Finding company objective for {first_name} {last_name}")
         pos_row = self._find_from_Positions_by_firstName_and_lastName(
             last_name, first_name
         )
         if pos_row:
             company_id = pos_row.get("col-companyId")
-            log.info(company_id)
+            log.debug(f"Company id: {company_id}")
             objective_row = self._find_from_Objectives_by_companyId(company_id)
             if objective_row:
-                log.info(objective_row)
-                return objective_row.get("col-objective")
+                obj = objective_row.get("col-objective")
+                log.debug(f"Company objective: {obj}")
+                return obj
             return None
         return None
 

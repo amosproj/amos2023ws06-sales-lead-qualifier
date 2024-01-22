@@ -3,7 +3,6 @@
 
 import os
 
-from bdc.steps.helpers.offeneregister_api import CompanyDataRetriever
 from demo import (
     bdc_demo,
     db_demo,
@@ -32,10 +31,6 @@ PROMPT = "Choose demo:\n"
 EXIT = "Exit"
 
 if __name__ == "__main__":
-    cdp = CompanyDataRetriever()
-    # name = cdp.find_companyName_by_lastName_firstName("Souissi", "Rim")
-    obj = cdp.find_companyObjective_by_lastName_firstName("Souissi", "Rim")
-    log.info(obj)
     options = list(DEMOS.keys()) + [EXIT]
     while True:
         try:
