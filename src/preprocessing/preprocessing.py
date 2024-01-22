@@ -44,15 +44,15 @@ class Preprocessing:
             log.debug(f"Data path = {data_path}")
             data = pd.read_csv(data_path)
         self.preprocessed_df = data.copy()
-        # created the new output path based on which repo used
-        path_components = data_path.split("\\" if "\\" in data_path else "/")
-        path_components.pop()
+
         if historical_data:
-            path_components.pop()
-            path_components.append("preprocessed_data_files/preprocessed_data.csv")
+            self.prerocessed_data_output_path = "s3://amos--data--features/preprocessed_data_files/preprocessed_data.csv"
         else:
+            # created the new output path based on which repo used
+            path_components = data_path.split("\\" if "\\" in data_path else "/")
+            path_components.pop()
             path_components.append("preprocessed_data.csv")
-        self.prerocessed_data_output_path = "/".join(path_components)
+            self.prerocessed_data_output_path = "/".join(path_components)
 
         self.filter_bool = filter_null_data
         # columns that would be added later after one-hot encoding each class
@@ -92,7 +92,7 @@ class Preprocessing:
             "regional_atlas_regional_score",
         ]
         # numerical data that need scaling
-        self.data_to_scale = ["google_places_user_ratings_total"]
+        self.data_to_scale = []
 
         # categorical data that needs one-hot encoding
         self.categorical_data = [
