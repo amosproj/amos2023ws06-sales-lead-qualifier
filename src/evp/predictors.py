@@ -4,6 +4,7 @@
 from abc import ABC, abstractmethod
 from enum import Enum
 
+import xgboost as xgb
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report, f1_score
 from tqdm import tqdm
@@ -16,6 +17,7 @@ log = get_logger()
 
 class Predictors(Enum):
     RandomForest = "Random Forest"
+    XGBoost = "XG Boost"
 
 
 class MerchantSizeByDPV(Enum):
@@ -98,6 +100,90 @@ class RandomForest(Classifier):
 
         # inference
         y_pred = self.model.predict(X_test)
+        # metrics
+        accuracy = accuracy_score(y_test, y_pred)
+        f1_test = f1_score(y_test, y_pred, average="weighted")
+
+        log.info(f"F1 Score on Testing Set: {f1_test:.4f}")
+        log.info("Computing classification report")
+        self.classification_report = classification_report(
+            y_test, y_pred, output_dict=True
+        )
+        self.classification_report["epochs"] = epochs
+        self.epochs = epochs
+        self.f1_test = f1_test
+
+    def save(self) -> None:
+        model_type = type(self).__name__
+        try:
+            f1_string = f"{self.f1_test:.4f}"
+        except:
+            f1_string = self.f1_test
+        model_name = (
+            f"{model_type.lower()}_epochs({self.epochs})_f1({f1_string})_model.pkl"
+        )
+        get_database().save_ml_model(self.model, model_name)
+        get_database().save_classification_report(
+            self.classification_report, model_name
+        )
+
+    def load(self, model_name: str) -> None:
+        loaded_model = get_database().load_ml_model(model_name)
+        loaded_classification_report = get_database().load_classification_report(
+            model_name
+        )
+        if loaded_model is not None:
+            self.model = loaded_model
+        if loaded_classification_report is not None:
+            self.classification_report = loaded_classification_report
+        self.epochs = self.classification_report["epochs"]
+        self.f1_test = self.classification_report["weighted avg"]["f1-score"]
+
+
+class XGB(Classifier):
+    def __init__(
+        self,
+        model_name: str = None,
+        num_rounds=2000,
+        random_state=42,
+    ) -> None:
+        super().__init__()
+        self.random_state = random_state
+        self.model = None
+        self.num_rounds = num_rounds
+        if model_name is not None:
+            self.load(model_name)
+            if self.model is None:
+                log.info(
+                    f"Loading model '{model_name}' failed. Initializing new untrained model!"
+                )
+                self._init_new_model(num_rounds == num_rounds)
+        else:
+            self._init_new_model(num_rounds == num_rounds)
+
+    def _init_new_model(self, num_rounds=1000):
+        self.params = {
+            "objective": "multi:softmax",
+            "num_class": 5,
+            "max_depth": 3,
+            "learning_rate": 0.1,
+            "eval_metric": "mlogloss",
+        }
+
+    def predict(self, X) -> MerchantSizeByDPV:
+        return self.model.predict(X)
+
+    def train(
+        self, X_train, y_train, X_test, y_test, epochs=1, batch_size=None
+    ) -> None:
+        log.info("Training XGBoost")
+
+        dtrain = xgb.DMatrix(X_train, label=y_train)
+        dtest = xgb.DMatrix(X_test, label=y_test)
+        self.model = xgb.train(self.params, dtrain, self.num_rounds)
+
+        # inference
+        y_pred = self.model.predict(dtest)
         # metrics
         accuracy = accuracy_score(y_test, y_pred)
         f1_test = f1_score(y_test, y_pred, average="weighted")
