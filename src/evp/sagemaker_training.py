@@ -29,7 +29,6 @@ script_path = "ml_model.py"
 
 model_dir = "s3://{}/model".format("amos--models")
 
-
 # sklearn_estimator = SKLearn(
 #     entry_point=script_path,
 #     role=role,
