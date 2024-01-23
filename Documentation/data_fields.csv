@@ -49,9 +49,9 @@ regional_atlas_gdp_p_workhours,GDP per workhours,Regional Atlas
 regional_atlas_pop_avg_age_zensus,Average population age (from zensus),Regional Atlas
 regional_atlas_regional_score,Regional score,calculated
 address_ver_1,?,?
-review_avg_grammatical_score,,calculated
-review_polarization_type,,calculated
-review_polarization_score,,calculated
-review_highest_rating_ratio,,calculated
-review_lowest_rating_ratio,,calculated
-review_rating_trend,,calculated
+review_avg_grammatical_score,Average grammatical score of reviews,calculated
+review_polarization_type,Polarization type of review ratings,calculated
+review_polarization_score,Polarization score of review ratings ,calculated
+review_highest_rating_ratio,Ratio of the highest review ratings,calculated
+review_lowest_rating_ratio,Ratio of the lowest review ratings,calculated
+review_rating_trend,Value indicating the trend of ratings,calculated
