@@ -70,8 +70,17 @@ def evp_demo():
     if get_yes_no_input("Load model from file? (y/N)\n"):
         model_name = get_string_input("Provide model file name\n")
 
+    limit_classes = False
+    if get_yes_no_input(
+        "Use 3 classes ({XS}, {S, M, L}, {XL}) instead of 5 classes ({XS}, {S}, {M}, {L}, {XL})? (y/N)\n"
+    ):
+        limit_classes = True
+
     evp = EstimatedValuePredictor(
-        data=data, model_type=model_type, model_name=model_name
+        data=data,
+        model_type=model_type,
+        model_name=model_name,
+        limit_classes=limit_classes,
     )
 
     while True:
