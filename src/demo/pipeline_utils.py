@@ -19,6 +19,7 @@ from bdc.steps import (
     PreprocessPhonenumbers,
     RegionalAtlas,
     ScrapeAddress,
+    SearchOffeneRegister,
     SmartReviewInsightsEnhancer,
 )
 
@@ -35,12 +36,14 @@ STEP_STR_TO_CLASS = {
     "PreprocessPhonenumbers": PreprocessPhonenumbers,
     "RegionalAtlas": RegionalAtlas,
     "ScrapeAddress": ScrapeAddress,
+    "SearchOffeneRegister": SearchOffeneRegister,
     "SmartReviewInsightsEnhancer": SmartReviewInsightsEnhancer,
 }
 
 # Please do not write following lists! Use the functions below instead.
 _additional_pipeline_steps = [
     (ScrapeAddress, "Scrape Address", "(will take a long time)"),
+    (SearchOffeneRegister, "Search OffeneRegister", "(will take a long time)"),
     (FacebookGraphAPI, "Facebook Graph API", "(will use token)"),
     (PreprocessPhonenumbers, "Phone Number Validation", ""),
     (
