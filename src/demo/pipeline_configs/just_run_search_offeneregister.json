@@ -1,0 +1,19 @@
+{
+  "description": "Just runs SearchOffeneRegister for testing purposes!",
+  "config": {
+    "steps": [
+      {
+        "name": "HashGenerator",
+        "force_refresh": true
+      },
+      {
+        "name": "AnalyzeEmails",
+        "force_refresh": true
+      },
+      {
+        "name": "SearchOffeneRegister",
+        "force_refresh": true
+      }
+    ]
+  }
+}
