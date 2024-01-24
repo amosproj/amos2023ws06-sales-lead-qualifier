@@ -104,6 +104,7 @@ class GooglePlacesNearby(Step):
             response = self.gmaps.places_nearby(
                 location=coords,
                 radius=100,
+                type="establishment",
                 language="original",
             )
 
