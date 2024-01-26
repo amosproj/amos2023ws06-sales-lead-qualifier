@@ -60,20 +60,31 @@ outperformed by the other tested models.
 
 Random Forest Classifier with 100 estimators has been been able to achieve an overall F1-score of 0.62 and scores of 0.81, 0.13, 0.09, 0.08 and 0.15 for classes XS, S, M, L and XL respectively.
 
+### Feature subsets
+
+We have collected a lot of features (~54 data points) for the leads, additionally one-hot encoding the categorical variables
+results in a high dimensional feature space (132 features). Not all features might be equally relevant for our classification task
+so we want to try different subsets.
+
+The following subsets are available:
+
+1. `google_places_rating`, `google_places_user_ratings_total`, `google_places_confidence`, `regional_atlas_regional_score`
+
 ### Overall Results
 
 Note:
 The Random Forest Classifier used 100 estimators.
+The AdaBoost Classifier used 100 DecisionTree classifiers.
 The KNN classifier used a distance based weighting for the evaluated neighbors and considered 10 neighbors in the 5-class split and 19 neighbors for the 3-class split.
 The XGBoost was trained for 10000 rounds.
 
 In the following table we can see the model's overall weighted F1-score on the 3-class and
 5-class data set split.
 
-|         | KNN    | Naive Bayes | Random Forest | XGBoost |
-| ------- | ------ | ----------- | ------------- | ------- |
-| 5-Class | 0.6314 | 0.6073      | 0.6150        | 0.6442  |
-| 3-Class | 0.6725 | 0.6655      | 0.6642        | 0.6967  |
+|         | KNN    | Naive Bayes | Random Forest | XGBoost    | AdaBoost | AdaBoost(subset=1) |
+| ------- | ------ | ----------- | ------------- | ---------- | -------- | ------------------ |
+| 5-Class | 0.6314 | 0.6073      | 0.6150        | **0.6442** | 0.6098   | 0.6090             |
+| 3-Class | 0.6725 | 0.6655      | 0.6642        | **0.6967** | 0.6523   | 0.6591             |
 
 We can see that all classifiers perform better on the 3-class data set split and that the XGBoost classifier is the best performing for both data set splits.
 
@@ -83,13 +94,13 @@ We can see that all classifiers perform better on the 3-class data set split and
 
 In the following table we can see the F1-score of each model for each class in the 5-class split:
 
-| Class | KNN  | Naive Bayes | Random Forest | XGBoost |
-| ----- | ---- | ----------- | ------------- | ------- |
-| XS    | 0.82 | 0.83        | 0.81          | 0.84    |
-| S     | 0.15 | 0.02        | 0.13          | 0.13    |
-| M     | 0.08 | 0.02        | 0.09          | 0.08    |
-| L     | 0.06 | 0.00        | 0.08          | 0.06    |
-| XL    | 0.18 | 0.10        | 0.15          | 0.16    |
+| Class | KNN      | Naive Bayes | Random Forest | XGBoost  | AdaBoost | AdaBoost(subset=1) |
+| ----- | -------- | ----------- | ------------- | -------- | -------- | ------------------ |
+| XS    | 0.82     | 0.83        | 0.81          | **0.84** | 0.77     | 0.78               |
+| S     | 0.15     | 0.02        | 0.13          | 0.13     | **0.22** | 0.19               |
+| M     | 0.08     | 0.02        | 0.09          | 0.08     | **0.14** | 0.09               |
+| L     | 0.06     | 0.00        | **0.08**      | 0.06     | 0.07     | 0.07               |
+| XL    | **0.18** | 0.10        | 0.15          | 0.16     | 0.17     | 0.14               |
 
 For every model we can see that the predictions on the XS class are significantly better than every other class. TFor the KNN, Random Forest, and XGBoost all perform similar, having second best classes S and XL and worst classes M and L. The Naive Bayes classifier performs significantly worse on the S, M, and L classes and has second best class XL.
 
@@ -97,10 +108,10 @@ For every model we can see that the predictions on the XS class are significantl
 
 In the following table we can see the F1-score of each model for each class in the 3-class split:
 
-| Class | KNN  | Naive Bayes | Random Forest | XGBoost |
-| ----- | ---- | ----------- | ------------- | ------- |
-| XS    | 0.83 | 0.82        | 0.81          | 0.84    |
-| S,M,L | 0.27 | 0.28        | 0.30          | 0.33    |
-| XL    | 0.16 | 0.07        | 0.13          | 0.14    |
+| Class | KNN  | Naive Bayes | Random Forest | XGBoost  | AdaBoost | AdaBoost(subset=1) |
+| ----- | ---- | ----------- | ------------- | -------- | -------- | ------------------ |
+| XS    | 0.83 | 0.82        | 0.81          | **0.84** | 0.78     | 0.79               |
+| S,M,L | 0.27 | 0.28        | 0.30          | 0.33     | **0.34** | 0.32               |
+| XL    | 0.16 | 0.07        | 0.13          | 0.14     | 0.12     | **0.20**           |
 
 For the 3-class split we observe similar performance for the XS and {S, M, L} classes for each model, while the XGBoost model slightly outperforms the other models. The KNN classifier is performing the best on the XL class while the Naive Bayes classifier performs worst. Interestingly, we can observe that the performance of the models on the XS class was barely affected by the merging of the s, M, and L classes while the performance on the XL class got worse for all of them. This needs to be considered, when evaluating the overall performance of the models on this data set split.

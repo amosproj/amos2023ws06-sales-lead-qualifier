@@ -105,7 +105,7 @@ def evp_demo():
             range(1, 6),
         )
         if choice == 1:
-            evp.train(epochs=10)
+            evp.train()
         elif choice == 2:
             test_evp_model(evp)
         elif choice == 3:
