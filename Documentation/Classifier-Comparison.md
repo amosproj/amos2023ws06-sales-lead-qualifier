@@ -72,14 +72,15 @@ The following subsets are available:
 
 ### Overall Results
 
-Note:
-The Random Forest Classifier used 100 estimators.
-The AdaBoost Classifier used 100 DecisionTree classifiers.
-The KNN classifier used a distance based weighting for the evaluated neighbors and considered 10 neighbors in the 5-class split and 19 neighbors for the 3-class split.
-The XGBoost was trained for 10000 rounds.
+**_Notes:_**
+
+- The Random Forest Classifier used 100 estimators.
+- The AdaBoost Classifier used 100 DecisionTree classifiers.
+- The KNN classifier used a distance based weighting for the evaluated neighbors and considered 10 neighbors in the 5-class split and 19 neighbors for the 3-class split.
+- The XGBoost was trained for 10000 rounds.
 
 In the following table we can see the model's overall weighted F1-score on the 3-class and
-5-class data set split.
+5-class data set split. The best performing classifiers per row is marked **bold**.
 
 |         | KNN    | Naive Bayes | Random Forest | XGBoost    | AdaBoost | AdaBoost(subset=1) |
 | ------- | ------ | ----------- | ------------- | ---------- | -------- | ------------------ |
@@ -115,3 +116,4 @@ In the following table we can see the F1-score of each model for each class in t
 | XL    | 0.16 | 0.07        | 0.13          | 0.14     | 0.12     | **0.20**           |
 
 For the 3-class split we observe similar performance for the XS and {S, M, L} classes for each model, while the XGBoost model slightly outperforms the other models. The KNN classifier is performing the best on the XL class while the Naive Bayes classifier performs worst. Interestingly, we can observe that the performance of the models on the XS class was barely affected by the merging of the s, M, and L classes while the performance on the XL class got worse for all of them. This needs to be considered, when evaluating the overall performance of the models on this data set split.
+The AdaBoost Classifier, trained on subset 1, performs best for the XL class.
