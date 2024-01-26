@@ -5,11 +5,11 @@ from abc import ABC, abstractmethod
 from enum import Enum
 
 import xgboost as xgb
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report, f1_score
 from sklearn.naive_bayes import BernoulliNB
 from sklearn.neighbors import KNeighborsClassifier
-from tqdm import tqdm
+from sklearn.tree import DecisionTreeClassifier
 
 from database import get_database
 from logger import get_logger
@@ -22,6 +22,7 @@ class Predictors(Enum):
     XGBoost = "XG Boost"
     NaiveBayes = "Naive Bayes"
     KNN = "KNN Classifier"
+    AdaBoost = "AdaBoost"
 
 
 class MerchantSizeByDPV(Enum):
@@ -55,7 +56,7 @@ class Classifier(ABC):
     def train(
         self, X_train, y_train, X_test, y_test, epochs=1, batch_size=None
     ) -> None:
-        log.info(f"Training {type(self).__name__}")
+        log.info(f"Training {type(self).__name__} for {epochs} epochs")
 
         self.model.fit(X_train, y_train)
 
@@ -260,3 +261,44 @@ class XGB(Classifier):
         self.classification_report["epochs"] = epochs
         self.epochs = epochs
         self.f1_test = f1_test
+
+
+class AdaBoost(Classifier):
+    def __init__(
+        self,
+        model_name: str = None,
+        n_estimators=100,
+        class_weight=None,
+        random_state=42,
+    ) -> None:
+        super().__init__()
+        self.random_state = random_state
+        self.model = None
+        if model_name is not None:
+            self.load(model_name)
+            if self.model is None:
+                log.info(
+                    f"Loading model '{model_name}' failed. Initializing new untrained model!"
+                )
+                self._init_new_model(
+                    n_estimators=n_estimators, class_weight=class_weight
+                )
+        else:
+            self._init_new_model(n_estimators=n_estimators, class_weight=class_weight)
+
+    def _init_new_model(self, n_estimators=100, class_weight=None):
+        self.model = AdaBoostClassifier(
+            estimator=DecisionTreeClassifier(max_depth=None, class_weight=class_weight),
+            n_estimators=n_estimators,
+            random_state=self.random_state,
+        )
+
+    def predict(self, X) -> MerchantSizeByDPV:
+        return self.model.predict(X)
+
+    def train(
+        self, X_train, y_train, X_test, y_test, epochs=1, batch_size=None
+    ) -> None:
+        super().train(
+            X_train, y_train, X_test, y_test, epochs=epochs, batch_size=batch_size
+        )
