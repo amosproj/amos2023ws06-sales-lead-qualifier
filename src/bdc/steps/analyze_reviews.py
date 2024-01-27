@@ -92,6 +92,9 @@ class GPTReviewSentimentAnalyzer(Step):
         extract_text_from_reviews(reviews_list): Extracts text from reviews and removes line characters.
         num_tokens_from_string(text): Returns the number of tokens in a text string.
         batch_reviews(reviews, max_tokens): Batches reviews into smaller batches based on token limit.
+
+    Added Columns:
+        reviews_sentiment_score (float): The sentiment score of the reviews.
     """
 
     name = "GPT-Review-Sentiment-Analyzer"
@@ -377,6 +380,13 @@ class SmartReviewInsightsEnhancer(Step):
         _calculate_score(review): Calculates the score for a review.
         _grammatical_errors(text, lang): Calculates the number of grammatical errors in a text.
 
+    Added Columns:
+        review_avg_grammatical_score (float): The average grammatical score of the reviews.
+        review_polarization_type (str): The type of polarization in the reviews.
+        review_polarization_score (float): The score of polarization in the reviews.
+        review_highest_rating_ratio (float): The ratio of highest ratings in the reviews.
+        review_lowest_rating_ratio (float): The ratio of lowest ratings in the reviews.
+        review_rating_trend (float): The trend of ratings over time.
     """
 
     name = "Smart-Review-Insights-Enhancer"

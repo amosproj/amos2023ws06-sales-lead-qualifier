@@ -34,6 +34,19 @@ class GooglePlaces(Step):
         name: Name of this step, used for logging and as a column prefix
         added_cols: List of fields that will be added to the main dataframe by executing this step
         required_cols: List of fields that are required to be existent in the input dataframe before performing this step
+
+    Added Columns:
+        google_places_place_id (str): The place id of the business
+        google_places_business_status (str): The business status of the business
+        google_places_formatted_address (str): The formatted address of the business
+        google_places_name (str): The name of the business
+        google_places_user_ratings_total (int): The number of user ratings of the business
+        google_places_rating (float): The rating of the business
+        google_places_price_level (int): The price level of the business
+        google_places_candidate_count_mail (int): The number of candidates found by mail search
+        google_places_candidate_count_phone (int): The number of candidates found by phone search
+        google_places_place_id_matches_phone_search (bool): Whether the place id found by mail search matches the one found by phone search
+        google_places_confidence (float): A confidence score for the results
     """
 
     name = "Google_Places"

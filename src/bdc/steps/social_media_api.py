@@ -23,6 +23,10 @@ class FacebookGraphAPI(Step):
         name: Name of this step, used for logging
         added_cols: List of fields that will be added to the main dataframe by executing this step
         required_cols: List of fields that are required to be existent in the input dataframe before performing this step
+
+    Added Columns:
+        email (str): The email of the company from facebook graph
+        category (str): The category of the company from facebook graph
     """
 
     name = "Facebook_Graph"

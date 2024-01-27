@@ -26,6 +26,9 @@ class ScrapeAddress(Step):
         name: Name of this step, used for logging and as a column prefix
         added_cols: List of fields that will be added to the main dataframe by executing this step
         required_cols: List of fields that are required to be existent in the input dataframe before performing this step
+
+    Added Columns:
+        address_ver_1 (str): The scraped address of the company
     """
 
     name = "Scrape-Address"

@@ -33,6 +33,32 @@ class RegionalAtlas(Step):
         regions_gdfs: dataframe that includes all keys/values from the merged.geojson
         empty_result: empty result that will be used in case there are problems with the data
         epsg_code_etrs: 25832 is the standard used by RegionAtlas
+
+    Added Columns:
+        pop_density (float): Population density of the searched city
+        pop_development (float): Population development of the searched city
+        age_0 (float): Population age group 0-18 of the searched city
+        age_1 (float): Population age group 18-30 of the searched city
+        age_2 (float): Population age group 30-45 of the searched city
+        age_3 (float): Population age group 45-60 of the searched city
+        age_4 (float): Population age group 60+ of the searched city
+        pop_avg_age (float): Average age of the searched city
+        per_service_sector (float): Percentage of the service sector of the searched city
+        per_trade (float): Percentage of the trade sector of the searched city
+        employment_rate (float): Employment rate of the searched city
+        unemployment_rate (float): Unemployment rate of the searched city
+        per_long_term_unemployment (float): Percentage of long term unemployment of the searched city
+        investments_p_employee (float): Investments per employee of the searched city
+        gross_salary_p_employee (float): Gross salary per employee of the searched city
+        disp_income_p_inhabitant (float): Disposable income per inhabitant of the searched city
+        tot_income_p_taxpayer (float): Total income per taxpayer of the searched city
+        gdp_p_employee (float): GDP per employee of the searched city
+        gdp_development (float): GDP development of the searched city
+        gdp_p_inhabitant (float): GDP per inhabitant of the searched city
+        gdp_p_workhours (float): GDP per workhour of the searched city
+        pop_avg_age_zensus (float): Average age of the searched city (zensus)
+        unemployment_rate (float): Unemployment rate of the searched city (zensus)
+        regional_score (float): Regional score of the searched city
     """
 
     name: str = "Regional_Atlas"
