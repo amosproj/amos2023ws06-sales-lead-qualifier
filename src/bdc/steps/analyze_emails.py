@@ -50,6 +50,12 @@ class AnalyzeEmails(Step):
         name: Name of this step, used for logging
         added_cols: List of fields that will be added to the main dataframe by executing this step
         required_cols: List of fields that are required to be existent in the input dataframe before performing this step
+
+    Added Columns:
+        domain (str): The custom domain name/website if any
+        email_valid (bool): Boolean result of email check
+        first_name_in_account (bool): Boolean, True if the given first name is part of the email account name
+        last_name_in_account (bool): Boolean, True if the given last name is part of the email account name
     """
 
     name = "Analyze-Emails"

@@ -34,6 +34,10 @@ class GooglePlacesDetailed(Step):
         name: Name of this step, used for logging
         added_cols: List of fields that will be added to the main dataframe by executing this step
         required_cols: List of fields that are required to be existent in the input dataframe before performing this step
+
+    Added Columns:
+        google_places_detailed_website (str): The website of the company from google places
+        google_places_detailed_type (str): The type of the company from google places
     """
 
     name = "Google_Places_Detailed"

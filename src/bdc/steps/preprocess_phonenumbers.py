@@ -25,6 +25,13 @@ class PreprocessPhonenumbers(Step):
         added_cols: List of fields that will be added to the main dataframe by executing this step
         required_cols: List of fields that are required to be existent in the input dataframe before performing this
             step
+
+    Added Columns:
+        number_formatted (str): The formatted phone number, e.g. +49 123 456789
+        number_country (str): The country of the phone number, e.g. Germany
+        number_area (str): The area of the phone number, e.g. Berlin
+        number_valid (bool): Whether the phone number is valid
+        number_possible (bool): Whether the phone number is possible
     """
 
     name = "Preprocess-Phonenumbers"
