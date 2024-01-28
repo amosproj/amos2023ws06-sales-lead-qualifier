@@ -4,6 +4,7 @@
 from abc import ABC, abstractmethod
 from enum import Enum
 
+import lightgbm as lgb
 import xgboost as xgb
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report, f1_score
@@ -19,10 +20,11 @@ log = get_logger()
 
 class Predictors(Enum):
     RandomForest = "Random Forest"
-    XGBoost = "XG Boost"
+    XGBoost = "XGBoost"
     NaiveBayes = "Naive Bayes"
     KNN = "KNN Classifier"
     AdaBoost = "AdaBoost"
+    LightGBM = "LightGBM"
 
 
 class MerchantSizeByDPV(Enum):
@@ -302,3 +304,63 @@ class AdaBoost(Classifier):
         super().train(
             X_train, y_train, X_test, y_test, epochs=epochs, batch_size=batch_size
         )
+
+
+class LightGBM(Classifier):
+    def __init__(
+        self,
+        model_name: str = None,
+        num_leaves=2000,
+        random_state=42,
+    ) -> None:
+        super().__init__()
+        self.random_state = random_state
+        self.model = None
+        self.num_leaves = num_leaves
+        if model_name is not None:
+            self.load(model_name)
+            if self.model is None:
+                log.info(
+                    f"Loading model '{model_name}' failed. Initializing new untrained model!"
+                )
+                self._init_new_model(num_leaves == num_leaves)
+        else:
+            self._init_new_model(num_leaves == num_leaves)
+
+    def _init_new_model(self, num_rounds=1000):
+        self.params_lgb = {
+            "boosting_type": "gbdt",
+            "objective": "multiclass",
+            "metric": "multi_logloss",
+            "num_class": 5,
+            "num_leaves": self.num_leaves,
+            "max_depth": -1,
+            "learning_rate": 0.05,
+            "feature_fraction": 0.9,
+        }
+        self.model = lgb.LGBMClassifier(**self.params_lgb)
+
+    def predict(self, X) -> MerchantSizeByDPV:
+        return self.model.predict(X)
+
+    def train(
+        self, X_train, y_train, X_test, y_test, epochs=1, batch_size=None
+    ) -> None:
+        log.info("Training LightGBM")
+
+        self.model.fit(X_train, y_train)
+
+        # inference
+        y_pred = self.model.predict(X_test)
+        # metrics
+        accuracy = accuracy_score(y_test, y_pred)
+        f1_test = f1_score(y_test, y_pred, average="weighted")
+
+        log.info(f"F1 Score on Testing Set: {f1_test:.4f}")
+        log.info("Computing classification report")
+        self.classification_report = classification_report(
+            y_test, y_pred, output_dict=True
+        )
+        self.classification_report["epochs"] = epochs
+        self.epochs = epochs
+        self.f1_test = f1_test
