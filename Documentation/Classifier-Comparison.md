@@ -44,7 +44,7 @@ Fully Connected Neural Networks (FCNN) achieved overall lower performance than t
 ### Fully Connected Neural Networks Regression Model
 
 There has been an idea written in the scientific paper "Inter-species cell detection -
-datasets on pulmonary hemosiderophages in equine, human and feline specimens" by Marzahl et al. where they proposed using regression model on a classification task. The idea is to train the regression model on the class values, whereas the model predicts a continous values and learns the relation between the classes. The output is then subjected to threshholds (0-0.49,0.5-1.49,1.5-2.49,2.5-3.49,3.5-4.5) for classes XS, S, M, L, XL respectivly. This yielded better performance than the FCNN classifier but still was worse than that of the Random Forest.
+datasets on pulmonary hemosiderophages in equine, human and feline specimens" by Marzahl et al. (https://www.nature.com/articles/s41597-022-01389-0) where they proposed using regression model on a classification task. The idea is to train the regression model on the class values, whereas the model predicts a continous values and learns the relation between the classes. The output is then subjected to threshholds (0-0.49,0.5-1.49,1.5-2.49,2.5-3.49,3.5-4.5) for classes XS, S, M, L, XL respectivly. This yielded better performance than the FCNN classifier but still was worse than that of the Random Forest.
 
 ### QDA & Ridge Classifier
 
@@ -54,9 +54,13 @@ classes had F1-scores of ~0.00-0.15. For this reason we are not considering thes
 in future experiments. This resulted in an overall F1-score of ~0.11, which is significantly
 outperformed by the other tested models.
 
+### TabNet Architecture
+
+TabNet, short for "Tabular Neural Network," is a novel neural network architecture specifically designed for tabular data, commonly encountered in structured data, such as databases and CSV files. It was introduced in the paper titled "TabNet: Attentive Interpretable Tabular Learning" by Arik et al. (https://arxiv.org/abs/1908.07442). TabNet uses sequential attention to choose which features to reason from at each decision step, enabling interpretability and more efficient learning as the learning capacity is used for the most salient features. Unfortunately, TabNet similarly to our proposed 4 layer network, TabNet only learned the features of the XS class with XS f1 score of 0.84, while the other f1 scores of other classes are zeros. The underlying data does not seem to respond positively to neural network-based approaches.
+
 ## Well performing models
 
-In this section we will discuss the results of well performing models, which arer XGBoost, LightGBM, K-Nearest Neighbor (KNN), Random Forest, AdaBoost and Naive Bayes.
+In this sub-section we will discuss the results of well performing models, which arer XGBoost, LightGBM, K-Nearest Neighbor (KNN), Random Forest, AdaBoost and Naive Bayes.
 
 ### Feature subsets
 
