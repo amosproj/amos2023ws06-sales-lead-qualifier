@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Felix Zailskas <felixzailskas@gmail.com>
 
+import lightgbm as lgb
 import numpy as np
 import pandas as pd
 import xgboost as xgb
@@ -12,6 +13,7 @@ from evp.predictors import (
     AdaBoost,
     Classifier,
     KNNClassifier,
+    LightGBM,
     MerchantSizeByDPV,
     NaiveBayesClassifier,
     Predictors,
@@ -97,6 +99,8 @@ class EstimatedValuePredictor:
                 )
             case Predictors.AdaBoost:
                 self.lead_classifier = AdaBoost(model_name=model_name, **model_args)
+            case Predictors.LightGBM:
+                self.lead_classifier = LightGBM(model_name=model_name, **model_args)
             case default:
                 log.error(
                     f"Error: EVP initialized with unsupported model type {model_type}!"
