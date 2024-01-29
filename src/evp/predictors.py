@@ -305,7 +305,7 @@ class AdaBoost(Classifier):
             X_train, y_train, X_test, y_test, epochs=epochs, batch_size=batch_size
         )
 
-
+        
 class LightGBM(Classifier):
     def __init__(
         self,

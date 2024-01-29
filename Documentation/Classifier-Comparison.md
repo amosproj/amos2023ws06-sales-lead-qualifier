@@ -72,6 +72,16 @@ The following subsets are available:
 
 1. `google_places_rating`, `google_places_user_ratings_total`, `google_places_confidence`, `regional_atlas_regional_score`
 
+### Feature subsets
+
+We have collected a lot of features (~54 data points) for the leads, additionally one-hot encoding the categorical variables
+results in a high dimensional feature space (132 features). Not all features might be equally relevant for our classification task
+so we want to try different subsets.
+
+The following subsets are available:
+
+1. `google_places_rating`, `google_places_user_ratings_total`, `google_places_confidence`, `regional_atlas_regional_score`
+
 ### Overall Results
 
 **_Notes:_**
@@ -82,6 +92,7 @@ The following subsets are available:
 - The XGBoost was trained for 10000 rounds.
 - The LightGBM was trained with 2000 number of leaves
 
+
 In the following table we can see the model's overall weighted F1-score on the 3-class and
 5-class data set split. The best performing classifiers per row is marked **bold**.
 
@@ -90,6 +101,7 @@ In the following table we can see the model's overall weighted F1-score on the 3
 | 5-Class | 0.6314 | 0.6073      | 0.6150        | **0.6442** | 0.6098   | 0.6090             | 0.6405   |
 | 3-Class | 0.6725 | 0.6655      | 0.6642        | **0.6967** | 0.6523   | 0.6591             | 0.6956   |
 
+
 We can see that all classifiers perform better on the 3-class data set split and that the XGBoost classifier is the best performing for both data set splits.
 
 ### Results for each class
@@ -97,6 +109,7 @@ We can see that all classifiers perform better on the 3-class data set split and
 #### 5-class split
 
 In the following table we can see the F1-score of each model for each class in the 5-class split:
+
 
 | Class | KNN  | Naive Bayes | Random Forest | XGBoost  | AdaBoost | AdaBoost(subset=1) | LightGBM |
 | ----- | ---- | ----------- | ------------- | -------- | -------- | ------------------ | -------- |
