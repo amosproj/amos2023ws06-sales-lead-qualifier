@@ -5,11 +5,11 @@ import numpy as np
 import pandas as pd
 import xgboost as xgb
 from sklearn.model_selection import train_test_split
-from sklearn.utils import class_weight, resample
+from sklearn.utils import class_weight
 
-from database.models import Lead
 from evp.predictors import (
     XGB,
+    AdaBoost,
     Classifier,
     KNNClassifier,
     MerchantSizeByDPV,
@@ -37,11 +37,15 @@ class EstimatedValuePredictor:
         model_type: Predictors = Predictors.RandomForest,
         model_name: str = None,
         limit_classes: bool = False,
+        selected_features: list = None,
         **model_args,
     ) -> None:
         self.df = data
         self.num_classes = 5
-        features = self.df.drop("MerchantSizeByDPV", axis=1).to_numpy()
+        features = self.df.drop("MerchantSizeByDPV", axis=1)
+        if selected_features is not None:
+            features = features[selected_features]
+        features = features.to_numpy()
         if limit_classes:
             self.num_classes = 3
             self.df["new_labels"] = np.where(
@@ -91,6 +95,8 @@ class EstimatedValuePredictor:
                 self.lead_classifier = KNNClassifier(
                     model_name=model_name, **model_args
                 )
+            case Predictors.AdaBoost:
+                self.lead_classifier = AdaBoost(model_name=model_name, **model_args)
             case default:
                 log.error(
                     f"Error: EVP initialized with unsupported model type {model_type}!"

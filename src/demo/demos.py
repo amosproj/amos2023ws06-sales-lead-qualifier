@@ -7,12 +7,11 @@
 # SPDX-FileCopyrightText: 2023 Ahmed Sheta <ahmed.sheta@fau.de>
 
 
-from sklearn.metrics import classification_report, mean_squared_error
+from sklearn.metrics import classification_report
 
 from bdc import DataCollector
 from bdc.pipeline import Pipeline
 from database import get_database
-from database.parsers import LeadParser
 from demo.console_utils import (
     get_int_input,
     get_multiple_choice,
@@ -76,11 +75,28 @@ def evp_demo():
     ):
         limit_classes = True
 
+    feature_subsets = [
+        ["Include all features"],
+        [
+            "google_places_rating",
+            "google_places_user_ratings_total",
+            "google_places_confidence",
+            "regional_atlas_regional_score",
+        ],
+    ]
+    print("Do you want to train on a subset of features?")
+
+    for i, p in enumerate(feature_subsets):
+        print(f"({i}) : {p}")
+    feature_choice = get_int_input("", range(0, len(feature_subsets)))
+    feature_choice = None if feature_choice == 0 else feature_subsets[feature_choice]
+
     evp = EstimatedValuePredictor(
         data=data,
         model_type=model_type,
         model_name=model_name,
         limit_classes=limit_classes,
+        selected_features=feature_choice,
     )
 
     while True:
