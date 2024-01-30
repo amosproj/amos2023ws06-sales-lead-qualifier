@@ -2,6 +2,8 @@
 # SPDX-FileCopyrightText: 2023 Ahmed Sheta <ahmed.sheta@fau.de>
 
 
+import os
+
 import boto3
 import pandas as pd
 import sagemaker
@@ -25,7 +27,7 @@ s3.download_file(s3_bucket, s3_key, "preprocessed_data.csv")
 
 df = pd.read_csv("preprocessed_data.csv")
 
-script_path = "ml_model.py"
+script_path = "nn_model.py"
 
 model_dir = "s3://{}/model".format("amos--models")
 
@@ -40,13 +42,13 @@ model_dir = "s3://{}/model".format("amos--models")
 
 
 pytorch_estimator = PyTorch(
-    entry_point="script.py",
-    # source_dir='path/to/your/source/code',
+    entry_point="nn_model.py",
+    source_dir=os.getcwd(),
     role=role_arn,
     framework_version="1.8",
     py_version="py3",
     instance_count=1,
-    instance_type="ml.m5.large",
+    instance_type="ml.g4dn.xlarge",
     output_path=model_dir,
     sagemaker_session=sagemaker_session,
 )
