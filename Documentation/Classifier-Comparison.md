@@ -72,16 +72,6 @@ The following subsets are available:
 
 1. `google_places_rating`, `google_places_user_ratings_total`, `google_places_confidence`, `regional_atlas_regional_score`
 
-### Feature subsets
-
-We have collected a lot of features (~54 data points) for the leads, additionally one-hot encoding the categorical variables
-results in a high dimensional feature space (132 features). Not all features might be equally relevant for our classification task
-so we want to try different subsets.
-
-The following subsets are available:
-
-1. `google_places_rating`, `google_places_user_ratings_total`, `google_places_confidence`, `regional_atlas_regional_score`
-
 ### Overall Results
 
 **_Notes:_**
@@ -96,13 +86,17 @@ The following subsets are available:
 In the following table we can see the model's overall weighted F1-score on the 3-class and
 5-class data set split. The best performing classifiers per row is marked **bold**.
 
-|         | KNN    | Naive Bayes | Random Forest | XGBoost    | AdaBoost | AdaBoost(subset=1) | LightGBM |
-| ------- | ------ | ----------- | ------------- | ---------- | -------- | ------------------ | -------- |
-| 5-Class | 0.6314 | 0.6073      | 0.6150        | **0.6442** | 0.6098   | 0.6090             | 0.6405   |
-| 3-Class | 0.6725 | 0.6655      | 0.6642        | **0.6967** | 0.6523   | 0.6591             | 0.6956   |
+|         | KNN    | Naive Bayes | Random Forest | XGBoost    | AdaBoost | LightGBM |
+| ------- | ------ | ----------- | ------------- | ---------- | -------- | -------- |
+| 5-Class | 0.6314 | 0.6073      | 0.6150        | **0.6442** | 0.6098   | 0.6405   |
+| 3-Class | 0.6725 | 0.6655      | 0.6642        | **0.6967** | 0.6523   | 0.6956   |
 
+|         | KNN (subset=1) | Naive Bayes (subset=1) | RandomForest (subset=1) | XGBoost (subset=1) | AdaBoost (subset=1) | LightGBM (subset=1) |
+| ------- | -------------- | ---------------------- | ----------------------- | ------------------ | ------------------- | ------------------- |
+| 5-Class | 0.6288         | 0.6075                 | 0.5995                  | **0.6198**         | 0.6090              | 0.6252              |
+| 3-Class | 0.6680         | 0.6075                 | 0.6506                  | **0.6664**         | 0.6591              | 0.6644              |
 
-We can see that all classifiers perform better on the 3-class data set split and that the XGBoost classifier is the best performing for both data set splits.
+We can see that all classifiers perform better on the 3-class data set split and that the XGBoost classifier is the best performing for both data set splits. These results are consistent for both the full dataset as well as subset 1. We observe a slight performance for almost all classifiers when using subset 1 compared to the full dataset (except AdaBoost/3-class and Naive Bayes/5-class). This indicates that the few features retained in subset 1 are not the sole discriminant features of the dataset. However, the performance is still high enough to suggest that the features in subset 1 are highly relevant to make classifications on the data.
 
 ### Results for each class
 
@@ -110,26 +104,40 @@ We can see that all classifiers perform better on the 3-class data set split and
 
 In the following table we can see the F1-score of each model for each class in the 5-class split:
 
+| Class | KNN  | Naive Bayes | Random Forest | XGBoost  | AdaBoost | LightGBM |
+| ----- | ---- | ----------- | ------------- | -------- | -------- | -------- |
+| XS    | 0.82 | 0.83        | 0.81          | **0.84** | 0.77     | 0.83     |
+| S     | 0.15 | 0.02        | 0.13          | 0.13     | **0.22** | 0.14     |
+| M     | 0.08 | 0.02        | 0.09          | 0.08     | **0.14** | 0.09     |
+| L     | 0.06 | 0.00        | **0.08**      | 0.06     | 0.07     | 0.05     |
+| XL    | 0.18 | 0.10        | 0.15          | 0.16     | 0.14     | **0.21** |
 
-| Class | KNN  | Naive Bayes | Random Forest | XGBoost  | AdaBoost | AdaBoost(subset=1) | LightGBM |
-| ----- | ---- | ----------- | ------------- | -------- | -------- | ------------------ | -------- |
-| XS    | 0.82 | 0.83        | 0.81          | **0.84** | 0.77     | 0.78               | 0.83     |
-| S     | 0.15 | 0.02        | 0.13          | 0.13     | **0.22** | 0.19               | 0.14     |
-| M     | 0.08 | 0.02        | 0.09          | 0.08     | **0.14** | 0.09               | 0.09     |
-| L     | 0.06 | 0.00        | **0.08**      | 0.06     | 0.07     | 0.07               | 0.05     |
-| XL    | 0.18 | 0.10        | 0.15          | 0.16     | 0.17     | 0.14               | **0.21** |
+| Class | KNN (subset=1) | Naive Bayes (subset=1) | RandomForest (subset=1) | XGBoost (subset=1) | AdaBoost (subset=1) | LightGBM (subset=1) |
+| ----- | -------------- | ---------------------- | ----------------------- | ------------------ | ------------------- | ------------------- |
+| XS    | 0.82           | 0.84                   | 0.78                    | **0.84**           | 0.78                | 0.82                |
+| S     | 0.16           | 0.00                   | 0.16                    | 0.04               | **0.19**            | 0.13                |
+| M     | 0.07           | 0.00                   | 0.07                    | 0.02               | **0.09**            | 0.08                |
+| L     | **0.07**       | 0.00                   | 0.06                    | 0.05               | **0.07**            | 0.06                |
+| XL    | **0.19**       | 0.00                   | 0.11                    | 0.13               | 0.14                | 0.18                |
 
 For every model we can see that the predictions on the XS class are significantly better than every other class. For the KNN, Random Forest, and XGBoost all perform similar, having second best classes S and XL and worst classes M and L. The Naive Bayes classifier performs significantly worse on the S, M, and L classes and has second best class XL.
+Using subset 1 again mostly decreased performance on all classes, with the exception of the KNN classifier and classes L and XL where we can observe a slight increase in F1-score.
 
 #### 3-class split
 
 In the following table we can see the F1-score of each model for each class in the 3-class split:
 
-| Class | KNN  | Naive Bayes | Random Forest | XGBoost  | AdaBoost | AdaBoost(subset=1) | LightGBM |
-| ----- | ---- | ----------- | ------------- | -------- | -------- | ------------------ | -------- |
-| XS    | 0.83 | 0.82        | 0.81          | **0.84** | 0.78     | 0.79               | 0.83     |
-| S,M,L | 0.27 | 0.28        | 0.30          | 0.33     | **0.34** | 0.32               | **0.34** |
-| XL    | 0.16 | 0.07        | 0.13          | 0.14     | 0.12     | **0.20**           | 0.19     |
+| Class | KNN  | Naive Bayes | Random Forest | XGBoost  | AdaBoost | LightGBM |
+| ----- | ---- | ----------- | ------------- | -------- | -------- | -------- |
+| XS    | 0.83 | 0.82        | 0.81          | **0.84** | 0.78     | 0.83     |
+| S,M,L | 0.27 | 0.28        | 0.30          | 0.33     | **0.34** | **0.34** |
+| XL    | 0.16 | 0.07        | 0.13          | 0.14     | 0.12     | **0.19** |
 
-For the 3-class split we observe similar performance for the XS and {S, M, L} classes for each model, while the XGBoost model slightly outperforms the other models. The KNN classifier is performing the best on the XL class while the Naive Bayes classifier performs worst. Interestingly, we can observe that the performance of the models on the XS class was barely affected by the merging of the S, M, and L classes while the performance on the XL class got worse for all of them. This needs to be considered, when evaluating the overall performance of the models on this data set split.
-The AdaBoost Classifier, trained on subset 1, performs best for the XL class.
+| Class | KNN (subset=1) | Naive Bayes (subset=1) | RandomForest (subset=1) | XGBoost (subset=1) | AdaBoost (subset=1) | LightGBM (subset=1) |
+| ----- | -------------- | ---------------------- | ----------------------- | ------------------ | ------------------- | ------------------- |
+| XS    | 0.82           | 0.84                   | 0.79                    | **0.84**           | 0.79                | 0.81                |
+| S,M,L | 0.29           | 0.00                   | 0.30                    | 0.22               | **0.32**            | 0.28                |
+| XL    | 0.18           | 0.00                   | 0.11                    | 0.11               | **0.20**            | 0.17                |
+
+For the 3-class split we observe similar performance for the XS and {S, M, L} classes for each model, while the LightGBM model slightly outperforms the other models. The LightGBM classifier is performing the best on the XL class while the Naive Bayes classifier performs worst. Interestingly, we can observe that the performance of the models on the XS class was barely affected by the merging of the S, M, and L classes while the performance on the XL class got worse for all of them. This needs to be considered, when evaluating the overall performance of the models on this data set split.
+The AdaBoost Classifier, trained on subset 1, performs best for the XL class. The KNN classifier got a slight boost in performance for the {S, M, L} and XL classes when using subset 1. All other models perform worse on subset 1.
