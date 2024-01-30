@@ -7,7 +7,11 @@ import geopandas as gpd
 import pandas as pd
 import regex as re
 
-geojson_directory = "./src/data"
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+os.chdir(dname)
+
+geojson_directory = "../src/data"
 
 # List all GeoJSON files in the directory
 geojson_files = [

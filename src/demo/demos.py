@@ -9,7 +9,6 @@
 
 from sklearn.metrics import classification_report
 
-from bdc import DataCollector
 from bdc.pipeline import Pipeline
 from database import get_database
 from demo.console_utils import (
@@ -36,22 +35,6 @@ LEADS_TRAIN_FILE = "data/leads_train.csv"
 LEADS_TEST_FILE = "data/leads_test.csv"
 INPUT_FILE_BDC = "../data/sumup_leads_email.csv"
 OUTPUT_FILE_BDC = "../data/collected_data.json"
-
-
-# bdc_demo
-def bdc_demo():
-    dc = DataCollector()
-    try:
-        choice = get_int_input("(1) Read CSV\n(2) Dummy API\n", range(1, 3))
-        if choice == 1:
-            dc.get_data_from_csv(file_path=INPUT_FILE_BDC)
-        elif choice == 2:
-            dc.get_data_from_api(file_path=OUTPUT_FILE_BDC)
-        else:
-            print("Invalid choice")
-    except ValueError:
-        print("Invalid choice")
-
 
 # evp demo
 def evp_demo():
@@ -141,18 +124,6 @@ def predict_single_lead(evp: EstimatedValuePredictor):
         print(
             f"Lead has predicted value of {prediction} and true value of {evp.y_test[lead_id]}"
         )
-    else:
-        print("Invalid Choice")
-
-
-# db_demo
-def db_demo():
-    amt_leads = get_database().get_cardinality()
-    lead_id = get_int_input(
-        f"Choose a lead_id in range [1, {amt_leads}]\n", range(1, amt_leads + 1)
-    )
-    if 1 <= lead_id <= amt_leads:
-        print(get_database().get_lead_by_id(lead_id))
     else:
         print("Invalid Choice")
 
