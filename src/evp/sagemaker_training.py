@@ -57,7 +57,7 @@ pytorch_estimator = PyTorch(
 pytorch_estimator.fit({"train": "s3://{}/{}".format(s3_bucket, s3_key)})
 
 hyperparameters = {
-    "epochs": 100,
+    "epochs": 1,
     "batch-size": 128,
 }
 

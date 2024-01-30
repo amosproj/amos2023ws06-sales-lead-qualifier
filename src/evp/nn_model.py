@@ -5,7 +5,6 @@ import os
 import pickle
 
 import boto3
-import joblib
 import numpy as np
 import pandas as pd
 import torch
