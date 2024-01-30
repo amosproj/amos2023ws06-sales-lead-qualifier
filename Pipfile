@@ -8,6 +8,7 @@ name = "pypi"
 
 [dev-packages]
 pytest = "==7.4.0"
+coverage = "==7.4.1"
 pre-commit = "==3.5.0"
 flake8 = "==6.0.0"
 pytest-env = "==1.0.1"
