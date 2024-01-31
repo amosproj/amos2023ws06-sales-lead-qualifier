@@ -160,14 +160,14 @@ tabnet_model.save("tabnet_model")
 # f1_test = f1_score(y_test, predictions, average="weighted")
 
 
-local_directory = "../data/models/"
-os.makedirs(local_directory, exist_ok=True)
-local_save_path = os.path.join(
-    local_directory,
-    f"TabNet_f1({f1_test:.4f})_model.pkl",
-)
-with open(local_save_path, "wb") as file:
-    pickle.dump(clf, file)
+# local_directory = "../data/models/"
+# os.makedirs(local_directory, exist_ok=True)
+# local_save_path = os.path.join(
+#     local_directory,
+#     f"TabNet_f1({f1_test:.4f})_model.pkl",
+# )
+# with open(local_save_path, "wb") as file:
+#     pickle.dump(clf, file)
 
 # # upload to s3 bucket
 # s3_client = boto3.client("s3")
