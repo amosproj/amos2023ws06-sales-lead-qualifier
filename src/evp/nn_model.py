@@ -108,7 +108,7 @@ tabnet_model.fit(
 
 def calculate_f1_score(model, X, y_true):
     predictions = model.predict(X)
-    y_pred = tf.argmax(predictions, axis=1).numpy()
+    y_pred = torch.argmax(predictions, axis=1).numpy()
     f1 = f1_score(y_true, y_pred, average="weighted")
     print(classification_report(y_test, y_pred))
     return f1
