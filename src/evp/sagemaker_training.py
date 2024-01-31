@@ -48,22 +48,10 @@ pytorch_estimator = PyTorch(
     framework_version="1.8",
     py_version="py3",
     instance_count=1,
-    instance_type="ml.g4dn.xlarge",
+    instance_type="ml.m5.4xlarge",
     output_path=model_dir,
     sagemaker_session=sagemaker_session,
 )
 
 # train the model on SageMaker
 pytorch_estimator.fit({"train": "s3://{}/{}".format(s3_bucket, s3_key)})
-
-hyperparameters = {
-    "epochs": 1,
-    "batch-size": 128,
-}
-
-# Start the training job
-pytorch_estimator.fit(
-    {"training": "s3://{}/{}".format(s3_bucket, s3_key)},
-    job_name="job1_NN_model",
-    hyperparameters=hyperparameters,
-)
