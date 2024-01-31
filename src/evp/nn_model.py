@@ -83,27 +83,29 @@ print(f"class_weights = {class_weights}")
 # )
 
 # pretrainer = TabNetPretrainer()
-# pretrainer.fit(X_train.values)
-clf = TabNetClassifier()
+# pretrainer.fit(X_train.values, max_epochs=2)
+
 tabnet_model = TabNetClassifier(
     optimizer_fn=torch.optim.Adam,
-    optimizer_params=dict(lr=2e-2, weight_decay=1e-5),
-    scheduler_params=dict(mode="min", patience=5, min_lr=1e-5, factor=0.9),
+    optimizer_params=dict(lr=1e-4, weight_decay=1e-5),
     scheduler_fn=torch.optim.lr_scheduler.ReduceLROnPlateau,
 )
-
 # Training
-# tabnet_model.fit(X_train, y_train, epochs=500, validation_data=(X_test, y_test), class_weight=class_weights_tensor)
 tabnet_model.fit(
     X_train.values,
     y_train.values,
     eval_set=[(X_val.values, y_val.values)],
     eval_metric=["logloss"],
     max_epochs=500,
-    patience=40,  # Set patience for early stopping
+    patience=50,  # Set patience for early stopping
     batch_size=64,
     virtual_batch_size=32,
 )
+
+local_save_path = f"TabNet f1()_model.pkl"
+
+with open(local_save_path, "wb") as file:
+    pickle.dump(tabnet_model, file)
 
 
 def calculate_f1_score(model, X, y_true):
@@ -118,7 +120,10 @@ f1_score_test = calculate_f1_score(tabnet_model, X_test, y_test)
 print(f"F1 Score on Test Set: {f1_score_test}")
 
 # Save or use the trained model
-tabnet_model.save("tabnet_model")
+local_save_path = f"TabNet_f1(f1_score_test)_model.pkl"
+
+with open(local_save_path, "wb") as file:
+    pickle.dump(tabnet_model, file)
 
 # patience = 10
 # best_valid_loss = float("inf")
