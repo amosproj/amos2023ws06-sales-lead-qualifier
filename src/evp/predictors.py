@@ -310,7 +310,7 @@ class LightGBM(Classifier):
     def __init__(
         self,
         model_name: str = None,
-        num_leaves=2000,
+        num_leaves=1000,
         random_state=42,
     ) -> None:
         super().__init__()
