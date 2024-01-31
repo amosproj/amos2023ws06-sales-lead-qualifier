@@ -156,8 +156,8 @@ tabnet_model.save("tabnet_model")
 
 
 # print(classification_report(y_test, clamped_tensor))
-print(classification_report(y_test, predictions))
-f1_test = f1_score(y_test, predictions, average="weighted")
+# print(classification_report(y_test, predictions))
+# f1_test = f1_score(y_test, predictions, average="weighted")
 
 
 local_directory = "../data/models/"
