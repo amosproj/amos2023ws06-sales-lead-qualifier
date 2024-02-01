@@ -31,10 +31,8 @@ EXIT = "Exit"
 if __name__ == "__main__":
     options = list(DEMOS.keys()) + [EXIT]
     while True:
-        try:
-            choice = get_multiple_choice(PROMPT, options)
-            if choice == EXIT:
-                break
+        choice = get_multiple_choice(PROMPT, options)
+        if choice == EXIT:
+            break
+        if choice != None:
             DEMOS[choice]()
-        except ValueError:
-            print("Invalid choice")
