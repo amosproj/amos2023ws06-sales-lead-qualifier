@@ -305,12 +305,12 @@ class AdaBoost(Classifier):
             X_train, y_train, X_test, y_test, epochs=epochs, batch_size=batch_size
         )
 
-        
+
 class LightGBM(Classifier):
     def __init__(
         self,
         model_name: str = None,
-        num_leaves=2000,
+        num_leaves=1000,
         random_state=42,
     ) -> None:
         super().__init__()
