@@ -13,9 +13,17 @@ The original implementation of the deprecated modules can be found in the `depre
 
 ### Controller
 
+**_Note:_** This package has the additional dependency `pydantic==2.4.2`
+
 The controller module was originally planned to be used as a communication device between EVP and BDC. Whenever the salesperson interface would register a new lead the controller is supposed to trigger the BDC pipeline to enrich the data of that lead and preprocess it to create a feature vector. The successful completion of the BDC pipeline is then registered at the controller which will then trigger an inference of the EVP to compute the predicted merchant size and write this back to the lead data. The computed merchant size can then be used to rank the leads and allow the salesperson to decide the value of the leads and which one to call.
 
 The current implementation of the module supports queueing messages from the BDC and EVP as indicated by their type. Depending on the message type the message is then routed to the corresponding module (EVP or BDC). The actual processing of the messages by the modules is not implemented. All of this is done asynchronously by using the python threading library.
+
+### FacebookGraphAPI
+
+**_Note:_** This package has the additional dependency `facebook-sdk==3.1.0`. Also the environment variables `FACEBOOK_APP_ID` `FACEBOOK_APP_SECRET` need to be set with a valid token.
+
+This step was supposed to be used for querying lead data from the facebook by using either the business owner's name or the company name. The attempt was deprecated as the cost for the needed API token was evaluated too high and because the usage permissions of the facebook API were changed. Furthermore, it is paramount to check the legal ramifications of querying facebook for this kind of data as there might be legal consequences of searching for individuals on facebook instead of their businesses due to data privacy regulations in the EU.
 
 ## Possible ML improvements
 
