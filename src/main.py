@@ -3,7 +3,13 @@
 
 import os
 
-from demo import evp_demo, get_multiple_choice, pipeline_demo, preprocessing_demo
+from demo import (
+    evp_demo,
+    get_multiple_choice,
+    pipeline_demo,
+    predict_MerchantSize_on_lead_data_demo,
+    preprocessing_demo,
+)
 from logger import get_logger
 
 abspath = os.path.abspath(__file__)
@@ -16,6 +22,7 @@ DEMOS = {
     "Base Data Collector": pipeline_demo,
     "Data preprocessing": preprocessing_demo,
     "Estimated Value Predictor": evp_demo,
+    "Merchant Size Prediction": predict_MerchantSize_on_lead_data_demo,
 }
 PROMPT = "Choose demo:\n"
 

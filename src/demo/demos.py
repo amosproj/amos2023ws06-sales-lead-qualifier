@@ -7,6 +7,10 @@
 # SPDX-FileCopyrightText: 2023 Ahmed Sheta <ahmed.sheta@fau.de>
 
 
+import re
+import subprocess
+
+import xgboost as xgb
 from sklearn.metrics import classification_report
 
 from bdc.pipeline import Pipeline
@@ -223,3 +227,140 @@ def preprocessing_demo():
     )
     df = preprocessor.implement_preprocessing_pipeline()
     preprocessor.save_preprocessed_data()
+
+
+def predict_MerchantSize_on_lead_data_demo():
+    import os
+    import pickle
+    import sys
+    from io import BytesIO
+
+    import boto3
+    import joblib
+    import pandas as pd
+
+    log.info(
+        "Note: Enriched data must be located at s3://amos--data--events/leads/enriched.csv"
+    )
+
+    ######################### preprocessing the leads ##################################
+    current_dir = os.path.dirname(__file__) if "__file__" in locals() else os.getcwd()
+    parent_dir = os.path.join(current_dir, "..")
+    sys.path.append(parent_dir)
+    from preprocessing import Preprocessing
+
+    preprocessor = Preprocessing(filter_null_data=False, historical_data=False)
+    leads_enriched_path = "s3://amos--data--events/leads/enriched.csv"
+    if not leads_enriched_path:
+        log.error(
+            "No such file exists in the directory s3://amos--data--events/leads/enriched.csv"
+        )
+    preprocessor.data_path = leads_enriched_path
+    preprocessor.prerocessed_data_output_path = (
+        "s3://amos--data--events/leads/preprocessed_leads_data.csv"
+    )
+    df = preprocessor.implement_preprocessing_pipeline()
+    preprocessor.save_preprocessed_data()
+
+    ############################## adapting the preprocessing files ###########################
+    # load the data from the CSV files
+    historical_preprocessed_data = pd.read_csv(
+        "s3://amos--data--features/preprocessed_data_files/preprocessed_data.csv"
+    )
+    toBePredicted_preprocessed_data = pd.read_csv(
+        "s3://amos--data--events/leads/preprocessed_leads_data.csv"
+    )
+
+    historical_columns_order = historical_preprocessed_data.columns
+
+    missing_columns = set(historical_columns_order) - set(
+        toBePredicted_preprocessed_data.columns
+    )
+    for column in missing_columns:
+        toBePredicted_preprocessed_data[column] = 0
+
+    for column in toBePredicted_preprocessed_data.columns:
+        if column not in historical_columns_order:
+            toBePredicted_preprocessed_data = toBePredicted_preprocessed_data.drop(
+                column, axis=1
+            )
+
+    # reorder columns
+    toBePredicted_preprocessed_data = toBePredicted_preprocessed_data[
+        historical_columns_order
+    ]
+
+    toBePredicted_preprocessed_data.to_csv(
+        "s3://amos--data--events/leads/toBePredicted_preprocessed_data_updated.csv",
+        index=False,
+    )
+
+    # check if columns in both dataframe are in same order and same number
+    assert list(toBePredicted_preprocessed_data.columns) == list(
+        historical_preprocessed_data.columns
+    ), "Column names are different"
+
+    ####################### Applying ML model on lead data ####################################
+
+    bucket_name = "amos--models"
+
+    model_name = get_string_input(
+        "Provide model file name in amos--models/models S3 Bucket\nInput example: lightgbm_epochs(1)_f1(0.6375)_numclasses(5)_model.pkl\n"
+    )
+    # file_key = "models/lightgbm_epochs(1)_f1(0.6375)_numclasses(5)_model_updated.pkl"  # adjust according to the desired model
+    model_name = model_name.replace(" ", "")
+    xgb_bool = False
+    if model_name[:3].lower() == "xgb":
+        xgb_bool = True
+
+    file_key = f"models/" + model_name
+
+    def check_classification_task(string):
+        match = re.search(r"\d+", string)
+        if match:
+            last_number = int(match.group())
+            if last_number == 3:
+                return True
+            else:
+                False
+
+    classification_task_3 = check_classification_task(file_key)
+    # create an S3 client
+    s3 = boto3.client("s3")
+
+    # download the file from S3
+    response = s3.get_object(Bucket=bucket_name, Key=file_key)
+    model_content = response["Body"].read()
+
+    # load model
+    with BytesIO(model_content) as model_file:
+        model = joblib.load(model_file)
+        log.info(f"Loaded the model sucessfully!")
+
+    data_path = (
+        "s3://amos--data--events/leads/toBePredicted_preprocessed_data_updated.csv"
+    )
+    df = pd.read_csv(data_path)
+    input = df.drop("MerchantSizeByDPV", axis=1)
+    if xgb_bool:
+        input = xgb.DMatrix(input)
+
+    predictions = model.predict(input)
+    if classification_task_3:
+        size_mapping = {0: "XS", 1: "{S, M, L}", 2: "XL"}
+    else:
+        size_mapping = {0: "XS", 1: "S", 2: "M", 3: "L", 4: "XL"}
+    remapped_predictions = [size_mapping[prediction] for prediction in predictions]
+
+    enriched_data = pd.read_csv("s3://amos--data--events/leads/enriched.csv")
+
+    # first 5 columns: Last Name,First Name,Company / Account,Phone,Email,
+    raw_data = enriched_data.iloc[:, :5]
+    raw_data["PredictedMerchantSize"] = remapped_predictions
+
+    raw_data.to_csv(
+        "s3://amos--data--events/leads/predicted_MerchantSize_of_leads.csv", index=True
+    )
+    log.info(
+        f"Saved the predicted Merchant Size of the leads at s3://amos--data--events/leads/predicted_MerchantSize_of_leads.csv"
+    )
