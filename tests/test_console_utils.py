@@ -124,7 +124,7 @@ class TestGetMultipleChoice(unittest.TestCase):
         result = get_multiple_choice("Select an option: ", choices)
         self.assertEqual(result, "Option A")
         mock_get_int_input.assert_called_with(
-            "Select an option: " + choice_string, range(len(choices) + 1)
+            "Select an option: " + choice_string, range(len(choices))
         )
 
 
