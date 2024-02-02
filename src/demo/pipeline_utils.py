@@ -10,7 +10,6 @@ log = get_logger()
 
 from bdc.steps import (
     AnalyzeEmails,
-    FacebookGraphAPI,
     GooglePlaces,
     GooglePlacesDetailed,
     GPTReviewSentimentAnalyzer,
@@ -28,7 +27,6 @@ DEFAULT_PIPELINE_PATH = os.path.join(os.path.dirname(__file__), "pipeline_config
 STEP_STR_TO_CLASS = {
     "HashGenerator": HashGenerator,
     "AnalyzeEmails": AnalyzeEmails,
-    "FacebookGraphAPI": FacebookGraphAPI,
     "GooglePlaces": GooglePlaces,
     "GooglePlacesDetailed": GooglePlacesDetailed,
     "GPTReviewSentimentAnalyzer": GPTReviewSentimentAnalyzer,
@@ -44,7 +42,6 @@ STEP_STR_TO_CLASS = {
 _additional_pipeline_steps = [
     (ScrapeAddress, "Scrape Address", "(will take a long time)"),
     (SearchOffeneRegister, "Search OffeneRegister", "(will take a long time)"),
-    (FacebookGraphAPI, "Facebook Graph API", "(will use token)"),
     (PreprocessPhonenumbers, "Phone Number Validation", ""),
     (
         GooglePlaces,

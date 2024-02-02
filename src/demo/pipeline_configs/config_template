@@ -12,10 +12,6 @@
             "force_refresh": true
         },
         {
-            "name": "FacebookGraphAPI",
-            "force_refresh": true
-        },
-        {
             "name": "PreprocessPhonenumbers",
             "force_refresh": true
         },

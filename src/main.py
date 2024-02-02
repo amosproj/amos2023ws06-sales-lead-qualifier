@@ -3,14 +3,7 @@
 
 import os
 
-from demo import (
-    bdc_demo,
-    db_demo,
-    evp_demo,
-    get_multiple_choice,
-    pipeline_demo,
-    preprocessing_demo,
-)
+from demo import evp_demo, get_multiple_choice, pipeline_demo, preprocessing_demo
 from logger import get_logger
 
 abspath = os.path.abspath(__file__)
@@ -20,11 +13,9 @@ os.chdir(dname)
 log = get_logger()
 
 DEMOS = {
-    "BDC": bdc_demo,
-    "EVP": evp_demo,
-    "DB": db_demo,
-    "Pipeline": pipeline_demo,
+    "Base Data Collector": pipeline_demo,
     "Data preprocessing": preprocessing_demo,
+    "Estimated Value Predictor": evp_demo,
 }
 PROMPT = "Choose demo:\n"
 

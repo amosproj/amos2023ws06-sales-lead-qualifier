@@ -52,7 +52,7 @@ class Pipeline:
 
                     # cleanup
                     step.finish()
-            except StepError as e:
+            except (StepError, Exception) as e:
                 error_occurred = True
                 log.error(f"Step {step.name} failed! {e}")
             finally:
