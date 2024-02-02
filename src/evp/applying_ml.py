@@ -33,7 +33,7 @@ for column in toBePredicted_preprocessed_data.columns:
             column, axis=1
         )
 
-# Reorder columns in f1.csv to match f2.csv
+# reorder columns
 toBePredicted_preprocessed_data = toBePredicted_preprocessed_data[
     historical_columns_order
 ]
@@ -43,6 +43,7 @@ toBePredicted_preprocessed_data.to_csv(
     index=False,
 )
 
+# check if columns in both dataframe are in same order and same number
 assert list(toBePredicted_preprocessed_data.columns) == list(
     historical_preprocessed_data.columns
 ), "Column names are different"
@@ -67,7 +68,6 @@ data_path = "s3://amos--data--events/leads/toBePredicted_preprocessed_data_updat
 df = pd.read_csv(data_path)
 input = df.drop("MerchantSizeByDPV", axis=1)
 
-print(f"df.columns = {df.columns}")
 predictions = model.predict(input)
 size_mapping = {0: "XS", 1: "S", 2: "M", 3: "L", 4: "XL"}
 remapped_predictions = [size_mapping[prediction] for prediction in predictions]
