@@ -1,15 +1,32 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2024 Ahmed Sheta <ahmed.sheta@fau.de>
 
+import os
 import pickle
+import sys
 from io import BytesIO
 
 import boto3
 import joblib
 import pandas as pd
 
+######################### preprocessing the leads ##################################
+current_dir = os.path.dirname(__file__) if "__file__" in locals() else os.getcwd()
+parent_dir = os.path.join(current_dir, "..")
+sys.path.append(parent_dir)
+from preprocessing import Preprocessing
+
+preprocessor = Preprocessing(filter_null_data=False, historical_data=False)
+leads_enriched_path = "s3://amos--data--events/leads/enriched.csv"
+preprocessor.data_path = leads_enriched_path
+preprocessor.prerocessed_data_output_path = (
+    "s3://amos--data--events/leads/preprocessed_leads_data.csv"
+)
+df = preprocessor.implement_preprocessing_pipeline()
+preprocessor.save_preprocessed_data()
+
 ############################## adapting the preprocessing files ###########################
-# Load the data from the CSV files
+# load the data from the CSV files
 historical_preprocessed_data = pd.read_csv(
     "s3://amos--data--features/preprocessed_data_files/preprocessed_data.csv"
 )
@@ -72,4 +89,17 @@ predictions = model.predict(input)
 size_mapping = {0: "XS", 1: "S", 2: "M", 3: "L", 4: "XL"}
 remapped_predictions = [size_mapping[prediction] for prediction in predictions]
 
-print(remapped_predictions)
+# print(remapped_predictions)
+
+enriched_data = pd.read_csv("s3://amos--data--events/leads/enriched.csv")
+
+# first 5 columns: Last Name,First Name,Company / Account,Phone,Email,
+raw_data = enriched_data.iloc[:, :5]
+raw_data["PredictedMerchantSize"] = remapped_predictions
+
+raw_data.to_csv(
+    "s3://amos--data--events/leads/predicted_MerchantSize_of_leads.csv", index=True
+)
+print(
+    f"Saved the predicted Merchant Size of the leads at s3://amos--data--events/leads/predicted_MerchantSize_of_leads.csv"
+)

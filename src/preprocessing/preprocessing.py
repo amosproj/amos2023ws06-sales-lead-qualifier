@@ -31,9 +31,11 @@ log = get_logger()
 class Preprocessing:
     def __init__(self, filter_null_data=True, historical_data=False):
         data_repo = get_database()
-        data_path = data_repo.get_output_path()
+        self.data_path = data_repo.get_output_path()
         if historical_data:
-            input_path_components = data_path.split("\\" if "\\" in data_path else "/")
+            input_path_components = self.data_path.split(
+                "\\" if "\\" in self.data_path else "/"
+            )
             input_path_components.pop()
             input_path_components.pop()
             input_path_components.append("historical_data/100k_historic_enriched.csv")
@@ -41,15 +43,17 @@ class Preprocessing:
             data = pd.read_csv(input_path)
             log.debug(f"Data path = {input_path}")
         else:
-            log.debug(f"Data path = {data_path}")
-            data = pd.read_csv(data_path)
-        self.preprocessed_df = data.copy()
+            log.debug(f"Data path = {self.data_path}")
+            data = pd.read_csv(self.data_path)
+            self.preprocessed_df = data.copy()
 
         if historical_data:
             self.prerocessed_data_output_path = "s3://amos--data--features/preprocessed_data_files/preprocessed_data.csv"
         else:
             # created the new output path based on which repo used
-            path_components = data_path.split("\\" if "\\" in data_path else "/")
+            path_components = self.data_path.split(
+                "\\" if "\\" in self.data_path else "/"
+            )
             path_components.pop()
             path_components.append("preprocessed_data.csv")
             self.prerocessed_data_output_path = "/".join(path_components)
