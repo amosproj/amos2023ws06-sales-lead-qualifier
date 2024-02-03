@@ -6,7 +6,7 @@ SPDX-FileCopyrightText: 2023 Berkay Bozkurt <resitberkaybozkurt@gmail.com>
 
 # Sales-Lead-Qualifier Project (AMOS WS 2023/24)
 
-## Sum Insight Logo
+## Sum Insights Logo
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://github.com/amosproj/amos2023ws06-sales-lead-qualifier/assets/45459787/7d38795e-6bd5-4003-9b23-29911532b0f8">
