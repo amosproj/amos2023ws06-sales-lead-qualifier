@@ -19,13 +19,16 @@ jobs:
           python-version: "3.10"
       - name: Install dependencies
         run: |
-          pip install sphinx sphinx_rtd_theme myst_parser
+          python -m pip install --upgrade pip
+          pip install pipenv
+          # if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pipenv install --dev
       - name: Generate Sphinx
         run: |
           cd src/docs
-          sphinx-apidoc -o . ..
-          make clean
-          make html
+          pipenv run sphinx-apidoc -o . ..
+          pipenv run make clean
+          pipenv run make html
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/feature/pdoc' }}
