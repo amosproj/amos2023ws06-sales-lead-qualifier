@@ -254,6 +254,7 @@ def predict_MerchantSize_on_lead_data_demo():
     )
 
     ######################### preprocessing the leads ##################################
+    log.info(f"Preprocessing the leads!")
     if get_yes_no_input("Run on S3? (y/n)\n'n' means it will run locally!\n"):
         S3_bool = True
     else:
@@ -271,6 +272,7 @@ def predict_MerchantSize_on_lead_data_demo():
     preprocessor.save_preprocessed_data()
 
     ############################## adapting the preprocessing files ###########################
+    log.info(f"Adapting the leads' preprocessed data for the ML model!")
     # load the data from the CSV files
     historical_preprocessed_data = pd.read_csv(
         "s3://amos--data--features/preprocessed_data_files/preprocessed_data.csv"
@@ -307,9 +309,16 @@ def predict_MerchantSize_on_lead_data_demo():
         historical_columns_order
     ]
     if S3_bool:
+        log.info(f"Adapting the leads' preprocessed data for the ML model!")
+        toBePredicted_output_path_s3 = (
+            "s3://amos--data--events/leads/toBePredicted_preprocessed_data_updated.csv"
+        )
         toBePredicted_preprocessed_data.to_csv(
-            "s3://amos--data--events/leads/toBePredicted_preprocessed_data_updated.csv",
+            toBePredicted_output_path_s3,
             index=False,
+        )
+        log.info(
+            f"Saving the adapted preprocessed data at {toBePredicted_output_path_s3}"
         )
     else:
         path_components = preprocessor.data_path.split(
@@ -320,6 +329,9 @@ def predict_MerchantSize_on_lead_data_demo():
         local_preprocessed_data_path = "/".join(path_components)
         toBePredicted_preprocessed_data.to_csv(
             local_preprocessed_data_path, index=False
+        )
+        log.info(
+            f"Saving the adapted preprocessed data at {local_preprocessed_data_path}"
         )
 
     # check if columns in both dataframe are in same order and same number
@@ -390,8 +402,6 @@ def predict_MerchantSize_on_lead_data_demo():
 
     # first 5 columns: Last Name,First Name,Company / Account,Phone,Email,
     raw_data = enriched_data.iloc[:, :5]
-    print(f"raw_data = {raw_data.shape}")
-    print(f"remapped_predictions = {len(remapped_predictions)}")
     raw_data["PredictedMerchantSize"] = remapped_predictions
 
     if S3_bool:
