@@ -29,37 +29,57 @@ log = get_logger()
 
 
 class Preprocessing:
-    def __init__(self, filter_null_data=True, historical_data=False):
+    def __init__(self, filter_null_data=True, historical_bool=True, S3_bool=False):
         data_repo = get_database()
         self.data_path = data_repo.get_output_path()
         self.preprocessed_df = None
         self.prerocessed_data_output_path = None
-        # if historical_data:
-        #     input_path_components = self.data_path.split(
-        #         "\\" if "\\" in self.data_path else "/"
-        #     )
-        #     input_path_components.pop()
-        #     input_path_components.pop()
-        #     input_path_components.append("historical_data/100k_historic_enriched.csv")
-        #     input_path = "/".join(input_path_components)
-        #     data = pd.read_csv(input_path)
-        #     log.debug(f"Data path = {input_path}")
-        #     self.preprocessed_df = data.copy()
-        # else:
-        #     log.debug(f"Data path = {self.data_path}")
-        #     data = pd.read_csv(self.data_path)
-        #     self.preprocessed_df = data.copy()
+        if historical_bool and S3_bool:
+            self.data_path = (
+                "s3://amos--data--events/historical_data/100k_historic_enriched.csv"
+            )
+            self.prerocessed_data_output_path = "s3://amos--data--features/preprocessed_data_files/historical_preprocessed_data.csv"
+        elif historical_bool and not S3_bool:
+            # input path
+            input_path_components = self.data_path.split(
+                "\\" if "\\" in self.data_path else "/"
+            )
+            input_path_components.pop()
+            input_path_components.append("100k_historic_enriched.csv")
+            input_path = "/".join(input_path_components)
+            self.data_path = input_path
 
-        # if historical_data:
-        #     self.prerocessed_data_output_path = "s3://amos--data--features/preprocessed_data_files/preprocessed_data.csv"
-        # else:
-        #     # created the new output path based on which repo used
-        #     path_components = self.data_path.split(
-        #         "\\" if "\\" in self.data_path else "/"
-        #     )
-        #     path_components.pop()
-        #     path_components.append("preprocessed_data_files/preprocessed_data.csv")
-        #     self.prerocessed_data_output_path = "/".join(path_components)
+            # output path
+            path_components = self.data_path.split(
+                "\\" if "\\" in self.data_path else "/"
+            )
+            path_components.pop()
+            path_components.append(
+                "preprocessed_data_files/historical_preprocessed_data.csv"
+            )
+            self.prerocessed_data_output_path = "/".join(path_components)
+        elif not historical_bool and S3_bool:
+            self.data_path = "s3://amos--data--events/leads/enriched.csv"
+            self.prerocessed_data_output_path = "s3://amos--data--features/preprocessed_data_files/leads_preprocessed_data.csv"
+        elif not historical_bool and not S3_bool:
+            # input path
+            input_path_components = self.data_path.split(
+                "\\" if "\\" in self.data_path else "/"
+            )
+            input_path_components.pop()
+            input_path_components.append("leads_enriched.csv")
+            input_path = "/".join(input_path_components)
+            self.data_path = input_path
+
+            # output path
+            path_components = self.data_path.split(
+                "\\" if "\\" in self.data_path else "/"
+            )
+            path_components.pop()
+            path_components.append(
+                "preprocessed_data_files/leads_preprocessed_data.csv"
+            )
+            self.prerocessed_data_output_path = "/".join(path_components)
 
         self.filter_bool = filter_null_data
         # columns that would be added later after one-hot encoding each class
