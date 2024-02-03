@@ -15,8 +15,8 @@ import sys
 sys.path.insert(0, os.path.abspath(".."))
 
 project = "Sales Lead Qualifier"
-copyright = "2024, Sum Insight"
-author = "Sum Insight"
+copyright = "2024, SumInsights"
+author = "SumInsights"
 release = "01.00.00"
 
 # -- General configuration ---------------------------------------------------
