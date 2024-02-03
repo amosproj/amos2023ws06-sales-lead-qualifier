@@ -56,6 +56,13 @@ bin/
 **/data/models/*
 **/data/classification_reports/*
 
+**/docs/*
+!**/docs/conf.py
+!**/docs/index.rst
+!**/docs/make.bat
+!**/docs/Makefile
+!**/docs/readme_link.md
+
 # Env files
 *.env
 
