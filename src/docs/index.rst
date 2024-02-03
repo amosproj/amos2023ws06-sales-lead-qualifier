@@ -13,6 +13,7 @@ Welcome to Sales Lead Qualifier's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   readme_link
    modules
 
 Indices and tables
