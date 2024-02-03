@@ -10,6 +10,7 @@
 import re
 import subprocess
 
+import pandas as pd
 import xgboost as xgb
 from sklearn.metrics import classification_report
 
@@ -39,6 +40,7 @@ LEADS_TRAIN_FILE = "data/leads_train.csv"
 LEADS_TEST_FILE = "data/leads_test.csv"
 INPUT_FILE_BDC = "../data/sumup_leads_email.csv"
 OUTPUT_FILE_BDC = "../data/collected_data.json"
+
 
 # evp demo
 def evp_demo():
@@ -212,19 +214,71 @@ def pipeline_demo():
 
 
 def preprocessing_demo():
-    if get_yes_no_input("Filter out the API-irrelevant data? (y/n)"):
+    if get_yes_no_input("Filter out the API-irrelevant data? (y/n)\n"):
         filter_bool = True
     else:
         filter_bool = False
     if get_yes_no_input(
-        "Run on historical data ? (y/n)\nNote: DATABASE_TYPE should be S3!"
+        "Run on historical data ? (y/n)\n'n' means it will run on lead data!\n"
     ):
         historical_bool = True
     else:
         historical_bool = False
+    if get_yes_no_input("Run on S3? (y/n)\n'n' means it will run locally!\n"):
+        S3_bool = True
+    else:
+        S3_bool = False
+
     preprocessor = Preprocessing(
         filter_null_data=filter_bool, historical_data=historical_bool
     )
+    if historical_bool and S3_bool:
+        preprocessor.data_path = (
+            "s3://amos--data--events/historical_data/100k_historic_enriched.csv"
+        )
+        preprocessor.prerocessed_data_output_path = "s3://amos--data--features/preprocessed_data_files/historical_preprocessed_data.csv"
+    elif historical_bool and not S3_bool:
+        # input path
+        input_path_components = preprocessor.data_path.split(
+            "\\" if "\\" in preprocessor.data_path else "/"
+        )
+        input_path_components.pop()
+        input_path_components.append("100k_historic_enriched.csv")
+        input_path = "/".join(input_path_components)
+        preprocessor.data_path = input_path
+
+        # output path
+        path_components = preprocessor.data_path.split(
+            "\\" if "\\" in preprocessor.data_path else "/"
+        )
+        path_components.pop()
+        path_components.append(
+            "preprocessed_data_files/historical_preprocessed_data.csv"
+        )
+        preprocessor.prerocessed_data_output_path = "/".join(path_components)
+    elif not historical_bool and S3_bool:
+        preprocessor.data_path = "s3://amos--data--events/leads/enriched.csv"
+        preprocessor.prerocessed_data_output_path = "s3://amos--data--features/preprocessed_data_files/leads_preprocessed_data.csv"
+    elif not historical_bool and not S3_bool:
+        # input path
+        input_path_components = preprocessor.data_path.split(
+            "\\" if "\\" in preprocessor.data_path else "/"
+        )
+        input_path_components.pop()
+        input_path_components.append("leads_enriched.csv")
+        input_path = "/".join(input_path_components)
+        preprocessor.data_path = input_path
+
+        # output path
+        path_components = preprocessor.data_path.split(
+            "\\" if "\\" in preprocessor.data_path else "/"
+        )
+        path_components.pop()
+        path_components.append("preprocessed_data_files/leads_preprocessed_data.csv")
+        preprocessor.prerocessed_data_output_path = "/".join(path_components)
+
+    preprocessor.preprocessed_df = pd.read_csv(preprocessor.data_path)
+
     df = preprocessor.implement_preprocessing_pipeline()
     preprocessor.save_preprocessed_data()
 
@@ -250,7 +304,18 @@ def predict_MerchantSize_on_lead_data_demo():
     from preprocessing import Preprocessing
 
     preprocessor = Preprocessing(filter_null_data=False, historical_data=False)
-    leads_enriched_path = "s3://amos--data--events/leads/enriched.csv"
+
+    leads_enriched_path = "s3://amos--data--events/leads/enriched.csv"  # S3 path
+
+    # # input path
+    # input_path_components = preprocessor.data_path.split(
+    #         "\\" if "\\" in preprocessor.data_path else "/"
+    #     )
+    # input_path_components.pop()
+    # input_path_components.append("leads_enriched.csv")
+    # input_path = "/".join(input_path_components) # local path
+    # preprocessor.data_path = input_path
+
     if not leads_enriched_path:
         log.error(
             "No such file exists in the directory s3://amos--data--events/leads/enriched.csv"
@@ -259,6 +324,7 @@ def predict_MerchantSize_on_lead_data_demo():
     preprocessor.prerocessed_data_output_path = (
         "s3://amos--data--events/leads/preprocessed_leads_data.csv"
     )
+    preprocessor.preprocessed_df = pd.read_csv(leads_enriched_path)
     df = preprocessor.implement_preprocessing_pipeline()
     preprocessor.save_preprocessed_data()
 
