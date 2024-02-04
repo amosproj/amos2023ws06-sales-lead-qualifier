@@ -254,7 +254,6 @@ def predict_MerchantSize_on_lead_data_demo():
     )
 
     ######################### preprocessing the leads ##################################
-    log.info(f"Preprocessing the leads!")
     if get_yes_no_input("Run on S3? (y/n)\n'n' means it will run locally!\n"):
         S3_bool = True
     else:
@@ -264,6 +263,7 @@ def predict_MerchantSize_on_lead_data_demo():
     sys.path.append(parent_dir)
     from preprocessing import Preprocessing
 
+    log.info(f"Preprocessing the leads...")
     preprocessor = Preprocessing(
         filter_null_data=False, historical_bool=False, S3_bool=S3_bool
     )
@@ -272,7 +272,7 @@ def predict_MerchantSize_on_lead_data_demo():
     preprocessor.save_preprocessed_data()
 
     ############################## adapting the preprocessing files ###########################
-    log.info(f"Adapting the leads' preprocessed data for the ML model!")
+    log.info(f"Adapting the leads' preprocessed data for the ML model...")
     # load the data from the CSV files
     historical_preprocessed_data = pd.read_csv(
         "s3://amos--data--features/preprocessed_data_files/preprocessed_data.csv"
@@ -309,7 +309,6 @@ def predict_MerchantSize_on_lead_data_demo():
         historical_columns_order
     ]
     if S3_bool:
-        log.info(f"Adapting the leads' preprocessed data for the ML model!")
         toBePredicted_output_path_s3 = (
             "s3://amos--data--events/leads/toBePredicted_preprocessed_data_updated.csv"
         )
@@ -343,9 +342,14 @@ def predict_MerchantSize_on_lead_data_demo():
 
     bucket_name = "amos--models"
 
-    model_name = get_string_input(
-        "Provide model file name in amos--models/models S3 Bucket\nInput example: lightgbm_epochs(1)_f1(0.6375)_numclasses(5)_model.pkl\n"
-    )
+    if S3_bool:
+        model_name = get_string_input(
+            "Provide model file name in amos--models/models S3 Bucket\nInput example: lightgbm_epochs(1)_f1(0.6375)_numclasses(5)_model.pkl\n"
+        )
+    else:
+        model_name = get_string_input(
+            "Provide model file name in data/models local directory\nInput example: lightgbm_epochs(1)_f1(0.6375)_numclasses(5)_model.pkl\n"
+        )
     # file_key = "models/lightgbm_epochs(1)_f1(0.6375)_numclasses(5)_model_updated.pkl"  # adjust according to the desired model
     model_name = model_name.replace(" ", "")
     xgb_bool = False
@@ -364,17 +368,29 @@ def predict_MerchantSize_on_lead_data_demo():
                 False
 
     classification_task_3 = check_classification_task(file_key)
-    # create an S3 client
-    s3 = boto3.client("s3")
 
-    # download the file from S3
-    response = s3.get_object(Bucket=bucket_name, Key=file_key)
-    model_content = response["Body"].read()
-
-    # load model
-    with BytesIO(model_content) as model_file:
-        model = joblib.load(model_file)
-        log.info(f"Loaded the model sucessfully!")
+    try:
+        if S3_bool:
+            # create an S3 client
+            s3 = boto3.client("s3")
+            # download the file from S3
+            response = s3.get_object(Bucket=bucket_name, Key=file_key)
+            model_content = response["Body"].read()
+            # load model
+            with BytesIO(model_content) as model_file:
+                model = joblib.load(model_file)
+                log.info(f"Loaded the model from S3 bucket sucessfully!")
+        else:
+            path_components = preprocessor.data_path.split(
+                "\\" if "\\" in preprocessor.data_path else "/"
+            )
+            path_components.pop()
+            path_components.append(file_key)
+            model_local_path = "/".join(path_components)
+            model = joblib.load(model_local_path)
+            log.info(f"Loaded the model from the local path sucessfully!")
+    except:
+        log.error("No model found with the given name!")
 
     if S3_bool:
         data_path = (
