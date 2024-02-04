@@ -250,7 +250,7 @@ def predict_MerchantSize_on_lead_data_demo():
     import pandas as pd
 
     log.info(
-        "Note: In case of running locally, enriched data must be located at src/data/leads_enriched.csv locally\nIn case of running on S3, enriched data must be located at s3://amos--data--events/leads/enriched.csv or"
+        "Note: In case of running locally, enriched data must be located at src/data/leads_enriched.csv\nIn case of running on S3, enriched data must be located at s3://amos--data--events/leads/enriched.csv"
     )
 
     ######################### preprocessing the leads ##################################
