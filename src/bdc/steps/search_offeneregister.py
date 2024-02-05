@@ -30,6 +30,12 @@ class SearchOffeneRegister(Step):
         run(): Executes the step and returns the modified DataFrame.
         _extract_company_related_data(lead): Extracts company-related data for a given lead.
 
+    Added Columns:
+        company_name (str): The name of the company from offeneregister.de
+        company_objective (str): The objective of the company offeneregister.de
+        company_capital (float): The capital of the company offeneregister.de
+        company_capital_currency (str): The currency of the company capital offeneregister.de
+        company_address (str): The address of the company offeneregister.de
     """
 
     name = "OffeneRegister"

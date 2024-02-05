@@ -34,6 +34,9 @@ class GPTSummarizer(Step):
         added_cols: List of fields that will be added to the main dataframe by executing this step
         required_cols: List of fields that are required to be existent in the input dataframe before performing this
             step
+
+    Added Columns:
+        sales_person_summary (str): The summary of the company website for the salesperson using GPT
     """
 
     name = "GPT-Summarizer"
