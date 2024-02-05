@@ -374,7 +374,9 @@ class S3Repository(Repository):
         except Exception as e:
             log.error(f"Could not save report for '{model_name}' to S3: {str(e)}")
 
-    def load_preprocessed_data(self, file_name: str = "preprocessed_data.csv"):
+    def load_preprocessed_data(
+        self, file_name: str = "historical_preprocessed_data.csv"
+    ):
         file_path = self.DF_PREPROCESSED_INPUT + file_name
         if not file_path.startswith("s3://"):
             log.error(
