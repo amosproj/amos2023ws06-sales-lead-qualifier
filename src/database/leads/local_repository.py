@@ -19,7 +19,7 @@ log = get_logger()
 class LocalRepository(Repository):
     BASE_PATH = os.path.dirname(__file__)
     DF_INPUT = os.path.abspath(
-        os.path.join(BASE_PATH, "../../data/sumup_leads_email.csv")
+        os.path.join(BASE_PATH, "../../data/demo_leads_email.csv")
     )
     DF_OUTPUT = os.path.abspath(
         os.path.join(BASE_PATH, "../../data/leads_enriched.csv")
@@ -196,6 +196,11 @@ class LocalRepository(Repository):
         try:
             with open(json_file_path, "r", encoding="utf-8") as json_file:
                 data = json.load(json_file)
+                if operation_name not in data:
+                    log.info(
+                        f"Data for operation {operation_name} was not found in {json_file_path}"
+                    )
+                    return ""
                 return data[operation_name]
         except:
             log.warning(f"Error loading GPT results from path {json_file_path}.")
