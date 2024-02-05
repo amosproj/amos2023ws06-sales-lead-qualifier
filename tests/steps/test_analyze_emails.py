@@ -6,31 +6,13 @@ from unittest.mock import MagicMock, patch
 
 import pandas as pd
 
-import bdc.steps.helpers.generate_hash_leads
 from bdc.steps.analyze_emails import (
     AnalyzeEmails,
     analyze_email_account,
     extract_custom_domain,
 )
-
-
-def get_mock_lead_hash_generator():
-    class MockLeadHashGenerator:
-        def hash_lead(self, lead_data):
-            return ""
-
-        def hash_check(
-            self,
-            lead_data: pd.Series,
-            data_fill_function: callable,
-            step_name: str,
-            fields_tofill: list[str],
-            *args,
-            **kwargs,
-        ):
-            return data_fill_function(*args, **kwargs)
-
-    return MockLeadHashGenerator()
+from bdc.steps.helpers.generate_hash_leads import LeadHashGenerator
+from tests import mock_hash_check
 
 
 class TestExtractCustomDomain(unittest.TestCase):
@@ -101,34 +83,41 @@ class TestAnalyzeEmailAccount(unittest.TestCase):
         self.assertTrue(result.equals(expected))
 
 
-# class TestStepExecution(unittest.TestCase):
-#     step: AnalyzeEmails
+class TestStepExecution(unittest.TestCase):
+    step: AnalyzeEmails
 
-#     def setUp(self):
-#         lead_data = {
-#             "First Name": ["John"] * 3,
-#             "Last Name": ["Doe"] * 3,
-#             "Email": [
-#                 "john.doe@john.com",
-#                 "invalid_email",
-#                 "john@yahoo.com",
-#             ]
-#         }
-#         self.step = AnalyzeEmails(force_refresh=True)
-#         self.step.df =  pd.DataFrame(lead_data)
+    def setUp(self):
+        lead_data = {
+            "First Name": ["John"] * 3,
+            "Last Name": ["Doe"] * 3,
+            "Email": [
+                "john.doe@john.com",
+                "invalid_email",
+                "john@yahoo.com",
+            ],
+        }
+        self.step = AnalyzeEmails(force_refresh=True)
+        self.step.df = pd.DataFrame(lead_data)
 
-#     @patch("bdc.steps.helpers.get_lead_hash_generator")
-#     def test_run_method(self, mock_get_lead_hash_generator):
+    @patch.object(LeadHashGenerator, "hash_check", mock_hash_check)
+    def test_run_method(self):
+        result = self.step.run()
+        assert type(result) is pd.DataFrame
+        columns = result.columns.to_list()
+        assert all(
+            col in columns
+            for col in [
+                "First Name",
+                "Last Name",
+                "Email",
+                "domain",
+                "email_valid",
+                "first_name_in_account",
+                "last_name_in_account",
+            ]
+        )
+        assert result["domain"].to_list() == ["john.com", None, None]
 
-#         # Mock the hash_check method
-#         mock_get_lead_hash_generator.return_value = get_mock_lead_hash_generator()
-
-#         # Call the run method
-#         result = self.step.run()
-#         assert type(result) is pd.DataFrame
-#         assert ["First Name", "Last Name", "Email", "domain", "email_valid", "first_name_in_account",
-#         "last_name_in_account",] in result.columns.to_list()
-#         assert result["domain"].to_list() == ["john.com", None, None]
 
 if __name__ == "__main__":
     unittest.main()
