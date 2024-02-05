@@ -8,13 +8,13 @@
 
 
 import re
-import subprocess
 
 import pandas as pd
 import xgboost as xgb
 from sklearn.metrics import classification_report
 
 from bdc.pipeline import Pipeline
+from config import DATABASE_TYPE
 from database import get_database
 from demo.console_utils import (
     get_int_input,
@@ -241,7 +241,6 @@ def preprocessing_demo():
 
 def predict_MerchantSize_on_lead_data_demo():
     import os
-    import pickle
     import sys
     from io import BytesIO
 
@@ -254,10 +253,7 @@ def predict_MerchantSize_on_lead_data_demo():
     )
 
     ######################### preprocessing the leads ##################################
-    if get_yes_no_input("Run on S3? (y/n)\n'n' means it will run locally!\n"):
-        S3_bool = True
-    else:
-        S3_bool = False
+    S3_bool = DATABASE_TYPE == "S3"
     current_dir = os.path.dirname(__file__) if "__file__" in locals() else os.getcwd()
     parent_dir = os.path.join(current_dir, "..")
     sys.path.append(parent_dir)
