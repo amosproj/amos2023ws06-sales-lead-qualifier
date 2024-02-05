@@ -17,7 +17,6 @@ from bdc.steps import (
     HashGenerator,
     PreprocessPhonenumbers,
     RegionalAtlas,
-    ScrapeAddress,
     SearchOffeneRegister,
     SmartReviewInsightsEnhancer,
 )
@@ -33,14 +32,12 @@ STEP_STR_TO_CLASS = {
     "GPTSummarizer": GPTSummarizer,
     "PreprocessPhonenumbers": PreprocessPhonenumbers,
     "RegionalAtlas": RegionalAtlas,
-    "ScrapeAddress": ScrapeAddress,
     "SearchOffeneRegister": SearchOffeneRegister,
     "SmartReviewInsightsEnhancer": SmartReviewInsightsEnhancer,
 }
 
 # Please do not write following lists! Use the functions below instead.
 _additional_pipeline_steps = [
-    (ScrapeAddress, "Scrape Address", "(will take a long time)"),
     (SearchOffeneRegister, "Search OffeneRegister", "(will take a long time)"),
     (PreprocessPhonenumbers, "Phone Number Validation", ""),
     (

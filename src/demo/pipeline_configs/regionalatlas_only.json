@@ -1,0 +1,27 @@
+{
+  "description": "This config runs all steps with force_refresh set to true.",
+  "config": {
+    "steps": [
+      {
+        "name": "HashGenerator",
+        "force_refresh": true
+      },
+      {
+        "name": "AnalyzeEmails",
+        "force_refresh": true
+      },
+      {
+        "name": "PreprocessPhonenumbers",
+        "force_refresh": true
+      },
+      {
+        "name": "GooglePlaces",
+        "force_refresh": true
+      },
+      {
+        "name": "RegionalAtlas",
+        "force_refresh": true
+      }
+    ]
+  }
+}

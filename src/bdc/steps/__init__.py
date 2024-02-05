@@ -9,6 +9,5 @@ from .gpt_summarizer import *
 from .hash_generator import *
 from .preprocess_phonenumbers import *
 from .regionalatlas import *
-from .scrape_address import *
 from .search_offeneregister import *
 from .step import *
