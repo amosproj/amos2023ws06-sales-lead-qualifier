@@ -387,6 +387,7 @@ def predict_MerchantSize_on_lead_data_demo():
             log.info(f"Loaded the model from the local path sucessfully!")
     except:
         log.error("No model found with the given name!")
+        return
 
     if S3_bool:
         data_path = (
