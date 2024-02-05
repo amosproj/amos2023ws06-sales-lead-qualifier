@@ -18,6 +18,7 @@ preprocessed data set from the 22.01.2024.
 - XGBoost Classifier Model
 - K Nearest Neighbor Classifier (KNN)
 - Bernoulli Naive Bayes Classifier
+- LightGBM
 
 Each model type was tested on two splits of the data set. The used data set has five
 classes for prediction corresponding to different merchant sizes, namely XS, S, M, L, and XL.
@@ -81,7 +82,6 @@ The following subsets are available:
 - The KNN classifier used a distance based weighting for the evaluated neighbors and considered 10 neighbors in the 5-class split and 19 neighbors for the 3-class split.
 - The XGBoost was trained for 10000 rounds.
 - The LightGBM was trained with 2000 number of leaves
-
 
 In the following table we can see the model's overall weighted F1-score on the 3-class and
 5-class data set split. The best performing classifiers per row is marked **bold**.
