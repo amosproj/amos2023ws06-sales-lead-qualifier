@@ -224,10 +224,7 @@ def preprocessing_demo():
         historical_bool = True
     else:
         historical_bool = False
-    if get_yes_no_input("Run on S3? (y/n)\n'n' means it will run locally!\n"):
-        S3_bool = True
-    else:
-        S3_bool = False
+    S3_bool = DATABASE_TYPE == "S3"
 
     preprocessor = Preprocessing(
         filter_null_data=filter_bool, historical_bool=historical_bool, S3_bool=S3_bool
