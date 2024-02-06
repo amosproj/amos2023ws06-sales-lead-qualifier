@@ -95,7 +95,7 @@ class S3Repository(Repository):
             obj = s3.get_object(Bucket=bucket, Key=obj_key)
         except botocore.exceptions.ClientError as e:
             log.warning(
-                f"{e.response['Error']['Code']}: {e.response['Error']['Message']}"
+                f"{e.response['Error']['Code']}: {e.response['Error']['Message']} (s3://{bucket}/{obj_key})"
                 if "Error" in e.response
                 else f"Error while getting object s3://{bucket}/{obj_key}"
             )
@@ -209,8 +209,8 @@ class S3Repository(Repository):
             json_content = json.loads(file_content)
             return json_content
         except Exception as e:
-            log.error(
-                f"Error loading review from S3 with id {place_id}. Error: {str(e)}"
+            log.info(
+                f"No reviews in S3 for place with at s3://{bucket}/{key}. Error: {str(e)}"
             )
             return []
 
