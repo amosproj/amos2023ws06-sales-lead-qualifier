@@ -9,7 +9,7 @@ import pandas as pd
 from bdc.steps.hash_generator import HashGenerator
 
 
-class YourClassTests(unittest.TestCase):
+class TestStepExecution(unittest.TestCase):
     def setUp(self):
         self.lead_data = {
             "First Name": ["John"],
