@@ -83,6 +83,13 @@ class Repository(ABC):
         pass
 
     @abstractmethod
+    def save_prediction(self, df):
+        """
+        Save dataframe in df parameter in chosen output location
+        """
+        pass
+
+    @abstractmethod
     def insert_data(self, data):
         """
         Insert new data into specified dataframe
@@ -221,7 +228,14 @@ class Repository(ABC):
         pass
 
     @abstractmethod
-    def load_preprocessed_data(self, file_name: str):
+    def get_preprocessed_data_path(self, historical: bool = True):
+        """
+        Returns the path for a preprocessed data file (either historical or current)
+        """
+        pass
+
+    @abstractmethod
+    def load_preprocessed_data(self, historical: bool = True):
         """
         Load the preprocessed data from the given file
         """
