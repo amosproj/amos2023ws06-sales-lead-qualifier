@@ -22,7 +22,7 @@ google_places_rating,float,Average star rating,Google Places API,Company / Accou
 google_places_price_level,float,Price level (1-3),Google Places API,Company / Account,-
 google_places_candidate_count_mail,integer,Number of results from E-Mail based search,Google Places API,Company / Account,1
 google_places_candidate_count_phone,integer,Number of results from Phone based search,Google Places API,Company / Account,1
-google_places_place_id_matches_phone_se arch,boolean,Indicator weather phone based and EMail based search gave the same result,Google Places API,Company / Account,True/False
+google_places_place_id_matches_phone_search,boolean,Indicator weather phone based and EMail based search gave the same result,Google Places API,Company / Account,True/False
 google_places_confidence,float,Indicator of confidence in the Google result,processing,,0.9
 google_places_detailed_website,string,Link to business website,Google Places API,Company / Account,www.musterwebsite.de
 google_places_detailed_type,list,Type of business,Google Places API,Company / Account,"[""florist"", ""store""]"
@@ -39,7 +39,7 @@ regional_atlas_per_service_sector,float,-,Regional Atlas,google_places_formatted
 regional_atlas_per_trade,float,-,Regional Atlas,google_places_formatted_address,28.9
 regional_atlas_employment_rate,float,Employment rate,Regional Atlas,google_places_formatted_address,59.9
 regional_atlas_unemployment_rate,float,Unemployment rate,Regional Atlas,google_places_formatted_address,6.4
-regional_atlas_per_long_term_unemployme nt,float,Long term unemployment,Regional Atlas,google_places_formatted_address,49.9
+regional_atlas_per_long_term_unemployment,float,Long term unemployment,Regional Atlas,google_places_formatted_address,49.9
 regional_atlas_investments_p_employee,float,Investments per employee,Regional Atlas,google_places_formatted_address,6.8
 regional_atlas_gross_salary_p_employee,float,Gross salary per employee,Regional Atlas,google_places_formatted_address,63.9
 regional_atlas_disp_income_p_inhabitant,float,Income per inhabitant,Regional Atlas,google_places_formatted_address,23703
