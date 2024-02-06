@@ -31,7 +31,7 @@ log = get_logger()
 class Preprocessing:
     def __init__(self, filter_null_data=True, historical_bool=True):
         data_repo = get_database()
-        self.data_path = data_repo.get_output_path()
+        self.data_path = data_repo.get_enriched_data_path(historical=historical_bool)
         self.preprocessed_df = None
         self.preprocessed_data_output_path = data_repo.get_preprocessed_data_path(
             historical_bool

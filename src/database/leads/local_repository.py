@@ -24,6 +24,9 @@ class LocalRepository(Repository):
     DF_OUTPUT = os.path.abspath(
         os.path.join(BASE_PATH, "../../data/leads_enriched.csv")
     )
+    DF_HISTORICAL_OUTPUT = os.path.abspath(
+        os.path.join(BASE_PATH, "../../data/100k_historic_enriched.csv")
+    )
     DF_PREPROCESSED_INPUT = os.path.abspath(
         os.path.join(BASE_PATH, "../../data/preprocessed_data_files/")
     )

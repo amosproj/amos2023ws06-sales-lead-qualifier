@@ -8,6 +8,7 @@
 
 
 import re
+import warnings
 
 import pandas as pd
 import xgboost as xgb
@@ -32,6 +33,10 @@ from evp import EstimatedValuePredictor
 from evp.predictors import MerchantSizeByDPV, Predictors
 from logger import get_logger
 from preprocessing import Preprocessing
+
+warnings.simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
+warnings.simplefilter(action="ignore", category=FutureWarning)
+
 
 log = get_logger()
 
@@ -202,7 +207,7 @@ def pipeline_demo():
 
     steps_info = "\n".join([str(step) for step in steps])
     log.info(
-        f"Running Pipeline with steps:\n{steps_info}\ninput_location={get_database().get_input_path()}\noutput_location={get_database().get_output_path()}"
+        f"Running Pipeline with steps:\n{steps_info}\ninput_location={get_database().get_input_path()}\noutput_location={get_database().get_enriched_data_path()}"
     )
 
     pipeline = Pipeline(
@@ -272,8 +277,7 @@ def predict_MerchantSize_on_lead_data_demo():
     missing_columns = set(historical_columns_order) - set(
         unlabeled_preprocessed_data.columns
     )
-    for column in missing_columns:
-        unlabeled_preprocessed_data[column] = 0
+    unlabeled_preprocessed_data[list(missing_columns)] = 0
 
     for column in unlabeled_preprocessed_data.columns:
         if column not in historical_columns_order:

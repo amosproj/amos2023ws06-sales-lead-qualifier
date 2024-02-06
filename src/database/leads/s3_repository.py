@@ -43,6 +43,9 @@ class S3Repository(Repository):
     MODELS_BUCKET = "amos--models"
     DF_INPUT = f"s3://{EVENTS_BUCKET}/leads/enriched.csv"
     DF_OUTPUT = f"s3://{EVENTS_BUCKET}/leads/enriched.csv"
+    DF_HISTORICAL_OUTPUT = (
+        f"s3://{EVENTS_BUCKET}/historical_data/100k_historic_enriched.csv"
+    )
     DF_PREDICTION_OUTPUT = f"s3://{EVENTS_BUCKET}/leads/leads_predicted_size.csv"
     DF_PREPROCESSED_INPUT = f"s3://{FEATURES_BUCKET}/preprocessed_data_files/"
     REVIEWS = f"s3://{EVENTS_BUCKET}/reviews/"
