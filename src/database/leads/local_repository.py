@@ -253,7 +253,9 @@ class LocalRepository(Repository):
         except Exception as e:
             log.error(f"Could not save report at {report_file_path}! Error: {str(e)}")
 
-    def load_preprocessed_data(self, file_name: str = "preprocessed_data.csv"):
+    def load_preprocessed_data(
+        self, file_name: str = "historical_preprocessed_data.csv"
+    ):
         try:
             return pd.read_csv(os.path.join(self.DF_PREPROCESSED_INPUT, file_name))
         except FileNotFoundError:
