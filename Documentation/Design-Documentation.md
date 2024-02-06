@@ -1,7 +1,8 @@
 <!--
 SPDX-License-Identifier: MIT
 SPDX-FileCopyrightText: 2023 Felix Zailskas <felixzailskas@gmail.com>
-SPDX-FileCopyrightText: 2024 Ahmed Sheta <felixzailskas@gmail.com>
+SPDX-FileCopyrightText: 2024 Ahmed Sheta <ahmed.sheta@fau.de>
+SPDX-FileCopyrightText: 2024 Simon Zimmermann <tim.simon.zimmermann@fau.de>
 -->
 
 # Introduction
@@ -12,9 +13,28 @@ garnered through their sign-up website. The refined data obtained undergoes
 utilization in the prediction of potential value that a lead could contribute to
 SumUp, facilitated by a sophisticated machine learning model. The application is
 branched into two integral components: the Base Data Collector (BDC) and the
-Estimated Value Predictor (EVP).
+Merchant Size Predictor (MSP).
 
-## Base Data Collector
+## Component Diagram
+
+![Component Diagram](Media/component-diagram.svg)
+
+## External Software
+
+### Lead Form (LF)
+
+The _Lead Form_ is submitted by every new lead and provides a small set of data
+about the lead.
+
+### Customer Relationship Management (CRM)
+
+The project output is made available to the sales team. This can be done in
+different ways, e.g. writing to a Google Sheet or pushing directly to
+SalesForce.
+
+## Components
+
+## Base Data Collector (BDC)
 
 ### General description
 
@@ -55,18 +75,20 @@ one-hot encoding. This preprocessing stage serves transforms the output
 originating from the BDC into feature vectors, thereby rendering them amenable
 for predictive analysis by the machine learning model.
 
-## Estimated Value Predictor
+## Merchant Size Predictor (MSP) / Estimated Value Predictor (EVP)
 
-The primary objective of the EVP was initially oriented towards forecasting the
-estimated life-value of leads. However, this objective evolved during the
-project's progression, primarily influenced by labelling considerations. The
-machine learning model, integral to the EVP, undergoes training on proprietary
-historical data sourced from SumUp. The training process aims to discern
-discriminative features that effectively stratify each class within the Merchant
-Size taxonomy. It is imperative to note that the confidentiality of the
-underlying data prohibits its public disclosure.
+### Historical Note
 
-## Merchant Size Predictor
+The primary objective of the Estimated Value Predictor was initially oriented
+towards forecasting the estimated life-time value of leads. However, this
+objective evolved during the project's progression, primarily influenced by
+labelling considerations. The main objective has therefore changed to predicting
+only the size of a given lead, which can then be used as an indication for their
+potential life-time value. As a consequence, the component in questions is now
+(somewhat inconsistently) either referred to as the Estimated Value Predictor
+(EVP) or as the Merchant Size Predictor (MSP).
+
+### Design
 
 In the context of Merchant Size Prediction, our aim is to leverage pre-trained
 ML models on new lead data. By applying these models, we intend to predict the
@@ -75,8 +97,8 @@ making informed decisions on which leads to contact first. This predictive
 approach enhances the efficiency of lead management and optimizes resource
 allocation for maximum impact.
 
-## Data field definitions
-
-This section highlights the data field definitions obtained for each lead. The
-acquisition of such data may derive from the online Lead Form or may be
-extracted from online sources utilizing APIs.
+The machine learning model, integral to the MSP, undergoes training on
+proprietary historical data sourced from SumUp. The training process aims to
+discern discriminative features that effectively stratify each class within the
+Merchant Size taxonomy. It is imperative to note that the confidentiality of the
+underlying data prohibits its public disclosure.
