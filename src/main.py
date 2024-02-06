@@ -21,8 +21,8 @@ log = get_logger()
 DEMOS = {
     "Base Data Collector": pipeline_demo,
     "Data preprocessing": preprocessing_demo,
-    "Estimated Value Predictor": evp_demo,
-    "Merchant Size Prediction": predict_MerchantSize_on_lead_data_demo,
+    "ML model training": evp_demo,
+    "Merchant Size Predictor": predict_MerchantSize_on_lead_data_demo,
 }
 PROMPT = "Choose demo:\n"
 
