@@ -16,29 +16,38 @@ report_list = []
 
 standard_group_format = {
     # 1 pdf per lead (1 row in .csv)
-    "Contact": ["Last Name", "First Name", "Company / Account", "Phone", "Email", 'Predicted Size'],
-    #"Reviews": [
+    "Lead": [
+        "Last Name",
+        "First Name",
+        "Company / Account",
+        "Phone",
+        "Email",
+        "Predicted Size",
+    ],
+    # "Reviews": [
     #   "google_places_user_ratings_total",
     #    "google_places_rating",
     #    "google_places_price_level",
     #    "reviews_sentiment_score",
-    #],
+    # ],
     #'Region':[] starts with regional_atlas
     # Regarding columns names if there are more than one '_' take the split after the second _
 }
+
+file_list = []
 
 
 def process_lead(lead):
     # Input search string (either specific leads or a whole file)
     # Output: pd.series of a lead from leads_enriched.csv
     try:
-        df = pd.read_csv("data/leads_enriched.csv", delimiter=",")
+        df = pd.read_csv("data/dummy_leads_email.csv", delimiter=",")
     except FileNotFoundError:
         raise FileNotFoundError("File not found.")
     if os.path.exists(
         os.path.dirname(lead)
     ):  # If a path was specified (by default the dummy dataset)
-        df = pd.read_csv("data/dummy_leads_email.csv", delimiter=",")
+        df = pd.read_csv(lead, delimiter=",")
         return df
     elif isinstance(lead, list):  # A specified group of leads
         rows = df[df["Company / Account"] in lead]
@@ -87,8 +96,9 @@ def create_pdf(lead, format):
     Output: '...'.pdf
     """
     doc = SimpleDocTemplate(
-        f"src/data/reports/{lead['Company / Account']}.pdf", pagesize=A4
+        f"data/reports/{lead['Company / Account']}.pdf", pagesize=A4
     )
+    file_list.append(f"data/reports/{lead['Company / Account']}.pdf")
 
     report_list.append(f"src/data/reports/{lead['Company / Account']}.pdf")
 
@@ -183,6 +193,7 @@ def create_pdf(lead, format):
 
 
 def main():
+    # file_list=[]
     parser = argparse.ArgumentParser(description="Process lead and format arguments.")
     parser.add_argument(
         "--lead",
@@ -198,6 +209,7 @@ def main():
     # Process lead argument (result: either specific row(/s) or a table)
     # Choose lead with
     processed_lead = process_lead(args.lead)
+    print("Generate the reports for the following leads: ")
     print(processed_lead)
 
     # Process format argument (result: format that is a dictionary)
@@ -208,11 +220,12 @@ def main():
     for index, lead in processed_lead.iterrows():
         create_pdf(lead, processed_format)
 
-    print("Reports saved:")
-    for report in report_list:
-        print(report)
+    print("\nReports saved:")
+    for file in file_list:
+        print(f"{file}")
 
-    print() 
+    print()
+
 
 if __name__ == "__main__":
     main()
