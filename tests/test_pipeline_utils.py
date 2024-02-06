@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2024 Felix Zailskas <felixzailskas@gmail.com>
 
-import os
 import unittest
 from unittest.mock import MagicMock, mock_open, patch
 
@@ -22,7 +21,6 @@ class TestPipelineUtils(unittest.TestCase):
             [
                 (HashGenerator, "Hash Generator", ""),
                 (AnalyzeEmails, "Analyze Emails", ""),
-                (ScrapeAddress, "Scrape Address", "(will take a long time)"),
                 (
                     SearchOffeneRegister,
                     "Search OffeneRegister",
@@ -73,7 +71,6 @@ class TestPipelineUtils(unittest.TestCase):
         additional_steps = get_pipeline_additional_steps()
         self.assertEqual(
             [
-                (ScrapeAddress, "Scrape Address", "(will take a long time)"),
                 (
                     SearchOffeneRegister,
                     "Search OffeneRegister",
