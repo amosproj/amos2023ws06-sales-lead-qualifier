@@ -5,7 +5,6 @@
 import argparse
 import os
 
-
 import pandas as pd
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
