@@ -29,8 +29,8 @@ build process. The user will be presented with the following options:
 Choose demo:
 (0) : Base Data Collector
 (1) : Data preprocessing
-(2) : Estimated Value Predictor
-(3) : Merchant Size Prediction
+(2) : ML model training
+(3) : Merchant Size Predictor
 (4) : Exit
 ```
 
@@ -123,7 +123,7 @@ to have `DATABASE_TYPE="S3"` in `.env` file in order to run on historical data,
 otherwise, it will run locally. After preprocessing, the log will show where the
 preprocessed_data is stored.
 
-## (2) : Estimated Value Predictor
+## (2) : ML model training
 
 Six machine learning models are available:
 
@@ -176,7 +176,7 @@ Then, the user would be given multiple options:
   `DATABASE_TYPE=S3`, otherwise it will save it locally.
 - (5): Exit the EVP submenu
 
-## (3) : Merchant Size Prediction
+## (3) : Merchant Size Predictor
 
 After training, testing, and saving the model, the true essence of models lies
 not just in crucial task of generating forecasted predictions for previously
