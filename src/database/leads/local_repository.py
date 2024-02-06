@@ -4,7 +4,6 @@
 import csv
 import json
 import os
-from datetime import datetime
 from pathlib import Path
 
 import joblib
@@ -197,6 +196,11 @@ class LocalRepository(Repository):
         try:
             with open(json_file_path, "r", encoding="utf-8") as json_file:
                 data = json.load(json_file)
+                if operation_name not in data:
+                    log.info(
+                        f"Data for operation {operation_name} was not found in {json_file_path}"
+                    )
+                    return ""
                 return data[operation_name]
         except:
             log.warning(f"Error loading GPT results from path {json_file_path}.")

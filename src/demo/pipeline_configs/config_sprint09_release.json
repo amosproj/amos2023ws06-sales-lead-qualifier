@@ -7,10 +7,6 @@
         "force_refresh": true
       },
       {
-        "name": "ScrapeAddress",
-        "force_refresh": true
-      },
-      {
         "name": "PreprocessPhonenumbers",
         "force_refresh": true
       },

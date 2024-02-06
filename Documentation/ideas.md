@@ -25,6 +25,13 @@ The current implementation of the module supports queueing messages from the BDC
 
 This step was supposed to be used for querying lead data from the facebook by using either the business owner's name or the company name. The attempt was deprecated as the cost for the needed API token was evaluated too high and because the usage permissions of the facebook API were changed. Furthermore, it is paramount to check the legal ramifications of querying facebook for this kind of data as there might be legal consequences of searching for individuals on facebook instead of their businesses due to data privacy regulations in the EU.
 
+### ScrapeAddresses
+
+This step was an early experiment, using only the custom domain from an email address. We check if there's a live website running
+for the domain, and then try to parse the main site for a business address using a RegEx pattern. The pattern is not very precise
+and calling the website, as well as parsing it, takes quite some time, which accumulates for a lot of entries. The Google places
+step yields better results for the business address and is faster, that's why `scrape_addresses.py` was deprecated.
+
 ## Possible ML improvements
 
 ### Creating data subsets
