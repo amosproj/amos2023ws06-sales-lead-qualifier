@@ -54,7 +54,7 @@ class CustomLogger(logging.getLoggerClass()):
 
         # Create stream handler for logging to stdout (log all five levels)
         self.stdout_handler = logging.StreamHandler(sys.stdout)
-        self.stdout_handler.setLevel(logging.DEBUG)
+        self.stdout_handler.setLevel(logging.INFO)
         self.stdout_handler.setFormatter(StdOutFormatter())
         self.enable_console_output()
 

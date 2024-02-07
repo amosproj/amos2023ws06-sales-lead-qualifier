@@ -81,7 +81,7 @@ class LocalRepository(Repository):
         json_file_path = os.path.join(self.REVIEWS, file_name)
 
         if os.path.exists(json_file_path):
-            log.info(f"Reviews for {place_id} already exist")
+            log.debug(f"Reviews for {place_id} already exist")
             return
 
         with open(json_file_path, "w", encoding="utf-8") as json_file:
