@@ -6,8 +6,14 @@ SPDX-FileCopyrightText: 2024 Ahmed Sheta <ahmed.sheta@fau.de>
 
 # Classifier Comparison
 
-This document compares the results of the following classifiers on the enriched and
-preprocessed data set from the 22.01.2024.
+## Abstract
+
+This report presents a comprehensive evaluation of various classifiers trained on the historical dataset, which has been enriched and preprocessed through our pipeline. Each model type was tested on two splits of the data set. The used data set has five
+classes for prediction corresponding to different merchant sizes, namely XS, S, M, L, and XL. The first split of the data set used exactly these classes for the prediction corresponding to the exact classes given by SumUp. The other data set split grouped the classes S, M, and L into one new class resulting in three classes of the form {XS}, {S, M, L}, and {XL}. While this does not exactly correspond to the given classes from SumUp, this simplification ofthe prediction task generally resulted in a better F1-score across models.
+
+## Experimental Attempts
+
+In accordance with the free lunch theorem, indicating no universal model superiority, multiple attempts were made to find the optimal solution. Unfortunately, certain models did not perform satisfactorily. Here are the experimented models and methodolgies
 
 - Quadratic Discriminant Analysis (QDA)
 - Ridge Classifier
@@ -18,24 +24,13 @@ preprocessed data set from the 22.01.2024.
 - XGBoost Classifier Model
 - K Nearest Neighbor Classifier (KNN)
 - Bernoulli Naive Bayes Classifier
-
-Each model type was tested on two splits of the data set. The used data set has five
-classes for prediction corresponding to different merchant sizes, namely XS, S, M, L, and XL.
-The first split of the data set used exactly these classes for the prediction corresponding
-to the exact classes given by SumUp. The other data set split grouped the classes S, M, and L
-into one new class resulting in three classes of the form {XS}, {S, M, L}, and {XL}. While
-this does not exactly correspond to the given classes from SumUp, this simplification of
-the prediction task generally resulted in a better F1-score across models.
-
-## Experimental Attempts
-
-According to free lunch theorem, there is no universal model or methodology that is top performing on every problem or data, therefore multiple attempts are crucal. In this section, we will document the experiments we tried and their corresponding performance and outputs.
+- LightGBM
 
 ## Models not performing well
 
 ### Support Vector Machine Classifier Model
 
-Training Support Vector Machine (SVM) took a while such that the training never ended. It is believed that it is the case because SVMs are very sensitive to the misclassifications and it finds a hard time minimizing them, given the data.
+Training Support Vector Machine (SVM) took a while such that the training never ended. We believe that it is the case because SVMs are very sensitive to the misclassifications and it finds a hard time minimizing them, given the data.
 
 ### Fully Connected Neural Networks Classifier Model
 
@@ -81,7 +76,6 @@ The following subsets are available:
 - The KNN classifier used a distance based weighting for the evaluated neighbors and considered 10 neighbors in the 5-class split and 19 neighbors for the 3-class split.
 - The XGBoost was trained for 10000 rounds.
 - The LightGBM was trained with 2000 number of leaves
-
 
 In the following table we can see the model's overall weighted F1-score on the 3-class and
 5-class data set split. The best performing classifiers per row is marked **bold**.
@@ -141,3 +135,7 @@ In the following table we can see the F1-score of each model for each class in t
 
 For the 3-class split we observe similar performance for the XS and {S, M, L} classes for each model, while the LightGBM model slightly outperforms the other models. The LightGBM classifier is performing the best on the XL class while the Naive Bayes classifier performs worst. Interestingly, we can observe that the performance of the models on the XS class was barely affected by the merging of the S, M, and L classes while the performance on the XL class got worse for all of them. This needs to be considered, when evaluating the overall performance of the models on this data set split.
 The AdaBoost Classifier, trained on subset 1, performs best for the XL class. The KNN classifier got a slight boost in performance for the {S, M, L} and XL classes when using subset 1. All other models perform worse on subset 1.
+
+# Conclusion
+
+In summary, XGBoost consistently demonstrated superior performance, showcasing robust results across various splits and subsets. However, it is crucial to note that its elevated score is attributed to potential overfitting on the XS class. Given SumUp's emphasis on accurate predictions for higher classes, we recommend considering LightGBM. This model outperformed XGBoost in predicting the XL class and the other classes, offering better results in both the five-class and three-class splits.

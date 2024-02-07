@@ -1,0 +1,58 @@
+Field Name,Type,Description,Data source,Dependencies,Example
+Last Name,string,Last name of the lead,Lead data,-,Mustermann
+First Name,string,First name of the lead,Lead data,-,Mustername
+Company / Account,string,Company name of the lead,Lead data,-,Mustercompany
+Phone,string,Phone number of the lead,Lead data,-,49 1234 56789
+Email,string,Email of the lead,Lead data,-,musteremail@example.com
+domain,string,"The domain of the email is the part that follows the ""@"" symbol, indicating the organization or service hosting the email address.",processing,Email,example.com
+email_valid,boolean,Checks if the email is valid.,email_validator package,Email,True/False
+first_name_in_account,boolean,Checks if first name is written in "Account" input,processing,First Name,True/False
+last_name_in_account,boolean,Checks if last name is written in "Account" input,processing,Last Name,True/False
+number_formatted,string,Phone number (formatted),phonenumbers package,Phone,49123456789
+number_country,string,Country derived from phone number,phonenumbers package,Phone,Germany
+number_area,string,Area derived from phone number,phonenumbers package,Phone,Erlangen
+number_valid,boolean,Indicator weather a phone number is valid,phonenumbers package,Phone,True/False
+number_possible,boolean,Indicator weather a phone number is possible,phonenumbers package,Phone,True/False
+google_places_place_id,string,Place ID used by Google,Google Places API,Company / Account,-
+google_places_business_status,string,Business Status,Google Places API,Company / Account,Operational
+google_places_formatted_address,string,Formatted address,Google Places API,Company / Account,Musterstr.1
+google_places_name,string,Business Name,Google Places API,Company / Account,Mustername
+google_places_user_ratings_total,integer,Total number of ratings,Google Places API,Company / Account,100
+google_places_rating,float,Average star rating,Google Places API,Company / Account,4.5
+google_places_price_level,float,Price level (1-3),Google Places API,Company / Account,-
+google_places_candidate_count_mail,integer,Number of results from E-Mail based search,Google Places API,Company / Account,1
+google_places_candidate_count_phone,integer,Number of results from Phone based search,Google Places API,Company / Account,1
+google_places_place_id_matches_phone_search,boolean,Indicator weather phone based and EMail based search gave the same result,Google Places API,Company / Account,True/False
+google_places_confidence,float,Indicator of confidence in the Google result,processing,,0.9
+google_places_detailed_website,string,Link to business website,Google Places API,Company / Account,www.musterwebsite.de
+google_places_detailed_type,list,Type of business,Google Places API,Company / Account,"[""florist"", ""store""]"
+reviews_sentiment_score,float,Sentiment score between -1 and 1 for the reviews,GPT,Google reviews,0.9
+regional_atlas_pop_density,float,Population density,Regional Atlas,google_places_formatted_address,2649.6
+regional_atlas_pop_development,float,Population development,Regional Atlas,google_places_formatted_address,-96.5
+regional_atlas_age_0,float,Age group,Regional Atlas,google_places_formatted_address,16.3
+regional_atlas_age_1,float,Age group,Regional Atlas,google_places_formatted_address,8.2
+regional_atlas_age_2,float,Age group,Regional Atlas,google_places_formatted_address,31.1
+regional_atlas_age_3,float,Age group,Regional Atlas,google_places_formatted_address,26.8
+regional_atlas_age_4,float,Age group,Regional Atlas,google_places_formatted_address,17.7
+regional_atlas_pop_avg_age,float,Average population age,Regional Atlas,google_places_formatted_address,42.1
+regional_atlas_per_service_sector,float,-,Regional Atlas,google_places_formatted_address,88.4
+regional_atlas_per_trade,float,-,Regional Atlas,google_places_formatted_address,28.9
+regional_atlas_employment_rate,float,Employment rate,Regional Atlas,google_places_formatted_address,59.9
+regional_atlas_unemployment_rate,float,Unemployment rate,Regional Atlas,google_places_formatted_address,6.4
+regional_atlas_per_long_term_unemployment,float,Long term unemployment,Regional Atlas,google_places_formatted_address,49.9
+regional_atlas_investments_p_employee,float,Investments per employee,Regional Atlas,google_places_formatted_address,6.8
+regional_atlas_gross_salary_p_employee,float,Gross salary per employee,Regional Atlas,google_places_formatted_address,63.9
+regional_atlas_disp_income_p_inhabitant,float,Income per inhabitant,Regional Atlas,google_places_formatted_address,23703
+regional_atlas_tot_income_p_taxpayer,float,Income per taxpayer,Regional Atlas,google_places_formatted_address,45.2
+regional_atlas_gdp_p_employee,float,GDP per employee,Regional Atlas,google_places_formatted_address,84983
+regional_atlas_gdp_development,float,GDP development,Regional Atlas,google_places_formatted_address,5.2
+regional_atlas_gdp_p_inhabitant,float,GDP per inhabitant,Regional Atlas,google_places_formatted_address,61845
+regional_atlas_gdp_p_workhours,float,GDP per workhours,Regional Atlas,google_places_formatted_address,60.7
+regional_atlas_pop_avg_age_zensus,float,Average population age (from zensus),Regional Atlas,google_places_formatted_address,41.3
+regional_atlas_regional_score,float,Regional score,Regional Atlas,google_places_formatted_address,3761.93
+review_avg_grammatical_score,float,Average grammatical score of reviews,processing,google_places_place_id,0.56
+review_polarization_type,string,Polarization type of review ratings,processing,google_places_place_id,High-Rating Dominance
+review_polarization_score,float,Polarization score of review ratings ,processing,google_places_place_id,1
+review_highest_rating_ratio,float,Ratio of the highest review ratings,processing,google_places_place_id,1
+review_lowest_rating_ratio,float,Ratio of the lowest review ratings,processing,google_places_place_id,0
+review_rating_trend,float,Value indicating the trend of ratings,processing,google_places_place_id,0
