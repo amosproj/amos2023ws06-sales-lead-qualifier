@@ -8,6 +8,7 @@
 
 
 import re
+import warnings
 
 import pandas as pd
 import xgboost as xgb
@@ -32,6 +33,10 @@ from evp import EstimatedValuePredictor
 from evp.predictors import MerchantSizeByDPV, Predictors
 from logger import get_logger
 from preprocessing import Preprocessing
+
+warnings.simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
+warnings.simplefilter(action="ignore", category=FutureWarning)
+
 
 log = get_logger()
 
@@ -202,7 +207,7 @@ def pipeline_demo():
 
     steps_info = "\n".join([str(step) for step in steps])
     log.info(
-        f"Running Pipeline with steps:\n{steps_info}\ninput_location={get_database().get_input_path()}\noutput_location={get_database().get_output_path()}"
+        f"Running Pipeline with steps:\n{steps_info}\ninput_location={get_database().get_input_path()}\noutput_location={get_database().get_enriched_data_path()}"
     )
 
     pipeline = Pipeline(
@@ -224,10 +229,9 @@ def preprocessing_demo():
         historical_bool = True
     else:
         historical_bool = False
-    S3_bool = DATABASE_TYPE == "S3"
 
     preprocessor = Preprocessing(
-        filter_null_data=filter_bool, historical_bool=historical_bool, S3_bool=S3_bool
+        filter_null_data=filter_bool, historical_bool=historical_bool
     )
 
     preprocessor.preprocessed_df = pd.read_csv(preprocessor.data_path)
@@ -239,10 +243,7 @@ def preprocessing_demo():
 def predict_MerchantSize_on_lead_data_demo():
     import os
     import sys
-    from io import BytesIO
 
-    import boto3
-    import joblib
     import pandas as pd
 
     log.info(
@@ -254,12 +255,13 @@ def predict_MerchantSize_on_lead_data_demo():
     current_dir = os.path.dirname(__file__) if "__file__" in locals() else os.getcwd()
     parent_dir = os.path.join(current_dir, "..")
     sys.path.append(parent_dir)
+    from database import get_database
     from preprocessing import Preprocessing
 
+    db = get_database()
+
     log.info(f"Preprocessing the leads...")
-    preprocessor = Preprocessing(
-        filter_null_data=False, historical_bool=False, S3_bool=S3_bool
-    )
+    preprocessor = Preprocessing(filter_null_data=False, historical_bool=False)
     preprocessor.preprocessed_df = pd.read_csv(preprocessor.data_path)
     df = preprocessor.implement_preprocessing_pipeline()
     preprocessor.save_preprocessed_data()
@@ -267,67 +269,34 @@ def predict_MerchantSize_on_lead_data_demo():
     ############################## adapting the preprocessing files ###########################
     log.info(f"Adapting the leads' preprocessed data for the ML model...")
     # load the data from the CSV files
-    historical_preprocessed_data = pd.read_csv(
-        "s3://amos--data--features/preprocessed_data_files/preprocessed_data.csv"
-    )
-    if S3_bool:
-        toBePredicted_preprocessed_data = pd.read_csv(
-            "s3://amos--data--events/leads/preprocessed_leads_data.csv"
-        )
-    else:
-        path_components = preprocessor.data_path.split(
-            "\\" if "\\" in preprocessor.data_path else "/"
-        )
-        path_components.pop()
-        path_components.append("preprocessed_data_files/leads_preprocessed_data.csv")
-        leads_preprocessed_data_path = "/".join(path_components)
-        toBePredicted_preprocessed_data = pd.read_csv(leads_preprocessed_data_path)
+    historical_preprocessed_data = db.load_preprocessed_data(historical=True)
+    unlabeled_preprocessed_data = db.load_preprocessed_data(historical=False)
 
     historical_columns_order = historical_preprocessed_data.columns
 
     missing_columns = set(historical_columns_order) - set(
-        toBePredicted_preprocessed_data.columns
+        unlabeled_preprocessed_data.columns
     )
-    for column in missing_columns:
-        toBePredicted_preprocessed_data[column] = 0
+    unlabeled_preprocessed_data[list(missing_columns)] = 0
 
-    for column in toBePredicted_preprocessed_data.columns:
+    for column in unlabeled_preprocessed_data.columns:
         if column not in historical_columns_order:
-            toBePredicted_preprocessed_data = toBePredicted_preprocessed_data.drop(
+            unlabeled_preprocessed_data = unlabeled_preprocessed_data.drop(
                 column, axis=1
             )
 
     # reorder columns
-    toBePredicted_preprocessed_data = toBePredicted_preprocessed_data[
-        historical_columns_order
-    ]
-    if S3_bool:
-        toBePredicted_output_path_s3 = (
-            "s3://amos--data--events/leads/toBePredicted_preprocessed_data_updated.csv"
-        )
-        toBePredicted_preprocessed_data.to_csv(
-            toBePredicted_output_path_s3,
-            index=False,
-        )
-        log.info(
-            f"Saving the adapted preprocessed data at {toBePredicted_output_path_s3}"
-        )
-    else:
-        path_components = preprocessor.data_path.split(
-            "\\" if "\\" in preprocessor.data_path else "/"
-        )
-        path_components.pop()
-        path_components.append("toBePredicted_preprocessed_data_updated.csv")
-        local_preprocessed_data_path = "/".join(path_components)
-        toBePredicted_preprocessed_data.to_csv(
-            local_preprocessed_data_path, index=False
-        )
-        log.info(
-            f"Saving the adapted preprocessed data at {local_preprocessed_data_path}"
-        )
+    unlabeled_preprocessed_data = unlabeled_preprocessed_data[historical_columns_order]
+    unlabeled_preprocessed_data.to_csv(
+        preprocessor.preprocessed_data_output_path,
+        index=False,
+    )
+    log.info(
+        f"Saving the adapted preprocessed data at {preprocessor.preprocessed_data_output_path}"
+    )
 
     # check if columns in both dataframe are in same order and same number
-    assert list(toBePredicted_preprocessed_data.columns) == list(
+    assert list(unlabeled_preprocessed_data.columns) == list(
         historical_preprocessed_data.columns
     ), "Column names are different"
 
@@ -343,57 +312,30 @@ def predict_MerchantSize_on_lead_data_demo():
         model_name = get_string_input(
             "Provide model file name in data/models local directory\nInput example: lightgbm_epochs(1)_f1(0.6375)_numclasses(5)_model.pkl\n"
         )
-    # file_key = "models/lightgbm_epochs(1)_f1(0.6375)_numclasses(5)_model_updated.pkl"  # adjust according to the desired model
-    model_name = model_name.replace(" ", "")
+    model_name = model_name.strip()
     xgb_bool = False
-    if model_name[:3].lower() == "xgb":
+    if model_name.lower().startswith("xgb"):
         xgb_bool = True
 
-    file_key = f"models/" + model_name
-
     def check_classification_task(string):
-        match = re.search(r"\d+", string)
+        match = re.search(r"numclasses\((\d+)\)", string)
         if match:
-            last_number = int(match.group())
+            last_number = int(match.group(1))
             if last_number == 3:
                 return True
             else:
                 False
 
-    classification_task_3 = check_classification_task(file_key)
+    classification_task_3 = check_classification_task(model_name)
 
     try:
-        if S3_bool:
-            # create an S3 client
-            s3 = boto3.client("s3")
-            # download the file from S3
-            response = s3.get_object(Bucket=bucket_name, Key=file_key)
-            model_content = response["Body"].read()
-            # load model
-            with BytesIO(model_content) as model_file:
-                model = joblib.load(model_file)
-                log.info(f"Loaded the model from S3 bucket sucessfully!")
-        else:
-            path_components = preprocessor.data_path.split(
-                "\\" if "\\" in preprocessor.data_path else "/"
-            )
-            path_components.pop()
-            path_components.append(file_key)
-            model_local_path = "/".join(path_components)
-            model = joblib.load(model_local_path)
-            log.info(f"Loaded the model from the local path sucessfully!")
+        model = db.load_ml_model(model_name)
+        log.info(f"Loaded the model {model_name}!")
     except:
         log.error("No model found with the given name!")
         return
 
-    if S3_bool:
-        data_path = (
-            "s3://amos--data--events/leads/toBePredicted_preprocessed_data_updated.csv"
-        )
-    else:
-        data_path = local_preprocessed_data_path
-
-    df = pd.read_csv(data_path)
+    df = pd.read_csv(preprocessor.preprocessed_data_output_path)
     input = df.drop("MerchantSizeByDPV", axis=1)
     if xgb_bool:
         input = xgb.DMatrix(input)
@@ -405,29 +347,10 @@ def predict_MerchantSize_on_lead_data_demo():
         size_mapping = {0: "XS", 1: "S", 2: "M", 3: "L", 4: "XL"}
     remapped_predictions = [size_mapping[prediction] for prediction in predictions]
 
-    if S3_bool:
-        enriched_data = pd.read_csv("s3://amos--data--events/leads/enriched.csv")
-    else:
-        enriched_data = pd.read_csv(preprocessor.data_path)
+    enriched_data = pd.read_csv(preprocessor.data_path)
 
     # first 5 columns: Last Name,First Name,Company / Account,Phone,Email,
     raw_data = enriched_data.iloc[:, :5]
     raw_data["PredictedMerchantSize"] = remapped_predictions
 
-    if S3_bool:
-        raw_data.to_csv(
-            "s3://amos--data--events/leads/predicted_MerchantSize_of_leads.csv",
-            index=True,
-        )
-        log.info(
-            f"Saved the predicted Merchant Size of the leads at s3://amos--data--events/leads/predicted_MerchantSize_of_leads.csv"
-        )
-    else:
-        path_components = preprocessor.data_path.split(
-            "\\" if "\\" in preprocessor.data_path else "/"
-        )
-        path_components.pop()
-        path_components.append("predicted_MerchantSize_of_leads.csv")
-        output_path = "/".join(path_components)
-        raw_data.to_csv(output_path, index=True)
-        log.info(f"Saved the predicted Merchant Size of the leads at {output_path}")
+    db.save_prediction(raw_data)

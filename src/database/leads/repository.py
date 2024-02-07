@@ -18,9 +18,18 @@ class Repository(ABC):
         pass
 
     @property
+    @abstractmethod
     def DF_OUTPUT(self):
         """
         Define database path to store dataframe
+        """
+        pass
+
+    @property
+    @abstractmethod
+    def DF_HISTORICAL_OUTPUT(self):
+        """
+        Define database path to store historical enriched dataframe (used for preprocessing input)
         """
         pass
 
@@ -65,7 +74,9 @@ class Repository(ABC):
     def get_input_path(self):
         return self.DF_INPUT
 
-    def get_output_path(self):
+    def get_enriched_data_path(self, historical=False):
+        if historical:
+            return self.DF_HISTORICAL_OUTPUT
         return self.DF_OUTPUT
 
     @abstractmethod
@@ -79,6 +90,13 @@ class Repository(ABC):
     def save_dataframe(self):
         """
         Save dataframe in df attribute in chosen output location
+        """
+        pass
+
+    @abstractmethod
+    def save_prediction(self, df):
+        """
+        Save dataframe in df parameter in chosen output location
         """
         pass
 
@@ -221,7 +239,14 @@ class Repository(ABC):
         pass
 
     @abstractmethod
-    def load_preprocessed_data(self, file_name: str):
+    def get_preprocessed_data_path(self, historical: bool = True):
+        """
+        Returns the path for a preprocessed data file (either historical or current)
+        """
+        pass
+
+    @abstractmethod
+    def load_preprocessed_data(self, historical: bool = True):
         """
         Load the preprocessed data from the given file
         """

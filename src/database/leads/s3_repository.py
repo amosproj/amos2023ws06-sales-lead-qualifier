@@ -43,6 +43,10 @@ class S3Repository(Repository):
     MODELS_BUCKET = "amos--models"
     DF_INPUT = f"s3://{EVENTS_BUCKET}/leads/enriched.csv"
     DF_OUTPUT = f"s3://{EVENTS_BUCKET}/leads/enriched.csv"
+    DF_HISTORICAL_OUTPUT = (
+        f"s3://{EVENTS_BUCKET}/historical_data/100k_historic_enriched.csv"
+    )
+    DF_PREDICTION_OUTPUT = f"s3://{EVENTS_BUCKET}/leads/leads_predicted_size.csv"
     DF_PREPROCESSED_INPUT = f"s3://{FEATURES_BUCKET}/preprocessed_data_files/"
     REVIEWS = f"s3://{EVENTS_BUCKET}/reviews/"
     SNAPSHOTS = f"s3://{EVENTS_BUCKET}/snapshots/"
@@ -130,6 +134,16 @@ class S3Repository(Repository):
         self.df.to_csv(csv_buffer, index=False)
         self._save_to_s3(csv_buffer.getvalue(), bucket, obj_key)
         log.info(f"Successfully saved enriched leads to s3://{bucket}/{obj_key}")
+
+    def save_prediction(self, df):
+        """
+        Save dataframe in df parameter in chosen output location
+        """
+        bucket, obj_key = decode_s3_url(self.DF_PREDICTION_OUTPUT)
+        csv_buffer = StringIO()
+        df.to_csv(csv_buffer, index=False)
+        self._save_to_s3(csv_buffer.getvalue(), bucket, obj_key)
+        log.info(f"Successfully saved prediction result to s3://{bucket}/{obj_key}")
 
     def _save_to_s3(self, data, bucket, key):
         s3.put_object(
@@ -374,15 +388,17 @@ class S3Repository(Repository):
         except Exception as e:
             log.error(f"Could not save report for '{model_name}' to S3: {str(e)}")
 
-    def load_preprocessed_data(
-        self, file_name: str = "historical_preprocessed_data.csv"
-    ):
+    def get_preprocessed_data_path(self, historical: bool = True):
+        file_name = (
+            "historical_preprocessed_data.csv"
+            if historical
+            else "preprocessed_data.csv"
+        )
         file_path = self.DF_PREPROCESSED_INPUT + file_name
-        if not file_path.startswith("s3://"):
-            log.error(
-                "S3 location has to be defined like this: s3://<BUCKET>/<OBJECT_KEY>"
-            )
-            return
+        return file_path
+
+    def load_preprocessed_data(self, historical: bool = True):
+        file_path = self.get_preprocessed_data_path(historical)
 
         source = None
         remote_dataset = None

@@ -24,8 +24,14 @@ class LocalRepository(Repository):
     DF_OUTPUT = os.path.abspath(
         os.path.join(BASE_PATH, "../../data/leads_enriched.csv")
     )
+    DF_HISTORICAL_OUTPUT = os.path.abspath(
+        os.path.join(BASE_PATH, "../../data/100k_historic_enriched.csv")
+    )
     DF_PREPROCESSED_INPUT = os.path.abspath(
         os.path.join(BASE_PATH, "../../data/preprocessed_data_files/")
+    )
+    DF_PREDICTION_OUTPUT = os.path.abspath(
+        os.path.join(BASE_PATH, "../../data/leads_predicted_size.csv")
     )
     REVIEWS = os.path.abspath(os.path.join(BASE_PATH, "../../data/reviews/"))
     SNAPSHOTS = os.path.abspath(os.path.join(BASE_PATH, "../../data/snapshots/"))
@@ -51,6 +57,13 @@ class LocalRepository(Repository):
         self.df.to_csv(self.DF_OUTPUT, index=False)
         log.info(f"Saved enriched data locally to {self.DF_OUTPUT}")
 
+    def save_prediction(self, df):
+        """
+        Save dataframe in df parameter in chosen output location
+        """
+        df.to_csv(self.DF_PREDICTION_OUTPUT, index=False)
+        log.info(f"Saved prediction result locally to {self.DF_PREDICTION_OUTPUT}")
+
     def insert_data(self, data):
         """
         TODO: Insert new data into specified dataframe
@@ -68,7 +81,7 @@ class LocalRepository(Repository):
         json_file_path = os.path.join(self.REVIEWS, file_name)
 
         if os.path.exists(json_file_path):
-            log.info(f"Reviews for {place_id} already exist")
+            log.debug(f"Reviews for {place_id} already exist")
             return
 
         with open(json_file_path, "w", encoding="utf-8") as json_file:
@@ -253,10 +266,17 @@ class LocalRepository(Repository):
         except Exception as e:
             log.error(f"Could not save report at {report_file_path}! Error: {str(e)}")
 
-    def load_preprocessed_data(
-        self, file_name: str = "historical_preprocessed_data.csv"
-    ):
+    def get_preprocessed_data_path(self, historical: bool = True):
+        file_name = (
+            "historical_preprocessed_data.csv"
+            if historical
+            else "preprocessed_data.csv"
+        )
+        file_path = os.path.join(self.DF_PREPROCESSED_INPUT, file_name)
+        return file_path
+
+    def load_preprocessed_data(self, historical: bool = True):
         try:
-            return pd.read_csv(os.path.join(self.DF_PREPROCESSED_INPUT, file_name))
+            return pd.read_csv(self.get_preprocessed_data_path(historical))
         except FileNotFoundError:
             log.error("Error: Could not find input file for preprocessed data.")

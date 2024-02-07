@@ -29,57 +29,13 @@ log = get_logger()
 
 
 class Preprocessing:
-    def __init__(self, filter_null_data=True, historical_bool=True, S3_bool=False):
+    def __init__(self, filter_null_data=True, historical_bool=True):
         data_repo = get_database()
-        self.data_path = data_repo.get_output_path()
+        self.data_path = data_repo.get_enriched_data_path(historical=historical_bool)
         self.preprocessed_df = None
-        self.prerocessed_data_output_path = None
-        if historical_bool and S3_bool:
-            self.data_path = (
-                "s3://amos--data--events/historical_data/100k_historic_enriched.csv"
-            )
-            self.prerocessed_data_output_path = "s3://amos--data--features/preprocessed_data_files/historical_preprocessed_data.csv"
-        elif historical_bool and not S3_bool:
-            # input path
-            input_path_components = self.data_path.split(
-                "\\" if "\\" in self.data_path else "/"
-            )
-            input_path_components.pop()
-            input_path_components.append("100k_historic_enriched.csv")
-            input_path = "/".join(input_path_components)
-            self.data_path = input_path
-
-            # output path
-            path_components = self.data_path.split(
-                "\\" if "\\" in self.data_path else "/"
-            )
-            path_components.pop()
-            path_components.append(
-                "preprocessed_data_files/historical_preprocessed_data.csv"
-            )
-            self.prerocessed_data_output_path = "/".join(path_components)
-        elif not historical_bool and S3_bool:
-            self.data_path = "s3://amos--data--events/leads/enriched.csv"
-            self.prerocessed_data_output_path = "s3://amos--data--features/preprocessed_data_files/leads_preprocessed_data.csv"
-        elif not historical_bool and not S3_bool:
-            # input path
-            input_path_components = self.data_path.split(
-                "\\" if "\\" in self.data_path else "/"
-            )
-            input_path_components.pop()
-            input_path_components.append("leads_enriched.csv")
-            input_path = "/".join(input_path_components)
-            self.data_path = input_path
-
-            # output path
-            path_components = self.data_path.split(
-                "\\" if "\\" in self.data_path else "/"
-            )
-            path_components.pop()
-            path_components.append(
-                "preprocessed_data_files/leads_preprocessed_data.csv"
-            )
-            self.prerocessed_data_output_path = "/".join(path_components)
+        self.preprocessed_data_output_path = data_repo.get_preprocessed_data_path(
+            historical_bool
+        )
 
         self.filter_bool = filter_null_data
         # columns that would be added later after one-hot encoding each class
@@ -291,9 +247,9 @@ class Preprocessing:
         except ValueError as e:
             log.error(f"Failed to save the selected columns for preprocessing! {e}")
         try:
-            selected_df.to_csv(self.prerocessed_data_output_path, index=False)
+            selected_df.to_csv(self.preprocessed_data_output_path, index=False)
             log.info(
-                f"Preprocessed dataframe of shape {self.preprocessed_df.shape} is saved at {self.prerocessed_data_output_path}"
+                f"Preprocessed dataframe of shape {self.preprocessed_df.shape} is saved at {self.preprocessed_data_output_path}"
             )
         except ValueError as e:
             log.error(f"Failed to save preprocessed data file! {e}")
