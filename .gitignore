@@ -53,8 +53,16 @@ bin/
 !**/data/merged_geo.geojson
 **/data/reviews/*.json
 **/data/gpt-results/*.json
-**/data/models/*
+**/data/models/*.pkl
+**/data/models/*.joblib
 **/data/classification_reports/*
+
+**/docs/*
+!**/docs/conf.py
+!**/docs/index.rst
+!**/docs/make.bat
+!**/docs/Makefile
+!**/docs/readme_link.md
 
 # Env files
 *.env
@@ -70,3 +78,6 @@ report.pdf
 **/cache/*
 
 !.gitkeep
+
+# testing
+.coverage

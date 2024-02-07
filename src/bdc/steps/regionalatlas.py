@@ -6,7 +6,6 @@
 import geopandas as gpd
 import osmnx
 import pandas as pd
-from geopandas.tools import sjoin
 from pandas import DataFrame
 from tqdm import tqdm
 
@@ -144,13 +143,13 @@ class RegionalAtlas(Step):
 
         tqdm.pandas(desc="Computing Regional Score")
 
-        self.df[self.added_cols[:-1]] = self.df.progress_apply(
+        self.df[self.added_cols[-1:]] = self.df.progress_apply(
             lambda lead: pd.Series(
                 get_lead_hash_generator().hash_check(
                     lead,
                     self.calculate_regional_score,
                     self.name + "_Regional-Score",
-                    self.added_cols[:-1],
+                    self.added_cols[-1:],
                     lead,
                 )
             ),

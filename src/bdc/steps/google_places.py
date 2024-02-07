@@ -228,7 +228,7 @@ class GooglePlaces(Step):
             return None, 0
 
         if not response["status"] == HTTPStatus.OK.name:
-            log.warning(
+            log.debug(
                 f"Failed to fetch data. Status code: {response['status']}",
             )
             return None, 0

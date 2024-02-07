@@ -7,7 +7,6 @@ from datetime import datetime
 
 import pandas as pd
 
-from bdc.steps.step import Step
 from database import get_database
 from logger import get_logger
 
@@ -56,12 +55,12 @@ class LeadHashGenerator:
 
         if lead_hash in lookup_table:
             # If the hash exists in the lookup table, return the corresponding data
-            log.info(f"Hash {lead_hash} already exists in the lookup table.")
+            log.debug(f"Hash {lead_hash} already exists in the lookup table.")
             try:
                 previous_data = lead_data[fields_tofill]
                 return previous_data
             except KeyError as e:
-                log.info(
+                log.debug(
                     f"Hash is present but data fields {fields_tofill} were not found."
                 )
                 lookup_table[lead_hash] = lookup_table[lead_hash][:-1] + [

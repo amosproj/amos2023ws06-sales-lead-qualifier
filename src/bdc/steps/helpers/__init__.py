@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 Berkay Bozkurt <resitberkaybozkurt@gmail.com>
 
-from .generate_hash_leads import LeadHashGenerator
-from .offeneregister_api import OffeneRegisterAPI
-from .text_analyzer import TextAnalyzer
+from .generate_hash_leads import *
+from .offeneregister_api import *
+from .text_analyzer import *
 
 _lead_hash_generator = None
 

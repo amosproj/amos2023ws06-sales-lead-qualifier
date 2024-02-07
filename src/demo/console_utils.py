@@ -87,7 +87,7 @@ def get_multiple_choice(prompt: str, choices: list) -> str:
             prompt += "".join(
                 f"({index}) : {choice} \n" for index, choice in enumerate(choices)
             )
-            ind = get_int_input(prompt, range(len(choices) + 1))
+            ind = get_int_input(prompt, range(len(choices)))
             return choices[ind]
         except ValueError:
             print("Invalid input. Please enter a valid integer.")

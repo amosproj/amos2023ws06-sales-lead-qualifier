@@ -3,7 +3,7 @@
 
 import os
 
-from .logger import CustomLogger
+from .logger import *
 
 _logger = None
 

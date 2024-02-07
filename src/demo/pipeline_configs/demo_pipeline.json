@@ -1,42 +1,38 @@
 {
-  "description": "This config runs all steps with force_refresh set to false.",
+  "description": "This config is optimized for demoing our software.",
   "config": {
     "steps": [
       {
         "name": "HashGenerator",
-        "force_refresh": false
+        "force_refresh": true
       },
       {
         "name": "AnalyzeEmails",
-        "force_refresh": false
+        "force_refresh": true
       },
       {
         "name": "PreprocessPhonenumbers",
-        "force_refresh": false
+        "force_refresh": true
       },
       {
         "name": "GooglePlaces",
-        "force_refresh": false
+        "force_refresh": true
       },
       {
         "name": "GooglePlacesDetailed",
-        "force_refresh": false
+        "force_refresh": true
       },
       {
         "name": "GPTReviewSentimentAnalyzer",
-        "force_refresh": false
-      },
-      {
-        "name": "GPTSummarizer",
-        "force_refresh": false
+        "force_refresh": true
       },
       {
         "name": "SmartReviewInsightsEnhancer",
-        "force_refresh": false
+        "force_refresh": true
       },
       {
         "name": "RegionalAtlas",
-        "force_refresh": false
+        "force_refresh": true
       }
     ]
   }

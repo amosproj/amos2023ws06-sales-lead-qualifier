@@ -4,8 +4,6 @@
 from config import DATABASE_TYPE
 from logger import get_logger
 
-from .database_dummy import DatabaseDummy
-from .db_connection import mongo_connection
 from .leads import LocalRepository, Repository, S3Repository
 
 _database = None
