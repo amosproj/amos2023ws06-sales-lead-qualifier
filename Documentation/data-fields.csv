@@ -6,8 +6,8 @@ Phone,string,Phone number of the lead,Lead data,-,49 1234 56789
 Email,string,Email of the lead,Lead data,-,musteremail@example.com
 domain,string,"The domain of the email is the part that follows the ""@"" symbol, indicating the organization or service hosting the email address.",processing,Email,example.com
 email_valid,boolean,Checks if the email is valid.,email_validator package,Email,True/False
-first_name_in_account,boolean,Checks if first name is written in "Account" input,processing,First Name,True/False
-last_name_in_account,boolean,Checks if last name is written in "Account" input,processing,Last Name,True/False
+first_name_in_account,boolean,"Checks if first name is written in ""Account"" input",processing,First Name,True/False
+last_name_in_account,boolean,"Checks if last name is written in ""Account"" input",processing,Last Name,True/False
 number_formatted,string,Phone number (formatted),phonenumbers package,Phone,49123456789
 number_country,string,Country derived from phone number,phonenumbers package,Phone,Germany
 number_area,string,Area derived from phone number,phonenumbers package,Phone,Erlangen

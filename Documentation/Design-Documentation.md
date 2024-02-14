@@ -17,7 +17,7 @@ Merchant Size Predictor (MSP).
 
 ## Component Diagram
 
-![Component Diagram](Media/component-diagram.svg)
+![Component Diagram](_static/component-diagram.svg)
 
 ## External Software
 

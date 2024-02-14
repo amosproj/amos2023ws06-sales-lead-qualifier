@@ -14,6 +14,7 @@ Welcome to Sales Lead Qualifier's documentation!
    :caption: Contents:
 
    readme_link
+   documentation
    modules
 
 Indices and tables

@@ -20,7 +20,7 @@ The repository contains the file `.env.template`. This file is a template for th
 
 To create the virtual environment in this project you must have `pipenv` installed on your machine. Then run the following commands:
 
-```[bash]
+```bash
 # for development environment
 pipenv install --dev
 # for production environment
@@ -29,7 +29,7 @@ pipenv install
 
 To work within the environment you can now run:
 
-```[bash]
+```bash
 # to activate the virtual environment
 pipenv shell
 # to run a single command
@@ -38,7 +38,7 @@ pipenv run <COMMAND>
 
 To install new packages in the environment add them to the `Pipfile`. Always pin the exact package version to avoid package conflicts and unexpected side effects from package upgrades.
 
-```[bash]
+```bash
 # to add a package to the development environment
 [dev-packages]
 <PACKAGE_NAME> = "==<VERSION_NUMBER>"
@@ -57,13 +57,13 @@ This application is run using a Docker container. For this the `Dockerfile` at r
 
 To build the application run
 
-```[bash]
+```bash
 ./build_app.sh
 ```
 
 To run the application interactively run
 
-```[bash]
+```bash
 ./run_app.sh
 ```
 
@@ -71,13 +71,13 @@ To run the application interactively run
 
 To build the Docker containers
 
-```[bash]
+```bash
 docker-compose build
 ```
 
 To run the Docker containers
 
-```[bash]
+```bash
 docker-compose run sumup_app
 ```
 
@@ -87,7 +87,7 @@ This project is operated under an MIT license. Every file must contain the REUSE
 
 [REUSE documentation](https://reuse.software/faq/)
 
-```[bash]
+```bash
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023
 ```
@@ -96,7 +96,7 @@ This project is operated under an MIT license. Every file must contain the REUSE
 
 This repository uses `pre-commit` hooks to ensure a consistent and clean file organization. Each registered hook will be executed when committing to the repository. To ensure that the hooks will be executed they need to be installed using the following command:
 
-```[bash]
+```bash
 pre-commit install
 ```
 

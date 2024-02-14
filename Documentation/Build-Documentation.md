@@ -13,7 +13,7 @@ fill in all values with the corresponding secrets.
 To create the virtual environment in this project you must have `pipenv`
 installed on your machine. Then run the following commands:
 
-```[bash]
+```bash
 # for development environment
 pipenv install --dev
 # for production environment
@@ -22,7 +22,7 @@ pipenv install
 
 To work within the environment you can now run:
 
-```[bash]
+```bash
 # to activate the virtual environment
 pipenv shell
 # to run a single command
@@ -55,6 +55,6 @@ To run the application the `pipenv` environment must be installed and all needed
 environment variables must be set in the `.env` file. Then the application can
 be started via
 
-```[bash]
+```bash
 pipenv run python src/main.py
 ```

@@ -21,12 +21,12 @@ Merchant Size Predictor is labelled as the (Estimated) Value Predictor here.
 
 ### Component Diagram
 
-![Component Diagram](Media/component-diagram-with-controller.svg)
+![Component Diagram](_static/component-diagram-with-controller.svg)
 
 ### Sequence Diagram
 
-![Sequence Diagram](Media/sequence-diagram.svg)
+![Sequence Diagram](_static/sequence-diagram.svg)
 
 ### Controller Workflow Diagram
 
-![Controller Workflow Diagram](Media/controller-workflow-diagram.jpg)
+![Controller Workflow Diagram](_static/controller-workflow-diagram.jpg)
