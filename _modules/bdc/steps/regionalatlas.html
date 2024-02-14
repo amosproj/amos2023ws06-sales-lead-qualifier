@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bdc.steps.regionalatlas &mdash; Sales Lead Qualifier 01.00.00 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=6386319a"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Sales Lead Qualifier
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme_link.html">Sales-Lead-Qualifier Project (AMOS WS 2023/24)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html">Build Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html#user-documentation">User Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html#design-documentation">Design Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html#classifier-comparison">Classifier Comparison</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html#concepts-unrealized-ideas-miscellaneous">Concepts, Unrealized Ideas &amp; Miscellaneous</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">src</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Sales Lead Qualifier</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">bdc.steps.regionalatlas</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for bdc.steps.regionalatlas</h1><div class="highlight"><pre>
+<span></span><span class="c1"># SPDX-License-Identifier: MIT</span>
+<span class="c1"># SPDX-FileCopyrightText: 2023 Felix Zailskas &lt;felixzailskas@gmail.com&gt;</span>
+<span class="c1"># SPDX-FileCopyrightText: 2023 Fabian-Paul Utech &lt;f.utech@gmx.net&gt;</span>
+
+
+<span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
+<span class="kn">import</span> <span class="nn">osmnx</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="kn">from</span> <span class="nn">bdc.steps.helpers</span> <span class="kn">import</span> <span class="n">get_lead_hash_generator</span>
+<span class="kn">from</span> <span class="nn">bdc.steps.step</span> <span class="kn">import</span> <span class="n">Step</span><span class="p">,</span> <span class="n">StepError</span>
+<span class="kn">from</span> <span class="nn">logger</span> <span class="kn">import</span> <span class="n">get_logger</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="RegionalAtlas">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.regionalatlas.RegionalAtlas">[docs]</a>
+<span class="k">class</span> <span class="nc">RegionalAtlas</span><span class="p">(</span><span class="n">Step</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The RegionalAtlas step will query the RegionalAtlas database for location based geographic and demographic</span>
+<span class="sd">        information, based on the address that was found for a business (currently through Google API) or the</span>
+<span class="sd">        area provided by the phonenumber (preprocess_phonenumbers.py).</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        name: Name of this step, used for logging</span>
+<span class="sd">        reagionalatlas_feature_keys: Dictionary to translate between the keys in the merged.geojson and the used column names in the df</span>
+<span class="sd">        df_fields: the keys of the merged.geojson</span>
+<span class="sd">        added_cols: List of fields that will be added to the main dataframe by executing this step</span>
+<span class="sd">        required_cols: List of fields that are required in the input dataframe before performing this step</span>
+
+<span class="sd">        regions_gdfs: dataframe that includes all keys/values from the merged.geojson</span>
+<span class="sd">        empty_result: empty result that will be used in case there are problems with the data</span>
+<span class="sd">        epsg_code_etrs: 25832 is the standard used by RegionAtlas</span>
+
+<span class="sd">    Added Columns:</span>
+<span class="sd">        pop_density (float): Population density of the searched city</span>
+<span class="sd">        pop_development (float): Population development of the searched city</span>
+<span class="sd">        age_0 (float): Population age group 0-18 of the searched city</span>
+<span class="sd">        age_1 (float): Population age group 18-30 of the searched city</span>
+<span class="sd">        age_2 (float): Population age group 30-45 of the searched city</span>
+<span class="sd">        age_3 (float): Population age group 45-60 of the searched city</span>
+<span class="sd">        age_4 (float): Population age group 60+ of the searched city</span>
+<span class="sd">        pop_avg_age (float): Average age of the searched city</span>
+<span class="sd">        per_service_sector (float): Percentage of the service sector of the searched city</span>
+<span class="sd">        per_trade (float): Percentage of the trade sector of the searched city</span>
+<span class="sd">        employment_rate (float): Employment rate of the searched city</span>
+<span class="sd">        unemployment_rate (float): Unemployment rate of the searched city</span>
+<span class="sd">        per_long_term_unemployment (float): Percentage of long term unemployment of the searched city</span>
+<span class="sd">        investments_p_employee (float): Investments per employee of the searched city</span>
+<span class="sd">        gross_salary_p_employee (float): Gross salary per employee of the searched city</span>
+<span class="sd">        disp_income_p_inhabitant (float): Disposable income per inhabitant of the searched city</span>
+<span class="sd">        tot_income_p_taxpayer (float): Total income per taxpayer of the searched city</span>
+<span class="sd">        gdp_p_employee (float): GDP per employee of the searched city</span>
+<span class="sd">        gdp_development (float): GDP development of the searched city</span>
+<span class="sd">        gdp_p_inhabitant (float): GDP per inhabitant of the searched city</span>
+<span class="sd">        gdp_p_workhours (float): GDP per workhour of the searched city</span>
+<span class="sd">        pop_avg_age_zensus (float): Average age of the searched city (zensus)</span>
+<span class="sd">        unemployment_rate (float): Unemployment rate of the searched city (zensus)</span>
+<span class="sd">        regional_score (float): Regional score of the searched city</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Regional_Atlas&quot;</span>
+    <span class="n">reagionalatlas_feature_keys</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;pop_density&quot;</span><span class="p">:</span> <span class="s2">&quot;ai0201&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pop_development&quot;</span><span class="p">:</span> <span class="s2">&quot;ai0202&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;age_0&quot;</span><span class="p">:</span> <span class="s2">&quot;ai0203&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;age_1&quot;</span><span class="p">:</span> <span class="s2">&quot;ai0204&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;age_2&quot;</span><span class="p">:</span> <span class="s2">&quot;ai0205&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;age_3&quot;</span><span class="p">:</span> <span class="s2">&quot;ai0206&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;age_4&quot;</span><span class="p">:</span> <span class="s2">&quot;ai0207&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pop_avg_age&quot;</span><span class="p">:</span> <span class="s2">&quot;ai0218&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;per_service_sector&quot;</span><span class="p">:</span> <span class="s2">&quot;ai0706&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;per_trade&quot;</span><span class="p">:</span> <span class="s2">&quot;ai0707&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;employment_rate&quot;</span><span class="p">:</span> <span class="s2">&quot;ai0710&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;unemployment_rate&quot;</span><span class="p">:</span> <span class="s2">&quot;ai0801&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;per_long_term_unemployment&quot;</span><span class="p">:</span> <span class="s2">&quot;ai0808&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;investments_p_employee&quot;</span><span class="p">:</span> <span class="s2">&quot;ai1001&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;gross_salary_p_employee&quot;</span><span class="p">:</span> <span class="s2">&quot;ai1002&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;disp_income_p_inhabitant&quot;</span><span class="p">:</span> <span class="s2">&quot;ai1601&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;tot_income_p_taxpayer&quot;</span><span class="p">:</span> <span class="s2">&quot;ai1602&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;gdp_p_employee&quot;</span><span class="p">:</span> <span class="s2">&quot;ai1701&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;gdp_development&quot;</span><span class="p">:</span> <span class="s2">&quot;ai1702&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;gdp_p_inhabitant&quot;</span><span class="p">:</span> <span class="s2">&quot;ai1703&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;gdp_p_workhours&quot;</span><span class="p">:</span> <span class="s2">&quot;ai1704&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pop_avg_age_zensus&quot;</span><span class="p">:</span> <span class="s2">&quot;ai_z01&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;unemployment_rate&quot;</span><span class="p">:</span> <span class="s2">&quot;ai_z08&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">df_fields</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">reagionalatlas_feature_keys</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+
+    <span class="c1"># Weirdly the expression [f&quot;{name}_{field}&quot; for field in df_fields] gives an error as name is not in the scope of the iterator</span>
+    <span class="n">added_cols</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">name</span> <span class="o">+</span> <span class="n">field</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">_&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_fields</span><span class="p">)),</span>
+            <span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">reagionalatlas_feature_keys</span><span class="o">.</span><span class="n">keys</span><span class="p">()]),</span>
+        <span class="p">)</span>
+    <span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">_regional_score&quot;</span><span class="p">]</span>
+
+    <span class="n">required_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;google_places_formatted_address&quot;</span><span class="p">]</span>
+
+    <span class="n">regions_gdfs</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">()</span>
+    <span class="n">empty_result</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">reagionalatlas_feature_keys</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+    <span class="c1"># Adjust the EPSG code from the osmnx search query to the regionalatlas specific code</span>
+    <span class="c1"># epsg_code 4326 [WGS 84 (used by osmnx)]=&gt; epsg_code_etrs = 25832 [ETRS89 / UTM zone 32N (used by regionalatlas)]</span>
+    <span class="n">epsg_code_etrs</span> <span class="o">=</span> <span class="mi">25832</span>
+
+<div class="viewcode-block" id="RegionalAtlas.load_data">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.regionalatlas.RegionalAtlas.load_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="RegionalAtlas.verify">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.regionalatlas.RegionalAtlas.verify">[docs]</a>
+    <span class="k">def</span> <span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="c1"># Load the data file</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">regions_gdfs</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s2">&quot;data/merged_geo.geojson&quot;</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StepError</span><span class="p">(</span>
+                <span class="s2">&quot;The path for the geojson for regional information (Regionalatlas) is not valid!&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">verify</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="RegionalAtlas.run">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.regionalatlas.RegionalAtlas.run">[docs]</a>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+        <span class="n">tqdm</span><span class="o">.</span><span class="n">pandas</span><span class="p">(</span><span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Getting social data&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Add the new fields to the df</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">added_cols</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">progress_apply</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">lead</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+                <span class="n">get_lead_hash_generator</span><span class="p">()</span><span class="o">.</span><span class="n">hash_check</span><span class="p">(</span>
+                    <span class="n">lead</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">get_data_from_address</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;_Location-Data&quot;</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">added_cols</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="n">lead</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">),</span>
+            <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># self.df[self.added_cols[:-1]] = self.df.progress_apply(</span>
+        <span class="c1">#     lambda lead: pd.Series(self.get_data_from_address(lead)), axis=1</span>
+        <span class="c1"># )</span>
+
+        <span class="n">tqdm</span><span class="o">.</span><span class="n">pandas</span><span class="p">(</span><span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Computing Regional Score&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">added_cols</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">progress_apply</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">lead</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+                <span class="n">get_lead_hash_generator</span><span class="p">()</span><span class="o">.</span><span class="n">hash_check</span><span class="p">(</span>
+                    <span class="n">lead</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">calculate_regional_score</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;_Regional-Score&quot;</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">added_cols</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:],</span>
+                    <span class="n">lead</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">),</span>
+            <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="RegionalAtlas.finish">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.regionalatlas.RegionalAtlas.finish">[docs]</a>
+    <span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">success_rate</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="mi">1</span>
+            <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;regional_atlas_pop_density&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;regional_atlas_pop_density&quot;</span><span class="p">])</span>
+        <span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;Percentage of regional information (germany): </span><span class="si">{:.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="nb">round</span><span class="p">(</span><span class="n">success_rate</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RegionalAtlas.get_data_from_address">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.regionalatlas.RegionalAtlas.get_data_from_address">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_data_from_address</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve the regional features for every lead. Every column of reagionalatlas_feature_keys is added.</span>
+
+<span class="sd">        Based on the google places address or the phonenumber area. Checks if the centroid of the</span>
+<span class="sd">        searched city is in a RegionalAtlas region.</span>
+
+<span class="sd">        Possible extensions could include:</span>
+<span class="sd">        - More RegionalAtlas features</span>
+
+<span class="sd">        :param row: Lead for which to retrieve the features</span>
+
+<span class="sd">        :return: dict - The retrieved features if the necessary fields are present for the lead. Empty dictionary otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># can only get an result if we know the region</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">row</span><span class="p">[</span><span class="s2">&quot;google_places_formatted_address&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;number_area&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">empty_result</span>
+
+        <span class="n">country</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="c1"># the phone number has secondary priority (because it can be a private number), therefore can be overwritten by the google places information</span>
+        <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;number_country&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">country</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;number_country&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;google_places_formatted_address&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">google_location</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;google_places_formatted_address&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)[</span>
+                <span class="o">-</span><span class="mi">2</span><span class="p">:</span>
+            <span class="p">]</span>
+            <span class="n">google_location</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">google_location</span><span class="p">]</span>
+            <span class="n">country</span> <span class="o">=</span> <span class="n">google_location</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+        <span class="c1"># the &#39;regionalatlas&#39; data is specific to germany</span>
+        <span class="k">if</span> <span class="n">country</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s2">&quot;deutschland&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;germany&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;allemagne&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tyskland&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;germania&quot;</span><span class="p">,</span>
+        <span class="p">]:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">empty_result</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;#Alternative to the if &#39;if country not in ...&#39;</span>
+<span class="sd">        if not self.germany_gdf.intersects(row_gdf):</span>
+<span class="sd">            return self.empty_result&quot;&quot;&quot;</span>
+
+        <span class="c1"># Get the polygon of the city, to find the corresponding region</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;google_places_formatted_address&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">search_gdf</span> <span class="o">=</span> <span class="n">osmnx</span><span class="o">.</span><span class="n">geocode_to_gdf</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">google_location</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># at this point we know, that either a google_places_address exists or a number_area</span>
+                <span class="n">search_gdf</span> <span class="o">=</span> <span class="n">osmnx</span><span class="o">.</span><span class="n">geocode_to_gdf</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;number_area&quot;</span><span class="p">])</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Google location not found!&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">empty_result</span>
+
+        <span class="n">search_gdf_reprojected</span> <span class="o">=</span> <span class="n">search_gdf</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="s2">&quot;EPSG:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg_code_etrs</span><span class="p">))</span>
+
+        <span class="c1"># Use the centroid of the city, to check if a region</span>
+        <span class="n">search_centroid</span> <span class="o">=</span> <span class="n">search_gdf_reprojected</span><span class="o">.</span><span class="n">centroid</span>
+
+        <span class="n">area_key</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">return_values</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># go through all regions of germany ...</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">region</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">regions_gdfs</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">area_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">region</span><span class="p">[</span><span class="s2">&quot;schluessel&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">area_key</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">return_values</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                        <span class="n">region</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reagionalatlas_feature_keys</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+                    <span class="p">)</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">region_polygon</span> <span class="o">=</span> <span class="n">region</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span>
+                <span class="n">b_contains</span> <span class="o">=</span> <span class="n">region_polygon</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">search_centroid</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="n">b_contains</span><span class="p">:</span>
+                    <span class="n">area_key</span> <span class="o">=</span> <span class="n">region</span><span class="p">[</span><span class="s2">&quot;schluessel&quot;</span><span class="p">]</span>
+                    <span class="n">return_values</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                        <span class="n">region</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reagionalatlas_feature_keys</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+                    <span class="p">)</span>
+                    <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">return_values</span></div>
+
+
+<div class="viewcode-block" id="RegionalAtlas.calculate_regional_score">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.regionalatlas.RegionalAtlas.calculate_regional_score">[docs]</a>
+    <span class="k">def</span> <span class="nf">calculate_regional_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lead</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate a regional score for a lead based on information from the RegionalAtlas API.</span>
+
+<span class="sd">        This function uses population density, employment rate, and average income to compute</span>
+<span class="sd">        the buying power of potential customers in the area in millions of euro.</span>
+
+<span class="sd">        The score is computed as:</span>
+<span class="sd">            (population density * employment rate * average income) / 1,000,000</span>
+
+<span class="sd">        Possible extensions could include:</span>
+<span class="sd">        - Population age groups</span>
+
+<span class="sd">        :param lead: Lead for which to compute the score</span>
+
+<span class="sd">        :return: float | None - The computed score if the necessary fields are present for the lead. None otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">pop_density_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">_pop_density&quot;</span>
+        <span class="n">employment_rate_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">_employment_rate&quot;</span>
+        <span class="n">income_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">_disp_income_p_inhabitant&quot;</span>
+
+        <span class="n">pop_density</span> <span class="o">=</span> <span class="n">lead</span><span class="p">[</span><span class="n">pop_density_col</span><span class="p">]</span>
+        <span class="n">employment_rate</span> <span class="o">=</span> <span class="n">lead</span><span class="p">[</span><span class="n">employment_rate_col</span><span class="p">]</span>
+        <span class="n">income_per_inhabitant</span> <span class="o">=</span> <span class="n">lead</span><span class="p">[</span><span class="n">income_col</span><span class="p">]</span>
+
+        <span class="n">pop_density</span> <span class="o">=</span> <span class="n">pop_density</span> <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">pop_density</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">employment_rate</span> <span class="o">=</span> <span class="n">employment_rate</span> <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">employment_rate</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">income_per_inhabitant</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">income_per_inhabitant</span> <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">income_per_inhabitant</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="p">)</span>
+
+        <span class="n">regional_score</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">pop_density</span> <span class="o">*</span> <span class="n">employment_rate</span> <span class="o">*</span> <span class="n">income_per_inhabitant</span>
+        <span class="p">)</span> <span class="o">/</span> <span class="mi">1000000</span>
+
+        <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">regional_score</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">regional_score</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Regional score is null&quot;</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, SumInsights.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

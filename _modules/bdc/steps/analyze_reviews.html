@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bdc.steps.analyze_reviews &mdash; Sales Lead Qualifier 01.00.00 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=6386319a"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Sales Lead Qualifier
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme_link.html">Sales-Lead-Qualifier Project (AMOS WS 2023/24)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html">Build Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html#user-documentation">User Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html#design-documentation">Design Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html#classifier-comparison">Classifier Comparison</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html#concepts-unrealized-ideas-miscellaneous">Concepts, Unrealized Ideas &amp; Miscellaneous</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">src</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Sales Lead Qualifier</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">bdc.steps.analyze_reviews</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for bdc.steps.analyze_reviews</h1><div class="highlight"><pre>
+<span></span><span class="c1"># SPDX-License-Identifier: MIT</span>
+<span class="c1"># SPDX-FileCopyrightText: 2023 Berkay Bozkurt &lt;resitberkaybozkurt@gmail.com&gt;</span>
+<span class="c1"># SPDX-FileCopyrightText: 2023 Sophie Heasman &lt;sophieheasmann@gmail.com&gt;</span>
+
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">openai</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">tiktoken</span>
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="kn">from</span> <span class="nn">bdc.steps.helpers</span> <span class="kn">import</span> <span class="n">TextAnalyzer</span><span class="p">,</span> <span class="n">get_lead_hash_generator</span>
+<span class="kn">from</span> <span class="nn">bdc.steps.step</span> <span class="kn">import</span> <span class="n">Step</span><span class="p">,</span> <span class="n">StepError</span>
+<span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">OPEN_AI_API_KEY</span>
+<span class="kn">from</span> <span class="nn">database</span> <span class="kn">import</span> <span class="n">get_database</span>
+<span class="kn">from</span> <span class="nn">logger</span> <span class="kn">import</span> <span class="n">get_logger</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">()</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">HELPER FUNCTIONS</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="is_review_valid">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.analyze_reviews.is_review_valid">[docs]</a>
+<span class="k">def</span> <span class="nf">is_review_valid</span><span class="p">(</span><span class="n">review</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks if the review is valid (has text and original language).</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    review (dict): A dictionary representing a review.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    bool: True if the review is valid, False otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="n">review</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">review</span><span class="p">[</span><span class="s2">&quot;lang&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="check_api_key">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.analyze_reviews.check_api_key">[docs]</a>
+<span class="k">def</span> <span class="nf">check_api_key</span><span class="p">(</span><span class="n">api_key</span><span class="p">,</span> <span class="n">api_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks if an API key is provided for a specific API.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        api_key (str): The API key to be checked.</span>
+<span class="sd">        api_name (str): The name of the API.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        StepError: If the API key is not provided.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True if the API key is provided, False otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">api_key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">StepError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An API key for </span><span class="si">{</span><span class="n">api_name</span><span class="si">}</span><span class="s2"> is needed to run this step!&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">CLASSES</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="GPTReviewSentimentAnalyzer">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer">[docs]</a>
+<span class="k">class</span> <span class="nc">GPTReviewSentimentAnalyzer</span><span class="p">(</span><span class="n">Step</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class that performs sentiment analysis on reviews using GPT-4 model.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        name (str): The name of the step.</span>
+<span class="sd">        model (str): The GPT model to be used for sentiment analysis.</span>
+<span class="sd">        model_encoding_name (str): The encoding name of the GPT model.</span>
+<span class="sd">        MAX_PROMPT_TOKENS (int): The maximum number of tokens allowed for a prompt.</span>
+<span class="sd">        no_answer (str): The default value for no answer.</span>
+<span class="sd">        gpt_required_fields (dict): The required fields for GPT analysis.</span>
+<span class="sd">        system_message_for_sentiment_analysis (str): The system message for sentiment analysis.</span>
+<span class="sd">        user_message_for_sentiment_analysis (str): The user message for sentiment analysis.</span>
+<span class="sd">        extracted_col_name (str): The name of the column to store the sentiment scores.</span>
+<span class="sd">        added_cols (list): The list of additional columns to be added to the DataFrame.</span>
+<span class="sd">        gpt (openai.OpenAI): The GPT instance for sentiment analysis.</span>
+
+<span class="sd">    Methods:</span>
+<span class="sd">        load_data(): Loads the GPT model.</span>
+<span class="sd">        verify(): Verifies the validity of the API key and DataFrame.</span>
+<span class="sd">        run(): Runs the sentiment analysis on the reviews.</span>
+<span class="sd">        finish(): Finishes the sentiment analysis step.</span>
+<span class="sd">        run_sentiment_analysis(place_id): Runs sentiment analysis on the reviews of a lead.</span>
+<span class="sd">        gpt_sentiment_analyze_review(review_list): Calculates the sentiment score using GPT.</span>
+<span class="sd">        extract_text_from_reviews(reviews_list): Extracts text from reviews and removes line characters.</span>
+<span class="sd">        num_tokens_from_string(text): Returns the number of tokens in a text string.</span>
+<span class="sd">        batch_reviews(reviews, max_tokens): Batches reviews into smaller batches based on token limit.</span>
+
+<span class="sd">    Added Columns:</span>
+<span class="sd">        reviews_sentiment_score (float): The sentiment score of the reviews.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;GPT-Review-Sentiment-Analyzer&quot;</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="s2">&quot;gpt-4&quot;</span>
+    <span class="n">model_encoding_name</span> <span class="o">=</span> <span class="s2">&quot;cl100k_base&quot;</span>
+    <span class="n">text_analyzer</span> <span class="o">=</span> <span class="n">TextAnalyzer</span><span class="p">()</span>
+    <span class="n">MAX_PROMPT_TOKENS</span> <span class="o">=</span> <span class="mi">4096</span>
+    <span class="n">no_answer</span> <span class="o">=</span> <span class="s2">&quot;None&quot;</span>
+    <span class="n">gpt_required_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;place_id&quot;</span><span class="p">:</span> <span class="s2">&quot;google_places_place_id&quot;</span><span class="p">}</span>
+    <span class="n">system_message_for_sentiment_analysis</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;You are review sentiment analyzer, you being provided reviews of the companies. You analyze the review and come up with the score between range [-1, 1], if no reviews then just answer with &#39;</span><span class="si">{</span><span class="n">no_answer</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+    <span class="n">user_message_for_sentiment_analysis</span> <span class="o">=</span> <span class="s2">&quot;Sentiment analyze the reviews  and provide me a score between range [-1, 1]  : </span><span class="si">{}</span><span class="s2">&quot;</span>
+    <span class="n">extracted_col_name</span> <span class="o">=</span> <span class="s2">&quot;reviews_sentiment_score&quot;</span>
+    <span class="n">added_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">extracted_col_name</span><span class="p">]</span>
+    <span class="n">required_cols</span> <span class="o">=</span> <span class="n">gpt_required_fields</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="n">gpt</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="GPTReviewSentimentAnalyzer.load_data">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.load_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads the GPT model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gpt</span> <span class="o">=</span> <span class="n">openai</span><span class="o">.</span><span class="n">OpenAI</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">OPEN_AI_API_KEY</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GPTReviewSentimentAnalyzer.verify">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.verify">[docs]</a>
+    <span class="k">def</span> <span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verifies the validity of the API key and DataFrame.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the API key and DataFrame are valid, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">is_key_valid</span> <span class="o">=</span> <span class="n">check_api_key</span><span class="p">(</span><span class="n">OPEN_AI_API_KEY</span><span class="p">,</span> <span class="s2">&quot;OpenAI&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">verify</span><span class="p">()</span> <span class="ow">and</span> <span class="n">is_key_valid</span></div>
+
+
+<div class="viewcode-block" id="GPTReviewSentimentAnalyzer.run">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.run">[docs]</a>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs the sentiment analysis on the reviews.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DataFrame: The DataFrame with the sentiment scores added.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tqdm</span><span class="o">.</span><span class="n">pandas</span><span class="p">(</span><span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Running sentiment analysis on reviews&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">extracted_col_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">progress_apply</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">lead</span><span class="p">:</span> <span class="n">get_lead_hash_generator</span><span class="p">()</span><span class="o">.</span><span class="n">hash_check</span><span class="p">(</span>
+                <span class="n">lead</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">run_sentiment_analysis</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">extracted_col_name</span><span class="p">,</span>
+                <span class="n">lead</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">gpt_required_fields</span><span class="p">[</span><span class="s2">&quot;place_id&quot;</span><span class="p">]],</span>
+            <span class="p">),</span>
+            <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># self.df[self.extracted_col_name] = self.df[</span>
+        <span class="c1">#     self.gpt_required_fields[&quot;place_id&quot;]</span>
+        <span class="c1"># ].progress_apply(lambda place_id: self.run_sentiment_analysis(place_id))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="GPTReviewSentimentAnalyzer.finish">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.finish">[docs]</a>
+    <span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="GPTReviewSentimentAnalyzer.run_sentiment_analysis">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.run_sentiment_analysis">[docs]</a>
+    <span class="k">def</span> <span class="nf">run_sentiment_analysis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">place_id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs sentiment analysis on reviews of lead extracted from company&#39;s website.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            place_id: The ID of the place.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The average sentiment score of the reviews.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># if there is no reviews_path, then return without API call.</span>
+        <span class="k">if</span> <span class="n">place_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">place_id</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">cached_result</span> <span class="o">=</span> <span class="n">get_database</span><span class="p">()</span><span class="o">.</span><span class="n">fetch_gpt_result</span><span class="p">(</span><span class="n">place_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cached_result</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">cached_result</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span>
+        <span class="n">reviews</span> <span class="o">=</span> <span class="n">get_database</span><span class="p">()</span><span class="o">.</span><span class="n">fetch_review</span><span class="p">(</span><span class="n">place_id</span><span class="p">)</span>
+        <span class="n">avg_score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">textblob_calculate_avg_sentiment_score</span><span class="p">(</span><span class="n">reviews</span><span class="p">)</span>
+        <span class="n">get_database</span><span class="p">()</span><span class="o">.</span><span class="n">save_gpt_result</span><span class="p">(</span><span class="n">avg_score</span><span class="p">,</span> <span class="n">place_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">avg_score</span></div>
+
+
+<div class="viewcode-block" id="GPTReviewSentimentAnalyzer.gpt_calculate_avg_sentiment_score">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.gpt_calculate_avg_sentiment_score">[docs]</a>
+    <span class="k">def</span> <span class="nf">gpt_calculate_avg_sentiment_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reviews</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the average sentiment score for a list of reviews using GPT.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            reviews (list): A list of review texts.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The average sentiment score.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">review_texts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_text_from_reviews</span><span class="p">(</span><span class="n">reviews</span><span class="p">)</span>
+        <span class="c1"># batch reviews so that we do not exceed the token limit of gpt4</span>
+        <span class="n">review_batches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_reviews</span><span class="p">(</span><span class="n">review_texts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_PROMPT_TOKENS</span><span class="p">)</span>
+        <span class="n">scores</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># iterate over each batch and calculate average sentiment score</span>
+        <span class="k">for</span> <span class="n">review_batch</span> <span class="ow">in</span> <span class="n">review_batches</span><span class="p">:</span>
+            <span class="n">sentiment_score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpt_sentiment_analyze_review</span><span class="p">(</span><span class="n">review_batch</span><span class="p">)</span>
+            <span class="n">scores</span> <span class="o">+=</span> <span class="n">sentiment_score</span> <span class="ow">or</span> <span class="mi">0</span>
+        <span class="n">avg_score</span> <span class="o">=</span> <span class="n">scores</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">review_batches</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">avg_score</span></div>
+
+
+<div class="viewcode-block" id="GPTReviewSentimentAnalyzer.textblob_calculate_avg_sentiment_score">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.textblob_calculate_avg_sentiment_score">[docs]</a>
+    <span class="k">def</span> <span class="nf">textblob_calculate_avg_sentiment_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reviews</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the average sentiment score for a list of reviews using TextBlob sentiment analysis.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            reviews (list): A list of dictionaries containing review text and language information.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The average sentiment score for the reviews.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">reviews_langs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">review</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;lang&quot;</span><span class="p">:</span> <span class="n">review</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;original_language&quot;</span><span class="p">,</span> <span class="s2">&quot;en&quot;</span><span class="p">),</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">review</span> <span class="ow">in</span> <span class="n">reviews</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">reviews_langs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">scores</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">review</span> <span class="ow">in</span> <span class="n">reviews_langs</span><span class="p">:</span>
+            <span class="n">score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_analyzer</span><span class="o">.</span><span class="n">calculate_sentiment_analysis_score</span><span class="p">(</span>
+                <span class="n">review</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span> <span class="n">review</span><span class="p">[</span><span class="s2">&quot;lang&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">scores</span> <span class="o">+=</span> <span class="n">score</span> <span class="ow">or</span> <span class="mi">0</span>
+        <span class="n">avg_score</span> <span class="o">=</span> <span class="n">scores</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">reviews_langs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">avg_score</span></div>
+
+
+<div class="viewcode-block" id="GPTReviewSentimentAnalyzer.gpt_sentiment_analyze_review">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.gpt_sentiment_analyze_review">[docs]</a>
+    <span class="k">def</span> <span class="nf">gpt_sentiment_analyze_review</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">review_list</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        GPT calculates the sentiment score considering the reviews.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            review_list: The list of reviews.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The sentiment score calculated by GPT.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">max_retries</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># Maximum number of retries</span>
+        <span class="n">retry_delay</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># Initial delay in seconds (5 seconds)</span>
+
+        <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_retries</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Attempt </span><span class="si">{</span><span class="n">attempt</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">max_retries</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpt</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                    <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+                    <span class="n">messages</span><span class="o">=</span><span class="p">[</span>
+                        <span class="p">{</span>
+                            <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_message_for_sentiment_analysis</span><span class="p">,</span>
+                        <span class="p">},</span>
+                        <span class="p">{</span>
+                            <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_message_for_sentiment_analysis</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">review_list</span>
+                            <span class="p">),</span>
+                        <span class="p">},</span>
+                    <span class="p">],</span>
+                    <span class="n">temperature</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="c1"># Extract and return the sentiment score</span>
+                <span class="n">sentiment_score</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span>
+                <span class="k">if</span> <span class="n">sentiment_score</span> <span class="ow">and</span> <span class="n">sentiment_score</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_answer</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">sentiment_score</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;No valid sentiment score found in the response.&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">except</span> <span class="n">openai</span><span class="o">.</span><span class="n">RateLimitError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">attempt</span> <span class="o">&lt;</span> <span class="n">max_retries</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Rate limit exceeded, retrying in </span><span class="si">{</span><span class="n">retry_delay</span><span class="si">}</span><span class="s2"> seconds...&quot;</span>
+                    <span class="p">)</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">retry_delay</span><span class="p">)</span>
+                    <span class="n">retry_delay</span> <span class="o">*=</span> <span class="mi">2</span>  <span class="c1"># Exponential backoff</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Max retries reached. Unable to complete the request.&quot;</span><span class="p">)</span>
+                    <span class="k">break</span>
+            <span class="k">except</span> <span class="p">(</span>
+                <span class="n">openai</span><span class="o">.</span><span class="n">APITimeoutError</span><span class="p">,</span>
+                <span class="n">openai</span><span class="o">.</span><span class="n">APIConnectionError</span><span class="p">,</span>
+                <span class="n">openai</span><span class="o">.</span><span class="n">BadRequestError</span><span class="p">,</span>
+                <span class="n">openai</span><span class="o">.</span><span class="n">AuthenticationError</span><span class="p">,</span>
+                <span class="n">openai</span><span class="o">.</span><span class="n">PermissionDeniedError</span><span class="p">,</span>
+            <span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred with GPT API: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">break</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An unexpected error occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">break</span>
+
+        <span class="c1"># Return None if the request could not be completed successfully</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="GPTReviewSentimentAnalyzer.extract_text_from_reviews">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.extract_text_from_reviews">[docs]</a>
+    <span class="k">def</span> <span class="nf">extract_text_from_reviews</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reviews_list</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extracts text from reviews and removes line characters.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            reviews_list: The list of reviews.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: The list of formatted review texts.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">reviews_texts</span> <span class="o">=</span> <span class="p">[</span><span class="n">review</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">review</span> <span class="ow">in</span> <span class="n">reviews_list</span><span class="p">]</span>
+        <span class="n">review_texts_formatted</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">review</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">review</span> <span class="ow">in</span> <span class="n">reviews_texts</span> <span class="k">if</span> <span class="n">review</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">review_texts_formatted</span></div>
+
+
+<div class="viewcode-block" id="GPTReviewSentimentAnalyzer.num_tokens_from_string">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.num_tokens_from_string">[docs]</a>
+    <span class="k">def</span> <span class="nf">num_tokens_from_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the number of tokens in a text string.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text (str): The input text.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: The number of tokens in the text.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">encoding</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">get_encoding</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_encoding_name</span><span class="p">)</span>
+        <span class="n">num_tokens</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">encoding</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">num_tokens</span></div>
+
+
+<div class="viewcode-block" id="GPTReviewSentimentAnalyzer.batch_reviews">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.batch_reviews">[docs]</a>
+    <span class="k">def</span> <span class="nf">batch_reviews</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reviews</span><span class="p">,</span> <span class="n">max_tokens</span><span class="o">=</span><span class="mi">4096</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Batches reviews into smaller batches based on token limit.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            reviews: The list of reviews.</span>
+<span class="sd">            max_tokens (int): The maximum number of tokens allowed for a batch.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: The list of batches.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">batches</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">current_batch</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">current_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_tokens_from_string</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_message_for_sentiment_analysis</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">review</span> <span class="ow">in</span> <span class="n">reviews</span><span class="p">:</span>
+            <span class="n">token_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_tokens_from_string</span><span class="p">(</span><span class="n">review</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">current_count</span> <span class="o">+</span> <span class="n">token_count</span> <span class="o">&gt;</span> <span class="n">max_tokens</span><span class="p">:</span>
+                <span class="n">batches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_batch</span><span class="p">)</span>
+                <span class="n">current_batch</span> <span class="o">=</span> <span class="p">[</span><span class="n">review</span><span class="p">]</span>
+                <span class="n">current_count</span> <span class="o">=</span> <span class="n">token_count</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">current_batch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">review</span><span class="p">)</span>
+                <span class="n">current_count</span> <span class="o">+=</span> <span class="n">token_count</span>
+
+        <span class="k">if</span> <span class="n">current_batch</span><span class="p">:</span>
+            <span class="n">batches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_batch</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">batches</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="SmartReviewInsightsEnhancer">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer">[docs]</a>
+<span class="k">class</span> <span class="nc">SmartReviewInsightsEnhancer</span><span class="p">(</span><span class="n">Step</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A step class that enhances review insights for smart review analysis.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        name (str): The name of the step.</span>
+<span class="sd">        required_fields (dict): A dictionary of required fields for the step.</span>
+<span class="sd">        language_tools (dict): A dictionary of language tools for different languages.</span>
+<span class="sd">        MIN_RATINGS_COUNT (int): The minimum number of ratings required to identify polarization.</span>
+<span class="sd">        RATING_DOMINANCE_THRESHOLD (float): The threshold for high or low rating dominance in decimal.</span>
+<span class="sd">        added_cols (list): A list of added columns for the enhanced review insights.</span>
+
+<span class="sd">    Methods:</span>
+<span class="sd">        load_data(): Loads the data for the step.</span>
+<span class="sd">        verify(): Verifies if the required fields are present in the data.</span>
+<span class="sd">        run(): Runs the step and enhances the review insights.</span>
+<span class="sd">        finish(): Finishes the step.</span>
+<span class="sd">        _get_language_tool(lang): Get the language tool for the specified language.</span>
+<span class="sd">        _enhance_review_insights(lead): Enhances the review insights for a given lead.</span>
+<span class="sd">        _analyze_rating_trend(rating_time): Analyzes the general trend of ratings over time.</span>
+<span class="sd">        _quantify_polarization(ratings): Analyzes and quantifies the polarization in a list of ratings.</span>
+<span class="sd">        _determine_polarization_type(polarization_score, highest_rating_ratio, lowest_rating_ratio, threshold): Determines the type of polarization based on rating ratios and a threshold.</span>
+<span class="sd">        _calculate_average_grammatical_score(reviews): Calculates the average grammatical score for a list of reviews.</span>
+<span class="sd">        _calculate_score(review): Calculates the score for a review.</span>
+<span class="sd">        _grammatical_errors(text, lang): Calculates the number of grammatical errors in a text.</span>
+
+<span class="sd">    Added Columns:</span>
+<span class="sd">        review_avg_grammatical_score (float): The average grammatical score of the reviews.</span>
+<span class="sd">        review_polarization_type (str): The type of polarization in the reviews.</span>
+<span class="sd">        review_polarization_score (float): The score of polarization in the reviews.</span>
+<span class="sd">        review_highest_rating_ratio (float): The ratio of highest ratings in the reviews.</span>
+<span class="sd">        review_lowest_rating_ratio (float): The ratio of lowest ratings in the reviews.</span>
+<span class="sd">        review_rating_trend (float): The trend of ratings over time.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Smart-Review-Insights-Enhancer&quot;</span>
+    <span class="n">required_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;place_id&quot;</span><span class="p">:</span> <span class="s2">&quot;google_places_place_id&quot;</span><span class="p">}</span>
+    <span class="n">text_analyzer</span> <span class="o">=</span> <span class="n">TextAnalyzer</span><span class="p">()</span>
+    <span class="n">MIN_RATINGS_COUNT</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">RATING_DOMINANCE_THRESHOLD</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="mf">0.4</span>  <span class="c1"># Threshold for high or low rating dominance in percentage (1.0 == 100%)</span>
+    <span class="p">)</span>
+
+    <span class="n">added_cols</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;review_avg_grammatical_score&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;review_polarization_type&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;review_polarization_score&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;review_highest_rating_ratio&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;review_lowest_rating_ratio&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;review_rating_trend&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+<div class="viewcode-block" id="SmartReviewInsightsEnhancer.load_data">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.load_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads the data for the step.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="SmartReviewInsightsEnhancer.verify">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.verify">[docs]</a>
+    <span class="k">def</span> <span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verifies if the required fields are present in the data.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the required fields are present, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">verify</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SmartReviewInsightsEnhancer.run">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.run">[docs]</a>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs the step and enhances the review insights.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DataFrame: The enhanced DataFrame with the added review insights.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tqdm</span><span class="o">.</span><span class="n">pandas</span><span class="p">(</span><span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Running reviews insights enhancement&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Apply the enhancement function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">added_cols</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">progress_apply</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">lead</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+                <span class="n">get_lead_hash_generator</span><span class="p">()</span><span class="o">.</span><span class="n">hash_check</span><span class="p">(</span>
+                    <span class="n">lead</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_enhance_review_insights</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">added_cols</span><span class="p">,</span>
+                    <span class="n">lead</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">),</span>
+            <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># self.df[self.added_cols] = self.df.progress_apply(</span>
+        <span class="c1">#     lambda lead: pd.Series(self._enhance_review_insights(lead)), axis=1</span>
+        <span class="c1"># )</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="SmartReviewInsightsEnhancer.finish">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.finish">[docs]</a>
+    <span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finishes the step.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="SmartReviewInsightsEnhancer._enhance_review_insights">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._enhance_review_insights">[docs]</a>
+    <span class="k">def</span> <span class="nf">_enhance_review_insights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lead</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Enhances the review insights for a given lead.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            lead (pd.Series): The lead data.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pd.Series: The enhanced review insights as a pandas Series.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">place_id</span> <span class="o">=</span> <span class="n">lead</span><span class="p">[</span><span class="s2">&quot;google_places_place_id&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">place_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">place_id</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">({</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">added_cols</span><span class="p">})</span>
+        <span class="n">reviews</span> <span class="o">=</span> <span class="n">get_database</span><span class="p">()</span><span class="o">.</span><span class="n">fetch_review</span><span class="p">(</span><span class="n">place_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">reviews</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">({</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">added_cols</span><span class="p">})</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">reviews_langs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">review</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;lang&quot;</span><span class="p">:</span> <span class="n">review</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;original_language&quot;</span><span class="p">,</span> <span class="s2">&quot;en&quot;</span><span class="p">),</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">review</span> <span class="ow">in</span> <span class="n">reviews</span>
+        <span class="p">]</span>
+        <span class="n">avg_gram_sco</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_average_grammatical_score</span><span class="p">(</span><span class="n">reviews_langs</span><span class="p">)</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">avg_gram_sco</span><span class="p">)</span>
+
+        <span class="n">ratings</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">review</span><span class="p">[</span><span class="s2">&quot;rating&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">review</span> <span class="ow">in</span> <span class="n">reviews</span>
+            <span class="k">if</span> <span class="s2">&quot;rating&quot;</span> <span class="ow">in</span> <span class="n">review</span> <span class="ow">and</span> <span class="n">review</span><span class="p">[</span><span class="s2">&quot;rating&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">]</span>
+
+        <span class="n">polarization_results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_quantify_polarization</span><span class="p">(</span><span class="n">ratings</span><span class="p">))</span>
+        <span class="n">results</span> <span class="o">+=</span> <span class="n">polarization_results</span>
+
+        <span class="n">rating_time</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">review</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;rating&quot;</span><span class="p">:</span> <span class="n">review</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;rating&quot;</span><span class="p">),</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">review</span> <span class="ow">in</span> <span class="n">reviews</span>
+        <span class="p">]</span>
+
+        <span class="n">rating_trend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_analyze_rating_trend</span><span class="p">(</span><span class="n">rating_time</span><span class="p">)</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rating_trend</span><span class="p">)</span>
+
+        <span class="n">extracted_features</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">added_cols</span><span class="p">,</span> <span class="n">results</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">extracted_features</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SmartReviewInsightsEnhancer._analyze_rating_trend">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._analyze_rating_trend">[docs]</a>
+    <span class="k">def</span> <span class="nf">_analyze_rating_trend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rating_time</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Analyzes the general trend of ratings over time.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            rating_time (list): List of review data, each a dict with &#39;time&#39; (Unix timestamp) and &#39;rating&#39;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: A value between -1 and 1 indicating the trend of ratings.</span>
+<span class="sd">                - A value close to 1 indicates a strong increasing trend.</span>
+<span class="sd">                - A value close to -1 indicates a strong decreasing trend.</span>
+<span class="sd">                - A value around 0 indicates no significant trend (stable ratings).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Convert to DataFrame</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rating_time</span><span class="p">)</span>
+
+        <span class="c1"># Convert Unix timestamp to numerical value (e.g., days since the first review)</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">],</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;days_since_start&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">days</span>
+
+        <span class="c1"># Linear regression</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="s2">&quot;days_since_start&quot;</span><span class="p">]],</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;rating&quot;</span><span class="p">])</span>
+
+        <span class="c1"># Slope of the regression line</span>
+        <span class="n">slope</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Normalize the slope to be within the range [-1, 1]</span>
+        <span class="n">slope_normalized</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">slope</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Replace -0 with 0</span>
+        <span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">slope_normalized</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">slope_normalized</span></div>
+
+
+<div class="viewcode-block" id="SmartReviewInsightsEnhancer._quantify_polarization">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._quantify_polarization">[docs]</a>
+    <span class="k">def</span> <span class="nf">_quantify_polarization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ratings</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Analyzes and quantifies the polarization in a list of ratings.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ratings (list): List of ratings.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: A tuple containing the polarization type, polarization score,</span>
+<span class="sd">                highest rating ratio, and lowest rating ratio.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">total_ratings</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ratings</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">total_ratings</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MIN_RATINGS_COUNT</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;There is no sufficient data to identify polarization&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;Insufficient data&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+        <span class="n">rating_counts</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">ratings</span><span class="p">)</span>
+        <span class="n">high_low_count</span> <span class="o">=</span> <span class="n">rating_counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">rating_counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">high_low_ratio</span> <span class="o">=</span> <span class="n">high_low_count</span> <span class="o">/</span> <span class="n">total_ratings</span>
+        <span class="n">middle_ratio</span> <span class="o">=</span> <span class="p">(</span><span class="n">total_ratings</span> <span class="o">-</span> <span class="n">high_low_count</span><span class="p">)</span> <span class="o">/</span> <span class="n">total_ratings</span>
+        <span class="n">highest_rating_ratio</span> <span class="o">=</span> <span class="n">rating_counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">total_ratings</span>
+        <span class="n">lowest_rating_ratio</span> <span class="o">=</span> <span class="n">rating_counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">total_ratings</span>
+        <span class="n">polarization_score</span> <span class="o">=</span> <span class="n">high_low_ratio</span> <span class="o">-</span> <span class="n">middle_ratio</span>
+
+        <span class="n">polarization_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_determine_polarization_type</span><span class="p">(</span>
+            <span class="n">polarization_score</span><span class="p">,</span>
+            <span class="n">highest_rating_ratio</span><span class="p">,</span>
+            <span class="n">lowest_rating_ratio</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RATING_DOMINANCE_THRESHOLD</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">polarization_type</span><span class="p">,</span>
+            <span class="n">polarization_score</span><span class="p">,</span>
+            <span class="n">highest_rating_ratio</span><span class="p">,</span>
+            <span class="n">lowest_rating_ratio</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SmartReviewInsightsEnhancer._determine_polarization_type">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._determine_polarization_type">[docs]</a>
+    <span class="k">def</span> <span class="nf">_determine_polarization_type</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">polarization_score</span><span class="p">,</span> <span class="n">highest_rating_ratio</span><span class="p">,</span> <span class="n">lowest_rating_ratio</span><span class="p">,</span> <span class="n">threshold</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines the type of polarization based on rating ratios and a threshold.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            polarization_score (float): The polarization score.</span>
+<span class="sd">            highest_rating_ratio (float): The highest rating ratio.</span>
+<span class="sd">            lowest_rating_ratio (float): The lowest rating ratio.</span>
+<span class="sd">            threshold (float): The threshold for high or low rating dominance.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The type of polarization.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">polarization_score</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">highest_rating_ratio</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;High-Rating Dominance&quot;</span>
+            <span class="k">elif</span> <span class="n">lowest_rating_ratio</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;Low-Rating Dominance&quot;</span>
+            <span class="k">return</span> <span class="s2">&quot;High-Low Polarization&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;Balanced&quot;</span></div>
+
+
+<div class="viewcode-block" id="SmartReviewInsightsEnhancer._calculate_average_grammatical_score">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._calculate_average_grammatical_score">[docs]</a>
+    <span class="k">def</span> <span class="nf">_calculate_average_grammatical_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reviews</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the average grammatical score for a list of reviews.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            reviews (list): List of reviews.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The average grammatical score.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">scores</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_score</span><span class="p">(</span><span class="n">review</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">review</span> <span class="ow">in</span> <span class="n">reviews</span>
+            <span class="k">if</span> <span class="n">is_review_valid</span><span class="p">(</span><span class="n">review</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">valid_scores</span> <span class="o">=</span> <span class="p">[</span><span class="n">score</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">scores</span> <span class="k">if</span> <span class="n">score</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">valid_scores</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_scores</span><span class="p">)</span> <span class="k">if</span> <span class="n">valid_scores</span> <span class="k">else</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="SmartReviewInsightsEnhancer._calculate_score">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._calculate_score">[docs]</a>
+    <span class="k">def</span> <span class="nf">_calculate_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">review</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the score for a review.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            review (dict): The review data.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The calculated score.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">num_errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_analyzer</span><span class="o">.</span><span class="n">find_number_of_grammatical_errors</span><span class="p">(</span>
+            <span class="n">review</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span> <span class="n">review</span><span class="p">[</span><span class="s2">&quot;lang&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">num_words</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">review</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">num_words</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">num_errors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">num_errors</span> <span class="o">/</span> <span class="n">num_words</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, SumInsights.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

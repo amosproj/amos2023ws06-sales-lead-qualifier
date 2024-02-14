@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bdc package &mdash; Sales Lead Qualifier 01.00.00 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=6386319a"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="bdc.steps package" href="bdc.steps.html" />
+    <link rel="prev" title="src" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Sales Lead Qualifier
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme_link.html">Sales-Lead-Qualifier Project (AMOS WS 2023/24)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html">Build Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html#user-documentation">User Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html#design-documentation">Design Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html#classifier-comparison">Classifier Comparison</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html#concepts-unrealized-ideas-miscellaneous">Concepts, Unrealized Ideas &amp; Miscellaneous</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">bdc package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html">bdc.steps package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bdc.pipeline">bdc.pipeline module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#bdc.pipeline.Pipeline"><code class="docutils literal notranslate"><span class="pre">Pipeline</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bdc">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="config.html">config module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="database.html">database package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo.html">demo package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evp.html">evp package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logger.html">logger package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="preprocessing.html">preprocessing package</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Sales Lead Qualifier</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">src</a></li>
+      <li class="breadcrumb-item active">bdc package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/bdc.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="bdc-package">
+<h1>bdc package<a class="headerlink" href="#bdc-package" title="Link to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="bdc.steps.html">bdc.steps package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bdc.steps.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bdc.steps.helpers.html">bdc.steps.helpers package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.helpers.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.helpers.html#module-bdc.steps.helpers.generate_hash_leads">bdc.steps.helpers.generate_hash_leads module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.helpers.html#module-bdc.steps.helpers.offeneregister_api">bdc.steps.helpers.offeneregister_api module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.helpers.html#module-bdc.steps.helpers.text_analyzer">bdc.steps.helpers.text_analyzer module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.helpers.html#module-bdc.steps.helpers">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bdc.steps.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bdc.steps.html#module-bdc.steps.analyze_emails">bdc.steps.analyze_emails module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_emails.AnalyzeEmails"><code class="docutils literal notranslate"><span class="pre">AnalyzeEmails</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_emails.AnalyzeEmails.name"><code class="docutils literal notranslate"><span class="pre">AnalyzeEmails.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_emails.AnalyzeEmails.added_cols"><code class="docutils literal notranslate"><span class="pre">AnalyzeEmails.added_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_emails.AnalyzeEmails.required_cols"><code class="docutils literal notranslate"><span class="pre">AnalyzeEmails.required_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id0"><code class="docutils literal notranslate"><span class="pre">AnalyzeEmails.added_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_emails.AnalyzeEmails.finish"><code class="docutils literal notranslate"><span class="pre">AnalyzeEmails.finish()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_emails.AnalyzeEmails.load_data"><code class="docutils literal notranslate"><span class="pre">AnalyzeEmails.load_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id1"><code class="docutils literal notranslate"><span class="pre">AnalyzeEmails.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id2"><code class="docutils literal notranslate"><span class="pre">AnalyzeEmails.required_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_emails.AnalyzeEmails.run"><code class="docutils literal notranslate"><span class="pre">AnalyzeEmails.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_emails.AnalyzeEmails.verify"><code class="docutils literal notranslate"><span class="pre">AnalyzeEmails.verify()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_emails.analyze_email_account"><code class="docutils literal notranslate"><span class="pre">analyze_email_account()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_emails.extract_custom_domain"><code class="docutils literal notranslate"><span class="pre">extract_custom_domain()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bdc.steps.html#module-bdc.steps.analyze_reviews">bdc.steps.analyze_reviews module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.name"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.model"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.model_encoding_name"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.model_encoding_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.MAX_PROMPT_TOKENS"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.MAX_PROMPT_TOKENS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.no_answer"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.no_answer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.gpt_required_fields"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.gpt_required_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.system_message_for_sentiment_analysis"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.system_message_for_sentiment_analysis</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.user_message_for_sentiment_analysis"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.user_message_for_sentiment_analysis</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.extracted_col_name"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.extracted_col_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.added_cols"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.added_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.gpt"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.gpt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.load_data"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.load_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.verify"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.verify()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.run"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.finish"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.finish()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.run_sentiment_analysis"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.run_sentiment_analysis()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.gpt_sentiment_analyze_review"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.gpt_sentiment_analyze_review()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.extract_text_from_reviews"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.extract_text_from_reviews()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.num_tokens_from_string"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.num_tokens_from_string()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.batch_reviews"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.batch_reviews()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id3"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.MAX_PROMPT_TOKENS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id4"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.added_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id5"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.batch_reviews()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id6"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.extract_text_from_reviews()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id7"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.extracted_col_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id8"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.finish()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id9"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.gpt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.gpt_calculate_avg_sentiment_score"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.gpt_calculate_avg_sentiment_score()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id10"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.gpt_required_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id11"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.gpt_sentiment_analyze_review()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id12"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.load_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id13"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id14"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.model_encoding_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id15"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id16"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.no_answer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id17"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.num_tokens_from_string()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.required_cols"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.required_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id18"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id19"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.run_sentiment_analysis()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id20"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.system_message_for_sentiment_analysis</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.text_analyzer"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.text_analyzer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.textblob_calculate_avg_sentiment_score"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.textblob_calculate_avg_sentiment_score()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id21"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.user_message_for_sentiment_analysis</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id22"><code class="docutils literal notranslate"><span class="pre">GPTReviewSentimentAnalyzer.verify()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.name"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.required_fields"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer.required_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.language_tools"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer.language_tools</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.MIN_RATINGS_COUNT"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer.MIN_RATINGS_COUNT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.RATING_DOMINANCE_THRESHOLD"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer.RATING_DOMINANCE_THRESHOLD</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.added_cols"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer.added_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.load_data"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer.load_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.verify"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer.verify()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.run"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.finish"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer.finish()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._get_language_tool"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer._get_language_tool()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._enhance_review_insights"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer._enhance_review_insights()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._analyze_rating_trend"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer._analyze_rating_trend()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._quantify_polarization"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer._quantify_polarization()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._determine_polarization_type"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer._determine_polarization_type()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._calculate_average_grammatical_score"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer._calculate_average_grammatical_score()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._calculate_score"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer._calculate_score()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._grammatical_errors"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer._grammatical_errors()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id23"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer.MIN_RATINGS_COUNT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id24"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer.RATING_DOMINANCE_THRESHOLD</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id25"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer.added_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id26"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer.finish()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id27"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer.load_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id28"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id29"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer.required_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id30"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.text_analyzer"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer.text_analyzer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id31"><code class="docutils literal notranslate"><span class="pre">SmartReviewInsightsEnhancer.verify()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.check_api_key"><code class="docutils literal notranslate"><span class="pre">check_api_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.is_review_valid"><code class="docutils literal notranslate"><span class="pre">is_review_valid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bdc.steps.html#bdc.steps.analyze_reviews.log"><code class="docutils literal notranslate"><span class="pre">log</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bdc.steps.html#module-bdc.steps.google_places">bdc.steps.google_places module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bdc.steps.html#bdc.steps.google_places.GooglePlaces"><code class="docutils literal notranslate"><span class="pre">GooglePlaces</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.google_places.GooglePlaces.name"><code class="docutils literal notranslate"><span class="pre">GooglePlaces.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.google_places.GooglePlaces.added_cols"><code class="docutils literal notranslate"><span class="pre">GooglePlaces.added_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.google_places.GooglePlaces.required_cols"><code class="docutils literal notranslate"><span class="pre">GooglePlaces.required_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id32"><code class="docutils literal notranslate"><span class="pre">GooglePlaces.added_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.google_places.GooglePlaces.api_fields"><code class="docutils literal notranslate"><span class="pre">GooglePlaces.api_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.google_places.GooglePlaces.calculate_confidence"><code class="docutils literal notranslate"><span class="pre">GooglePlaces.calculate_confidence()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.google_places.GooglePlaces.df_fields"><code class="docutils literal notranslate"><span class="pre">GooglePlaces.df_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.google_places.GooglePlaces.finish"><code class="docutils literal notranslate"><span class="pre">GooglePlaces.finish()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.google_places.GooglePlaces.get_data_from_google_api"><code class="docutils literal notranslate"><span class="pre">GooglePlaces.get_data_from_google_api()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.google_places.GooglePlaces.get_first_place_candidate"><code class="docutils literal notranslate"><span class="pre">GooglePlaces.get_first_place_candidate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.google_places.GooglePlaces.gmaps"><code class="docutils literal notranslate"><span class="pre">GooglePlaces.gmaps</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.google_places.GooglePlaces.load_data"><code class="docutils literal notranslate"><span class="pre">GooglePlaces.load_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id33"><code class="docutils literal notranslate"><span class="pre">GooglePlaces.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id34"><code class="docutils literal notranslate"><span class="pre">GooglePlaces.required_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.google_places.GooglePlaces.run"><code class="docutils literal notranslate"><span class="pre">GooglePlaces.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.google_places.GooglePlaces.verify"><code class="docutils literal notranslate"><span class="pre">GooglePlaces.verify()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bdc.steps.html#module-bdc.steps.google_places_detailed">bdc.steps.google_places_detailed module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bdc.steps.html#bdc.steps.google_places_detailed.GooglePlacesDetailed"><code class="docutils literal notranslate"><span class="pre">GooglePlacesDetailed</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.google_places_detailed.GooglePlacesDetailed.name"><code class="docutils literal notranslate"><span class="pre">GooglePlacesDetailed.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.google_places_detailed.GooglePlacesDetailed.added_cols"><code class="docutils literal notranslate"><span class="pre">GooglePlacesDetailed.added_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.google_places_detailed.GooglePlacesDetailed.required_cols"><code class="docutils literal notranslate"><span class="pre">GooglePlacesDetailed.required_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id35"><code class="docutils literal notranslate"><span class="pre">GooglePlacesDetailed.added_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.google_places_detailed.GooglePlacesDetailed.api_fields"><code class="docutils literal notranslate"><span class="pre">GooglePlacesDetailed.api_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.google_places_detailed.GooglePlacesDetailed.api_fields_output"><code class="docutils literal notranslate"><span class="pre">GooglePlacesDetailed.api_fields_output</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.google_places_detailed.GooglePlacesDetailed.df_fields"><code class="docutils literal notranslate"><span class="pre">GooglePlacesDetailed.df_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.google_places_detailed.GooglePlacesDetailed.finish"><code class="docutils literal notranslate"><span class="pre">GooglePlacesDetailed.finish()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.google_places_detailed.GooglePlacesDetailed.get_data_from_detailed_google_api"><code class="docutils literal notranslate"><span class="pre">GooglePlacesDetailed.get_data_from_detailed_google_api()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.google_places_detailed.GooglePlacesDetailed.gmaps"><code class="docutils literal notranslate"><span class="pre">GooglePlacesDetailed.gmaps</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.google_places_detailed.GooglePlacesDetailed.load_data"><code class="docutils literal notranslate"><span class="pre">GooglePlacesDetailed.load_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id36"><code class="docutils literal notranslate"><span class="pre">GooglePlacesDetailed.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id37"><code class="docutils literal notranslate"><span class="pre">GooglePlacesDetailed.required_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.google_places_detailed.GooglePlacesDetailed.run"><code class="docutils literal notranslate"><span class="pre">GooglePlacesDetailed.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.google_places_detailed.GooglePlacesDetailed.verify"><code class="docutils literal notranslate"><span class="pre">GooglePlacesDetailed.verify()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bdc.steps.html#module-bdc.steps.gpt_summarizer">bdc.steps.gpt_summarizer module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bdc.steps.html#bdc.steps.gpt_summarizer.GPTSummarizer"><code class="docutils literal notranslate"><span class="pre">GPTSummarizer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.gpt_summarizer.GPTSummarizer.name"><code class="docutils literal notranslate"><span class="pre">GPTSummarizer.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.gpt_summarizer.GPTSummarizer.added_cols"><code class="docutils literal notranslate"><span class="pre">GPTSummarizer.added_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.gpt_summarizer.GPTSummarizer.required_cols"><code class="docutils literal notranslate"><span class="pre">GPTSummarizer.required_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id38"><code class="docutils literal notranslate"><span class="pre">GPTSummarizer.added_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.gpt_summarizer.GPTSummarizer.client"><code class="docutils literal notranslate"><span class="pre">GPTSummarizer.client</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.gpt_summarizer.GPTSummarizer.extract_the_raw_html_and_parse"><code class="docutils literal notranslate"><span class="pre">GPTSummarizer.extract_the_raw_html_and_parse()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.gpt_summarizer.GPTSummarizer.extracted_col_name_website_summary"><code class="docutils literal notranslate"><span class="pre">GPTSummarizer.extracted_col_name_website_summary</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.gpt_summarizer.GPTSummarizer.finish"><code class="docutils literal notranslate"><span class="pre">GPTSummarizer.finish()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.gpt_summarizer.GPTSummarizer.gpt_required_fields"><code class="docutils literal notranslate"><span class="pre">GPTSummarizer.gpt_required_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.gpt_summarizer.GPTSummarizer.load_data"><code class="docutils literal notranslate"><span class="pre">GPTSummarizer.load_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.gpt_summarizer.GPTSummarizer.model"><code class="docutils literal notranslate"><span class="pre">GPTSummarizer.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id39"><code class="docutils literal notranslate"><span class="pre">GPTSummarizer.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.gpt_summarizer.GPTSummarizer.no_answer"><code class="docutils literal notranslate"><span class="pre">GPTSummarizer.no_answer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id40"><code class="docutils literal notranslate"><span class="pre">GPTSummarizer.required_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.gpt_summarizer.GPTSummarizer.run"><code class="docutils literal notranslate"><span class="pre">GPTSummarizer.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.gpt_summarizer.GPTSummarizer.summarize_the_company_website"><code class="docutils literal notranslate"><span class="pre">GPTSummarizer.summarize_the_company_website()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.gpt_summarizer.GPTSummarizer.system_message_for_website_summary"><code class="docutils literal notranslate"><span class="pre">GPTSummarizer.system_message_for_website_summary</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.gpt_summarizer.GPTSummarizer.user_message_for_website_summary"><code class="docutils literal notranslate"><span class="pre">GPTSummarizer.user_message_for_website_summary</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.gpt_summarizer.GPTSummarizer.verify"><code class="docutils literal notranslate"><span class="pre">GPTSummarizer.verify()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bdc.steps.html#module-bdc.steps.hash_generator">bdc.steps.hash_generator module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bdc.steps.html#bdc.steps.hash_generator.HashGenerator"><code class="docutils literal notranslate"><span class="pre">HashGenerator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.hash_generator.HashGenerator.name"><code class="docutils literal notranslate"><span class="pre">HashGenerator.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.hash_generator.HashGenerator.added_cols"><code class="docutils literal notranslate"><span class="pre">HashGenerator.added_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.hash_generator.HashGenerator.required_cols"><code class="docutils literal notranslate"><span class="pre">HashGenerator.required_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id41"><code class="docutils literal notranslate"><span class="pre">HashGenerator.added_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.hash_generator.HashGenerator.finish"><code class="docutils literal notranslate"><span class="pre">HashGenerator.finish()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.hash_generator.HashGenerator.load_data"><code class="docutils literal notranslate"><span class="pre">HashGenerator.load_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id42"><code class="docutils literal notranslate"><span class="pre">HashGenerator.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id43"><code class="docutils literal notranslate"><span class="pre">HashGenerator.required_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.hash_generator.HashGenerator.run"><code class="docutils literal notranslate"><span class="pre">HashGenerator.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.hash_generator.HashGenerator.verify"><code class="docutils literal notranslate"><span class="pre">HashGenerator.verify()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bdc.steps.html#module-bdc.steps.preprocess_phonenumbers">bdc.steps.preprocess_phonenumbers module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bdc.steps.html#bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers"><code class="docutils literal notranslate"><span class="pre">PreprocessPhonenumbers</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.name"><code class="docutils literal notranslate"><span class="pre">PreprocessPhonenumbers.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.added_cols"><code class="docutils literal notranslate"><span class="pre">PreprocessPhonenumbers.added_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.required_cols"><code class="docutils literal notranslate"><span class="pre">PreprocessPhonenumbers.required_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id44"><code class="docutils literal notranslate"><span class="pre">PreprocessPhonenumbers.added_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.check_number"><code class="docutils literal notranslate"><span class="pre">PreprocessPhonenumbers.check_number()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.finish"><code class="docutils literal notranslate"><span class="pre">PreprocessPhonenumbers.finish()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.load_data"><code class="docutils literal notranslate"><span class="pre">PreprocessPhonenumbers.load_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id45"><code class="docutils literal notranslate"><span class="pre">PreprocessPhonenumbers.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.process_row"><code class="docutils literal notranslate"><span class="pre">PreprocessPhonenumbers.process_row()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id46"><code class="docutils literal notranslate"><span class="pre">PreprocessPhonenumbers.required_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.run"><code class="docutils literal notranslate"><span class="pre">PreprocessPhonenumbers.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.verify"><code class="docutils literal notranslate"><span class="pre">PreprocessPhonenumbers.verify()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bdc.steps.html#module-bdc.steps.regionalatlas">bdc.steps.regionalatlas module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bdc.steps.html#bdc.steps.regionalatlas.RegionalAtlas"><code class="docutils literal notranslate"><span class="pre">RegionalAtlas</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.regionalatlas.RegionalAtlas.name"><code class="docutils literal notranslate"><span class="pre">RegionalAtlas.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.regionalatlas.RegionalAtlas.reagionalatlas_feature_keys"><code class="docutils literal notranslate"><span class="pre">RegionalAtlas.reagionalatlas_feature_keys</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.regionalatlas.RegionalAtlas.df_fields"><code class="docutils literal notranslate"><span class="pre">RegionalAtlas.df_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.regionalatlas.RegionalAtlas.added_cols"><code class="docutils literal notranslate"><span class="pre">RegionalAtlas.added_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.regionalatlas.RegionalAtlas.required_cols"><code class="docutils literal notranslate"><span class="pre">RegionalAtlas.required_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.regionalatlas.RegionalAtlas.regions_gdfs"><code class="docutils literal notranslate"><span class="pre">RegionalAtlas.regions_gdfs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.regionalatlas.RegionalAtlas.empty_result"><code class="docutils literal notranslate"><span class="pre">RegionalAtlas.empty_result</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.regionalatlas.RegionalAtlas.epsg_code_etrs"><code class="docutils literal notranslate"><span class="pre">RegionalAtlas.epsg_code_etrs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id47"><code class="docutils literal notranslate"><span class="pre">RegionalAtlas.added_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.regionalatlas.RegionalAtlas.calculate_regional_score"><code class="docutils literal notranslate"><span class="pre">RegionalAtlas.calculate_regional_score()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id48"><code class="docutils literal notranslate"><span class="pre">RegionalAtlas.df_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id49"><code class="docutils literal notranslate"><span class="pre">RegionalAtlas.empty_result</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id50"><code class="docutils literal notranslate"><span class="pre">RegionalAtlas.epsg_code_etrs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.regionalatlas.RegionalAtlas.finish"><code class="docutils literal notranslate"><span class="pre">RegionalAtlas.finish()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.regionalatlas.RegionalAtlas.get_data_from_address"><code class="docutils literal notranslate"><span class="pre">RegionalAtlas.get_data_from_address()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.regionalatlas.RegionalAtlas.load_data"><code class="docutils literal notranslate"><span class="pre">RegionalAtlas.load_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id51"><code class="docutils literal notranslate"><span class="pre">RegionalAtlas.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id52"><code class="docutils literal notranslate"><span class="pre">RegionalAtlas.reagionalatlas_feature_keys</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id53"><code class="docutils literal notranslate"><span class="pre">RegionalAtlas.regions_gdfs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id54"><code class="docutils literal notranslate"><span class="pre">RegionalAtlas.required_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.regionalatlas.RegionalAtlas.run"><code class="docutils literal notranslate"><span class="pre">RegionalAtlas.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.regionalatlas.RegionalAtlas.verify"><code class="docutils literal notranslate"><span class="pre">RegionalAtlas.verify()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bdc.steps.html#module-bdc.steps.search_offeneregister">bdc.steps.search_offeneregister module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bdc.steps.html#bdc.steps.search_offeneregister.SearchOffeneRegister"><code class="docutils literal notranslate"><span class="pre">SearchOffeneRegister</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.search_offeneregister.SearchOffeneRegister.name"><code class="docutils literal notranslate"><span class="pre">SearchOffeneRegister.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.search_offeneregister.SearchOffeneRegister.required_cols"><code class="docutils literal notranslate"><span class="pre">SearchOffeneRegister.required_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.search_offeneregister.SearchOffeneRegister.added_cols"><code class="docutils literal notranslate"><span class="pre">SearchOffeneRegister.added_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.search_offeneregister.SearchOffeneRegister.offeneregisterAPI"><code class="docutils literal notranslate"><span class="pre">SearchOffeneRegister.offeneregisterAPI</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.search_offeneregister.SearchOffeneRegister.verify"><code class="docutils literal notranslate"><span class="pre">SearchOffeneRegister.verify()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.search_offeneregister.SearchOffeneRegister.finish"><code class="docutils literal notranslate"><span class="pre">SearchOffeneRegister.finish()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.search_offeneregister.SearchOffeneRegister.load_data"><code class="docutils literal notranslate"><span class="pre">SearchOffeneRegister.load_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.search_offeneregister.SearchOffeneRegister.run"><code class="docutils literal notranslate"><span class="pre">SearchOffeneRegister.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.search_offeneregister.SearchOffeneRegister._extract_company_related_data"><code class="docutils literal notranslate"><span class="pre">SearchOffeneRegister._extract_company_related_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id55"><code class="docutils literal notranslate"><span class="pre">SearchOffeneRegister.added_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id56"><code class="docutils literal notranslate"><span class="pre">SearchOffeneRegister.finish()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id57"><code class="docutils literal notranslate"><span class="pre">SearchOffeneRegister.load_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id58"><code class="docutils literal notranslate"><span class="pre">SearchOffeneRegister.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id59"><code class="docutils literal notranslate"><span class="pre">SearchOffeneRegister.offeneregisterAPI</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id60"><code class="docutils literal notranslate"><span class="pre">SearchOffeneRegister.required_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id61"><code class="docutils literal notranslate"><span class="pre">SearchOffeneRegister.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id62"><code class="docutils literal notranslate"><span class="pre">SearchOffeneRegister.verify()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bdc.steps.html#module-bdc.steps.step">bdc.steps.step module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bdc.steps.html#bdc.steps.step.Step"><code class="docutils literal notranslate"><span class="pre">Step</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.step.Step.name"><code class="docutils literal notranslate"><span class="pre">Step.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.step.Step.added_cols"><code class="docutils literal notranslate"><span class="pre">Step.added_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.step.Step.required_cols"><code class="docutils literal notranslate"><span class="pre">Step.required_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id63"><code class="docutils literal notranslate"><span class="pre">Step.added_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.step.Step.check_data_presence"><code class="docutils literal notranslate"><span class="pre">Step.check_data_presence()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.step.Step.df"><code class="docutils literal notranslate"><span class="pre">Step.df</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.step.Step.finish"><code class="docutils literal notranslate"><span class="pre">Step.finish()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.step.Step.load_data"><code class="docutils literal notranslate"><span class="pre">Step.load_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id64"><code class="docutils literal notranslate"><span class="pre">Step.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#id65"><code class="docutils literal notranslate"><span class="pre">Step.required_cols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.step.Step.run"><code class="docutils literal notranslate"><span class="pre">Step.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.html#bdc.steps.step.Step.verify"><code class="docutils literal notranslate"><span class="pre">Step.verify()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bdc.steps.html#bdc.steps.step.StepError"><code class="docutils literal notranslate"><span class="pre">StepError</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bdc.steps.html#module-bdc.steps">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-bdc.pipeline">
+<span id="bdc-pipeline-module"></span><h2>bdc.pipeline module<a class="headerlink" href="#module-bdc.pipeline" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bdc.pipeline.Pipeline">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bdc.pipeline.</span></span><span class="sig-name descname"><span class="pre">Pipeline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/pipeline.html#Pipeline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.pipeline.Pipeline" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.pipeline.Pipeline.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/pipeline.html#Pipeline.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.pipeline.Pipeline.run" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bdc">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bdc" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="src" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="bdc.steps.html" class="btn btn-neutral float-right" title="bdc.steps package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, SumInsights.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bdc.steps.helpers.text_analyzer &mdash; Sales Lead Qualifier 01.00.00 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=6386319a"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            Sales Lead Qualifier
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../readme_link.html">Sales-Lead-Qualifier Project (AMOS WS 2023/24)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../documentation.html">Build Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../documentation.html#user-documentation">User Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../documentation.html#design-documentation">Design Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../documentation.html#classifier-comparison">Classifier Comparison</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../documentation.html#concepts-unrealized-ideas-miscellaneous">Concepts, Unrealized Ideas &amp; Miscellaneous</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">src</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Sales Lead Qualifier</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../helpers.html">bdc.steps.helpers</a></li>
+      <li class="breadcrumb-item active">bdc.steps.helpers.text_analyzer</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for bdc.steps.helpers.text_analyzer</h1><div class="highlight"><pre>
+<span></span><span class="c1"># SPDX-License-Identifier: MIT</span>
+<span class="c1"># SPDX-FileCopyrightText: 2023 Berkay Bozkurt &lt;resitberkaybozkurt@gmail.com&gt;</span>
+
+<span class="kn">import</span> <span class="nn">difflib</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">autocorrect</span> <span class="kn">import</span> <span class="n">Speller</span>
+<span class="kn">from</span> <span class="nn">deep_translator</span> <span class="kn">import</span> <span class="n">GoogleTranslator</span>
+<span class="kn">from</span> <span class="nn">pylanguagetool</span> <span class="kn">import</span> <span class="n">api</span> <span class="k">as</span> <span class="n">ltp</span>
+<span class="kn">from</span> <span class="nn">spellchecker</span> <span class="kn">import</span> <span class="n">SpellChecker</span>
+<span class="kn">from</span> <span class="nn">textblob</span> <span class="kn">import</span> <span class="n">TextBlob</span>
+
+<span class="kn">from</span> <span class="nn">logger</span> <span class="kn">import</span> <span class="n">get_logger</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="TextAnalyzer">
+<a class="viewcode-back" href="../../../../bdc.steps.helpers.html#bdc.steps.helpers.text_analyzer.TextAnalyzer">[docs]</a>
+<span class="k">class</span> <span class="nc">TextAnalyzer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class that provides text analysis functionalities such as spell checking, correction, and error detection.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">TARGET_LANG</span> <span class="o">=</span> <span class="s2">&quot;en&quot;</span>
+    <span class="n">_instance</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spell_checker_insts</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">speller_insts</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plt_insts</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">_get_spell_checker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lang_setting</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get an instance of SpellChecker for the specified language.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            lang_setting (str): The language setting.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            SpellChecker: An instance of SpellChecker for the specified language, or None if the language is not supported.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">lang_setting</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">spell_checker_insts</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">spell_checker_insts</span><span class="p">[</span><span class="n">lang_setting</span><span class="p">]</span> <span class="o">=</span> <span class="n">SpellChecker</span><span class="p">(</span>
+                    <span class="n">language</span><span class="o">=</span><span class="n">lang_setting</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Language &#39;</span><span class="si">{</span><span class="n">lang_setting</span><span class="si">}</span><span class="s2">&#39; is not supported or does not exist.&quot;</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">spell_checker_insts</span><span class="p">[</span><span class="n">lang_setting</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_get_speller</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lang_setting</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get an instance of Speller for the specified language.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            lang_setting (str): The language setting.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Speller: An instance of Speller for the specified language, or None if the language is not supported.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">lang_setting</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">speller_insts</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">speller_insts</span><span class="p">[</span><span class="n">lang_setting</span><span class="p">]</span> <span class="o">=</span> <span class="n">Speller</span><span class="p">(</span><span class="n">lang</span><span class="o">=</span><span class="n">lang_setting</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Language &#39;</span><span class="si">{</span><span class="n">lang_setting</span><span class="si">}</span><span class="s2">&#39; is not supported or does not exist.&quot;</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">speller_insts</span><span class="p">[</span><span class="n">lang_setting</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_find_differences</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text1</span><span class="p">,</span> <span class="n">text2</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compare two texts and return a list of differences.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text1 (str): The first text.</span>
+<span class="sd">            text2 (str): The second text.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list of differences.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="n">difflib</span><span class="o">.</span><span class="n">ndiff</span><span class="p">(</span><span class="n">text1</span><span class="o">.</span><span class="n">splitlines</span><span class="p">(),</span> <span class="n">text2</span><span class="o">.</span><span class="n">splitlines</span><span class="p">())</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TextAnalyzer.correct_text">
+<a class="viewcode-back" href="../../../../bdc.steps.helpers.html#bdc.steps.helpers.text_analyzer.TextAnalyzer.correct_text">[docs]</a>
+    <span class="k">def</span> <span class="nf">correct_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Correct the spelling of the given text using the specified language.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text (str): The text to be corrected.</span>
+<span class="sd">            language (str, optional): The language setting. Defaults to &quot;en&quot;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The corrected text.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">speller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_speller</span><span class="p">(</span><span class="n">language</span><span class="p">)</span>
+        <span class="n">spell_checker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_spell_checker</span><span class="p">(</span><span class="n">language</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">speller</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">spell_checker</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Could not find a spell checker or speller for language &#39;</span><span class="si">{</span><span class="n">language</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">text</span>
+
+        <span class="n">speller_corrected_text</span> <span class="o">=</span> <span class="n">speller</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="k">if</span> <span class="n">speller</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">text</span>
+        <span class="n">split_word</span> <span class="o">=</span> <span class="n">speller_corrected_text</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">spell_checker_corrected_text</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">spell_checker</span><span class="o">.</span><span class="n">correction</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">spell_checker</span><span class="o">.</span><span class="n">correction</span><span class="p">(</span><span class="n">word</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="n">word</span>
+                <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">speller_corrected_text</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">spell_checker</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="n">text</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">spell_checker_corrected_text</span></div>
+
+
+<div class="viewcode-block" id="TextAnalyzer.find_number_of_spelling_errors">
+<a class="viewcode-back" href="../../../../bdc.steps.helpers.html#bdc.steps.helpers.text_analyzer.TextAnalyzer.find_number_of_spelling_errors">[docs]</a>
+    <span class="k">def</span> <span class="nf">find_number_of_spelling_errors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find the number of spelling errors in the given text using the specified language.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text (str): The text to be checked.</span>
+<span class="sd">            language (str, optional): The language setting. Defaults to &quot;en&quot;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: The number of spelling errors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">find_spelling_errors</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">language</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="TextAnalyzer.find_spelling_errors">
+<a class="viewcode-back" href="../../../../bdc.steps.helpers.html#bdc.steps.helpers.text_analyzer.TextAnalyzer.find_spelling_errors">[docs]</a>
+    <span class="k">def</span> <span class="nf">find_spelling_errors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find the spelling errors in the given text using the specified language.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text (str): The text to be checked.</span>
+<span class="sd">            language (str, optional): The language setting. Defaults to &quot;en&quot;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list of spelling errors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">corrected_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">correct_text</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">language</span><span class="p">)</span>
+        <span class="n">differences</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_differences</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">corrected_text</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">differences</span></div>
+
+
+<div class="viewcode-block" id="TextAnalyzer.find_number_of_grammatical_errors">
+<a class="viewcode-back" href="../../../../bdc.steps.helpers.html#bdc.steps.helpers.text_analyzer.TextAnalyzer.find_number_of_grammatical_errors">[docs]</a>
+    <span class="k">def</span> <span class="nf">find_number_of_grammatical_errors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp_text</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finds the number of grammatical errors in the input text.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            inp_text (str): The input text to analyze for grammatical errors.</span>
+<span class="sd">            language (str, optional): The language of the input text. Defaults to &quot;en&quot;.</span>
+<span class="sd">            max_retries (int, optional): The maximum number of retry attempts. Defaults to 3.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: The number of grammatical errors found in the input text, or None if an error occurs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">max_retries</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># Maximum number of retries</span>
+        <span class="n">retry_delay</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># Initial delay in seconds (5 seconds)</span>
+        <span class="k">if</span> <span class="n">inp_text</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">inp_text</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_retries</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">errors</span> <span class="o">=</span> <span class="n">ltp</span><span class="o">.</span><span class="n">check</span><span class="p">(</span>
+                    <span class="n">inp_text</span><span class="p">,</span> <span class="n">api_url</span><span class="o">=</span><span class="s2">&quot;https://languagetool.org/api/v2/&quot;</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">language</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error while finding grammatical errors: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">attempt</span> <span class="o">&lt;</span> <span class="n">max_retries</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># No need to sleep on the last attempt</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Rate limit exceeded, retrying in </span><span class="si">{</span><span class="n">retry_delay</span><span class="si">}</span><span class="s2"> seconds...&quot;</span>
+                    <span class="p">)</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">retry_delay</span><span class="p">)</span>
+                    <span class="n">retry_delay</span> <span class="o">*=</span> <span class="mi">2</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="TextAnalyzer.translate">
+<a class="viewcode-back" href="../../../../bdc.steps.helpers.html#bdc.steps.helpers.text_analyzer.TextAnalyzer.translate">[docs]</a>
+    <span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp_text</span><span class="p">,</span> <span class="n">source_lang</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="n">target_lang</span><span class="o">=</span><span class="n">TARGET_LANG</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Translates the input text to the target language.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            inp_text (str): The input text to translate.</span>
+<span class="sd">            source_lang (str, optional): The source language of the input text. Defaults to &quot;auto&quot;.</span>
+<span class="sd">            target_lang (str, optional): The target language of the input text. Defaults to TARGET_LANG.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The translated text, or None if an error occurs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">inp_text</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">inp_text</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">source_lang</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">TARGET_LANG</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">inp_text</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">GoogleTranslator</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">source_lang</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">target_lang</span><span class="p">)</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span>
+                <span class="n">inp_text</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error while translating: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="TextAnalyzer.calculate_sentiment_analysis_score">
+<a class="viewcode-back" href="../../../../bdc.steps.helpers.html#bdc.steps.helpers.text_analyzer.TextAnalyzer.calculate_sentiment_analysis_score">[docs]</a>
+    <span class="k">def</span> <span class="nf">calculate_sentiment_analysis_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp_text</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the sentiment analysis of the input text.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            inp_text (str): The input text to analyze for sentiment analysis.</span>
+<span class="sd">            lang (str, optional): The language of the input text. Defaults to &quot;english&quot;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The sentiment analysis of the input text, or None if an error occurs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">inp_text</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">inp_text</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">translated_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">inp_text</span><span class="p">,</span> <span class="n">source_lang</span><span class="o">=</span><span class="n">lang</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">translated_text</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="n">blob</span> <span class="o">=</span> <span class="n">TextBlob</span><span class="p">(</span><span class="n">inp_text</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">blob</span><span class="o">.</span><span class="n">sentiment</span><span class="o">.</span><span class="n">polarity</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error while calculating sentiment analysis: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, SumInsights.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

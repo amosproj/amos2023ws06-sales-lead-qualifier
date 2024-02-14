@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bdc.steps.preprocess_phonenumbers &mdash; Sales Lead Qualifier 01.00.00 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=6386319a"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Sales Lead Qualifier
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme_link.html">Sales-Lead-Qualifier Project (AMOS WS 2023/24)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html">Build Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html#user-documentation">User Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html#design-documentation">Design Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html#classifier-comparison">Classifier Comparison</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html#concepts-unrealized-ideas-miscellaneous">Concepts, Unrealized Ideas &amp; Miscellaneous</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">src</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Sales Lead Qualifier</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">bdc.steps.preprocess_phonenumbers</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for bdc.steps.preprocess_phonenumbers</h1><div class="highlight"><pre>
+<span></span><span class="c1"># SPDX-License-Identifier: MIT</span>
+<span class="c1"># SPDX-FileCopyrightText: 2023 Fabian-Paul Utech &lt;f.utech@gmx.net&gt;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">phonenumbers</span>
+<span class="kn">from</span> <span class="nn">phonenumbers</span> <span class="kn">import</span> <span class="n">geocoder</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="kn">from</span> <span class="nn">bdc.steps.helpers</span> <span class="kn">import</span> <span class="n">get_lead_hash_generator</span>
+<span class="kn">from</span> <span class="nn">bdc.steps.step</span> <span class="kn">import</span> <span class="n">Step</span>
+<span class="kn">from</span> <span class="nn">logger</span> <span class="kn">import</span> <span class="n">get_logger</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="PreprocessPhonenumbers">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers">[docs]</a>
+<span class="k">class</span> <span class="nc">PreprocessPhonenumbers</span><span class="p">(</span><span class="n">Step</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The PreprocessPhonenumbers step will check if the provided phone numbers are valid and extract geo information</span>
+<span class="sd">    if possible.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        name: Name of this step, used for logging</span>
+<span class="sd">        added_cols: List of fields that will be added to the main dataframe by executing this step</span>
+<span class="sd">        required_cols: List of fields that are required to be existent in the input dataframe before performing this</span>
+<span class="sd">            step</span>
+
+<span class="sd">    Added Columns:</span>
+<span class="sd">        number_formatted (str): The formatted phone number, e.g. +49 123 456789</span>
+<span class="sd">        number_country (str): The country of the phone number, e.g. Germany</span>
+<span class="sd">        number_area (str): The area of the phone number, e.g. Berlin</span>
+<span class="sd">        number_valid (bool): Whether the phone number is valid</span>
+<span class="sd">        number_possible (bool): Whether the phone number is possible</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Preprocess-Phonenumbers&quot;</span>
+    <span class="n">added_cols</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;number_formatted&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;number_country&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;number_area&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;number_valid&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;number_possible&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="n">required_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Phone&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="PreprocessPhonenumbers.load_data">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.load_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="PreprocessPhonenumbers.verify">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.verify">[docs]</a>
+    <span class="k">def</span> <span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">verify</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="PreprocessPhonenumbers.run">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.run">[docs]</a>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">tqdm</span><span class="o">.</span><span class="n">pandas</span><span class="p">(</span><span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Preprocessing Phone numbers&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">added_cols</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">progress_apply</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">lead</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+                <span class="n">get_lead_hash_generator</span><span class="p">()</span><span class="o">.</span><span class="n">hash_check</span><span class="p">(</span>
+                    <span class="n">lead</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_row</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">added_cols</span><span class="p">,</span> <span class="n">lead</span>
+                <span class="p">)</span>
+            <span class="p">),</span>
+            <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># self.df[self.added_cols] = self.df.progress_apply(</span>
+        <span class="c1">#     lambda lead: pd.Series(self.process_row(lead)), axis=1</span>
+        <span class="c1"># )</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="PreprocessPhonenumbers.process_row">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.process_row">[docs]</a>
+    <span class="k">def</span> <span class="nf">process_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_number</span><span class="p">(</span><span class="s2">&quot;+&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;Phone&quot;</span><span class="p">]))</span> <span class="ow">or</span> <span class="p">{</span>
+            <span class="n">key</span><span class="p">:</span> <span class="kc">False</span> <span class="k">if</span> <span class="s2">&quot;valid&quot;</span> <span class="ow">in</span> <span class="n">key</span> <span class="ow">or</span> <span class="s2">&quot;possible&quot;</span> <span class="ow">in</span> <span class="n">key</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">added_cols</span>
+        <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="PreprocessPhonenumbers.finish">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.finish">[docs]</a>
+    <span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">p_phone_numbers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;number_valid&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Percentage of valid numbers: </span><span class="si">{</span><span class="n">p_phone_numbers</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PreprocessPhonenumbers.check_number">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.check_number">[docs]</a>
+    <span class="k">def</span> <span class="nf">check_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phone_number</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">phone_number_object</span> <span class="o">=</span> <span class="n">phonenumbers</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">phone_number</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">country_code</span> <span class="o">=</span> <span class="n">phonenumbers</span><span class="o">.</span><span class="n">format_number</span><span class="p">(</span>
+            <span class="n">phone_number_object</span><span class="p">,</span> <span class="n">phonenumbers</span><span class="o">.</span><span class="n">PhoneNumberFormat</span><span class="o">.</span><span class="n">INTERNATIONAL</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">international_number</span> <span class="o">=</span> <span class="n">phonenumbers</span><span class="o">.</span><span class="n">format_number</span><span class="p">(</span>
+            <span class="n">phone_number_object</span><span class="p">,</span> <span class="n">phonenumbers</span><span class="o">.</span><span class="n">PhoneNumberFormat</span><span class="o">.</span><span class="n">INTERNATIONAL</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Set country based on country code (Norway and Finland not working properly, thats why they are defined separetly)</span>
+        <span class="n">country</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;+358&quot;</span><span class="p">:</span> <span class="s2">&quot;Finland&quot;</span><span class="p">,</span> <span class="s2">&quot;+47&quot;</span><span class="p">:</span> <span class="s2">&quot;Norway&quot;</span><span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">country_code</span><span class="p">,</span> <span class="n">geocoder</span><span class="o">.</span><span class="n">country_name_for_number</span><span class="p">(</span><span class="n">phone_number_object</span><span class="p">,</span> <span class="s2">&quot;en&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">location</span> <span class="o">=</span> <span class="n">geocoder</span><span class="o">.</span><span class="n">description_for_number</span><span class="p">(</span><span class="n">phone_number_object</span><span class="p">,</span> <span class="s2">&quot;en&quot;</span><span class="p">)</span>
+        <span class="n">location</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">location</span> <span class="o">==</span> <span class="n">country</span> <span class="k">else</span> <span class="n">location</span>
+
+        <span class="c1"># Valid number (e.g., it&#39;s in an assigned exchange)</span>
+        <span class="n">is_valid_number</span> <span class="o">=</span> <span class="n">phonenumbers</span><span class="o">.</span><span class="n">is_valid_number</span><span class="p">(</span><span class="n">phone_number_object</span><span class="p">)</span>
+
+        <span class="c1"># Possible number (e.g., it has the right number of digits)</span>
+        <span class="n">is_possible_number</span> <span class="o">=</span> <span class="n">phonenumbers</span><span class="o">.</span><span class="n">is_possible_number</span><span class="p">(</span><span class="n">phone_number_object</span><span class="p">)</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">international_number</span><span class="p">,</span>
+            <span class="n">country</span><span class="p">,</span>
+            <span class="n">location</span><span class="p">,</span>
+            <span class="n">is_valid_number</span><span class="p">,</span>
+            <span class="n">is_possible_number</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="n">result_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">col</span><span class="p">:</span> <span class="n">val</span> <span class="k">for</span> <span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">added_cols</span><span class="p">,</span> <span class="n">results</span><span class="p">)}</span>
+
+        <span class="k">return</span> <span class="n">result_dict</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, SumInsights.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

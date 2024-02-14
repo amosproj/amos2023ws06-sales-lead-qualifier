@@ -1,0 +1,18 @@
+database package
+================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   database.leads
+
+Module contents
+---------------
+
+.. automodule:: database
+   :members:
+   :undoc-members:
+   :show-inheritance:

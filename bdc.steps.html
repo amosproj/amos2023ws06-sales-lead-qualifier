@@ -1,0 +1,2074 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bdc.steps package &mdash; Sales Lead Qualifier 01.00.00 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=6386319a"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="bdc.steps.helpers package" href="bdc.steps.helpers.html" />
+    <link rel="prev" title="bdc package" href="bdc.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Sales Lead Qualifier
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme_link.html">Sales-Lead-Qualifier Project (AMOS WS 2023/24)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html">Build Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html#user-documentation">User Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html#design-documentation">Design Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html#classifier-comparison">Classifier Comparison</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html#concepts-unrealized-ideas-miscellaneous">Concepts, Unrealized Ideas &amp; Miscellaneous</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="bdc.html">bdc package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="bdc.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">bdc.steps package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bdc.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bdc.html#module-bdc.pipeline">bdc.pipeline module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bdc.html#module-bdc">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="config.html">config module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="database.html">database package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo.html">demo package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evp.html">evp package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logger.html">logger package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="preprocessing.html">preprocessing package</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Sales Lead Qualifier</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">src</a></li>
+          <li class="breadcrumb-item"><a href="bdc.html">bdc package</a></li>
+      <li class="breadcrumb-item active">bdc.steps package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/bdc.steps.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="bdc-steps-package">
+<h1>bdc.steps package<a class="headerlink" href="#bdc-steps-package" title="Link to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="bdc.steps.helpers.html">bdc.steps.helpers package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bdc.steps.helpers.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bdc.steps.helpers.html#module-bdc.steps.helpers.generate_hash_leads">bdc.steps.helpers.generate_hash_leads module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bdc.steps.helpers.html#bdc.steps.helpers.generate_hash_leads.LeadHashGenerator"><code class="docutils literal notranslate"><span class="pre">LeadHashGenerator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.helpers.html#bdc.steps.helpers.generate_hash_leads.LeadHashGenerator.BASE_PATH"><code class="docutils literal notranslate"><span class="pre">LeadHashGenerator.BASE_PATH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.helpers.html#bdc.steps.helpers.generate_hash_leads.LeadHashGenerator.hash_check"><code class="docutils literal notranslate"><span class="pre">LeadHashGenerator.hash_check()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.helpers.html#bdc.steps.helpers.generate_hash_leads.LeadHashGenerator.hash_lead"><code class="docutils literal notranslate"><span class="pre">LeadHashGenerator.hash_lead()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bdc.steps.helpers.html#module-bdc.steps.helpers.offeneregister_api">bdc.steps.helpers.offeneregister_api module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bdc.steps.helpers.html#bdc.steps.helpers.offeneregister_api.OffeneRegisterAPI"><code class="docutils literal notranslate"><span class="pre">OffeneRegisterAPI</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.helpers.html#bdc.steps.helpers.offeneregister_api.OffeneRegisterAPI.find_companyAddress_by_lastName_firstName"><code class="docutils literal notranslate"><span class="pre">OffeneRegisterAPI.find_companyAddress_by_lastName_firstName()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.helpers.html#bdc.steps.helpers.offeneregister_api.OffeneRegisterAPI.find_companyCapitals_by_lastName_firstName"><code class="docutils literal notranslate"><span class="pre">OffeneRegisterAPI.find_companyCapitals_by_lastName_firstName()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.helpers.html#bdc.steps.helpers.offeneregister_api.OffeneRegisterAPI.find_companyName_by_lastName_firstName"><code class="docutils literal notranslate"><span class="pre">OffeneRegisterAPI.find_companyName_by_lastName_firstName()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.helpers.html#bdc.steps.helpers.offeneregister_api.OffeneRegisterAPI.find_companyObjective_by_lastName_firstName"><code class="docutils literal notranslate"><span class="pre">OffeneRegisterAPI.find_companyObjective_by_lastName_firstName()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bdc.steps.helpers.html#module-bdc.steps.helpers.text_analyzer">bdc.steps.helpers.text_analyzer module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bdc.steps.helpers.html#bdc.steps.helpers.text_analyzer.TextAnalyzer"><code class="docutils literal notranslate"><span class="pre">TextAnalyzer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.helpers.html#bdc.steps.helpers.text_analyzer.TextAnalyzer.TARGET_LANG"><code class="docutils literal notranslate"><span class="pre">TextAnalyzer.TARGET_LANG</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.helpers.html#bdc.steps.helpers.text_analyzer.TextAnalyzer.calculate_sentiment_analysis_score"><code class="docutils literal notranslate"><span class="pre">TextAnalyzer.calculate_sentiment_analysis_score()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.helpers.html#bdc.steps.helpers.text_analyzer.TextAnalyzer.correct_text"><code class="docutils literal notranslate"><span class="pre">TextAnalyzer.correct_text()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.helpers.html#bdc.steps.helpers.text_analyzer.TextAnalyzer.find_number_of_grammatical_errors"><code class="docutils literal notranslate"><span class="pre">TextAnalyzer.find_number_of_grammatical_errors()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.helpers.html#bdc.steps.helpers.text_analyzer.TextAnalyzer.find_number_of_spelling_errors"><code class="docutils literal notranslate"><span class="pre">TextAnalyzer.find_number_of_spelling_errors()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.helpers.html#bdc.steps.helpers.text_analyzer.TextAnalyzer.find_spelling_errors"><code class="docutils literal notranslate"><span class="pre">TextAnalyzer.find_spelling_errors()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bdc.steps.helpers.html#bdc.steps.helpers.text_analyzer.TextAnalyzer.translate"><code class="docutils literal notranslate"><span class="pre">TextAnalyzer.translate()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bdc.steps.helpers.html#module-bdc.steps.helpers">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bdc.steps.helpers.html#bdc.steps.helpers.get_lead_hash_generator"><code class="docutils literal notranslate"><span class="pre">get_lead_hash_generator()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-bdc.steps.analyze_emails">
+<span id="bdc-steps-analyze-emails-module"></span><h2>bdc.steps.analyze_emails module<a class="headerlink" href="#module-bdc.steps.analyze_emails" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bdc.steps.analyze_emails.AnalyzeEmails">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bdc.steps.analyze_emails.</span></span><span class="sig-name descname"><span class="pre">AnalyzeEmails</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force_refresh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_emails.html#AnalyzeEmails"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_emails.AnalyzeEmails" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bdc.steps.step.Step" title="bdc.steps.step.Step"><code class="xref py py-class docutils literal notranslate"><span class="pre">Step</span></code></a></p>
+<p>A pipeline step performing various preprocessing steps with the given email address.
+The following columns will be added on successful processing:</p>
+<ul class="simple">
+<li><p><strong>domain</strong>: The custom domain name/website if any</p></li>
+<li><p><strong>email_valid</strong>: Boolean result of email check</p></li>
+<li><p><strong>first_name_in_account</strong>: Boolean, True if the given first name is part of the email account name</p></li>
+<li><p><strong>last_name_in_account</strong>: Boolean, True if the given last name is part of the email account name</p></li>
+</ul>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.analyze_emails.AnalyzeEmails.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#bdc.steps.analyze_emails.AnalyzeEmails.name" title="Link to this definition"></a></dt>
+<dd><p>Name of this step, used for logging</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.analyze_emails.AnalyzeEmails.added_cols">
+<span class="sig-name descname"><span class="pre">added_cols</span></span><a class="headerlink" href="#bdc.steps.analyze_emails.AnalyzeEmails.added_cols" title="Link to this definition"></a></dt>
+<dd><p>List of fields that will be added to the main dataframe by executing this step</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.analyze_emails.AnalyzeEmails.required_cols">
+<span class="sig-name descname"><span class="pre">required_cols</span></span><a class="headerlink" href="#bdc.steps.analyze_emails.AnalyzeEmails.required_cols" title="Link to this definition"></a></dt>
+<dd><p>List of fields that are required to be existent in the input dataframe before performing this step</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="simple">
+<dt>Added Columns:</dt><dd><p>domain (str): The custom domain name/website if any
+email_valid (bool): Boolean result of email check
+first_name_in_account (bool): Boolean, True if the given first name is part of the email account name
+last_name_in_account (bool): Boolean, True if the given last name is part of the email account name</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">added_cols</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['domain',</span> <span class="pre">'email_valid',</span> <span class="pre">'first_name_in_account',</span> <span class="pre">'last_name_in_account']</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.analyze_emails.AnalyzeEmails.finish">
+<span class="sig-name descname"><span class="pre">finish</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_emails.html#AnalyzeEmails.finish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_emails.AnalyzeEmails.finish" title="Link to this definition"></a></dt>
+<dd><p>Finish the execution. Print a report or clean up temporary files. Will not be executed if verify() fails.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.analyze_emails.AnalyzeEmails.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_emails.html#AnalyzeEmails.load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_emails.AnalyzeEmails.load_data" title="Link to this definition"></a></dt>
+<dd><p>Load data for this processing step. This could be an API call or reading from a CSV file. Can also be empty
+if self.df is used.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Analyze-Emails'</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">required_cols</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['Email',</span> <span class="pre">'First</span> <span class="pre">Name',</span> <span class="pre">'Last</span> <span class="pre">Name']</span></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.analyze_emails.AnalyzeEmails.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_emails.html#AnalyzeEmails.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_emails.AnalyzeEmails.run" title="Link to this definition"></a></dt>
+<dd><p>Perform the actual processing step. Will not be executed if verify() fails.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p>StepError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.analyze_emails.AnalyzeEmails.verify">
+<span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_emails.html#AnalyzeEmails.verify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_emails.AnalyzeEmails.verify" title="Link to this definition"></a></dt>
+<dd><p>Verify that the data has been loaded correctly and is present in a format that can be processed by this step.
+If this fails, run() and finish() will not be executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bdc.steps.analyze_emails.analyze_email_account">
+<span class="sig-prename descclassname"><span class="pre">bdc.steps.analyze_emails.</span></span><span class="sig-name descname"><span class="pre">analyze_email_account</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lead</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Series</span></span></span><a class="reference internal" href="_modules/bdc/steps/analyze_emails.html#analyze_email_account"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_emails.analyze_email_account" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bdc.steps.analyze_emails.extract_custom_domain">
+<span class="sig-prename descclassname"><span class="pre">bdc.steps.analyze_emails.</span></span><span class="sig-name descname"><span class="pre">extract_custom_domain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Series</span></span></span><a class="reference internal" href="_modules/bdc/steps/analyze_emails.html#extract_custom_domain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_emails.extract_custom_domain" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-bdc.steps.analyze_reviews">
+<span id="bdc-steps-analyze-reviews-module"></span><h2>bdc.steps.analyze_reviews module<a class="headerlink" href="#module-bdc.steps.analyze_reviews" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bdc.steps.analyze_reviews.</span></span><span class="sig-name descname"><span class="pre">GPTReviewSentimentAnalyzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force_refresh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#GPTReviewSentimentAnalyzer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bdc.steps.step.Step" title="bdc.steps.step.Step"><code class="xref py py-class docutils literal notranslate"><span class="pre">Step</span></code></a></p>
+<p>A class that performs sentiment analysis on reviews using GPT-4 model.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.name" title="Link to this definition"></a></dt>
+<dd><p>The name of the step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.model" title="Link to this definition"></a></dt>
+<dd><p>The GPT model to be used for sentiment analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.model_encoding_name">
+<span class="sig-name descname"><span class="pre">model_encoding_name</span></span><a class="headerlink" href="#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.model_encoding_name" title="Link to this definition"></a></dt>
+<dd><p>The encoding name of the GPT model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.MAX_PROMPT_TOKENS">
+<span class="sig-name descname"><span class="pre">MAX_PROMPT_TOKENS</span></span><a class="headerlink" href="#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.MAX_PROMPT_TOKENS" title="Link to this definition"></a></dt>
+<dd><p>The maximum number of tokens allowed for a prompt.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.no_answer">
+<span class="sig-name descname"><span class="pre">no_answer</span></span><a class="headerlink" href="#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.no_answer" title="Link to this definition"></a></dt>
+<dd><p>The default value for no answer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.gpt_required_fields">
+<span class="sig-name descname"><span class="pre">gpt_required_fields</span></span><a class="headerlink" href="#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.gpt_required_fields" title="Link to this definition"></a></dt>
+<dd><p>The required fields for GPT analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.system_message_for_sentiment_analysis">
+<span class="sig-name descname"><span class="pre">system_message_for_sentiment_analysis</span></span><a class="headerlink" href="#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.system_message_for_sentiment_analysis" title="Link to this definition"></a></dt>
+<dd><p>The system message for sentiment analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.user_message_for_sentiment_analysis">
+<span class="sig-name descname"><span class="pre">user_message_for_sentiment_analysis</span></span><a class="headerlink" href="#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.user_message_for_sentiment_analysis" title="Link to this definition"></a></dt>
+<dd><p>The user message for sentiment analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.extracted_col_name">
+<span class="sig-name descname"><span class="pre">extracted_col_name</span></span><a class="headerlink" href="#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.extracted_col_name" title="Link to this definition"></a></dt>
+<dd><p>The name of the column to store the sentiment scores.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.added_cols">
+<span class="sig-name descname"><span class="pre">added_cols</span></span><a class="headerlink" href="#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.added_cols" title="Link to this definition"></a></dt>
+<dd><p>The list of additional columns to be added to the DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.gpt">
+<span class="sig-name descname"><span class="pre">gpt</span></span><a class="headerlink" href="#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.gpt" title="Link to this definition"></a></dt>
+<dd><p>The GPT instance for sentiment analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>openai.OpenAI</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#GPTReviewSentimentAnalyzer.load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.load_data" title="Link to this definition"></a></dt>
+<dd><p>Loads the GPT model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.verify">
+<span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#GPTReviewSentimentAnalyzer.verify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.verify" title="Link to this definition"></a></dt>
+<dd><p>Verifies the validity of the API key and DataFrame.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#GPTReviewSentimentAnalyzer.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.run" title="Link to this definition"></a></dt>
+<dd><p>Runs the sentiment analysis on the reviews.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.finish">
+<span class="sig-name descname"><span class="pre">finish</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#GPTReviewSentimentAnalyzer.finish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.finish" title="Link to this definition"></a></dt>
+<dd><p>Finishes the sentiment analysis step.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.run_sentiment_analysis">
+<span class="sig-name descname"><span class="pre">run_sentiment_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">place_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#GPTReviewSentimentAnalyzer.run_sentiment_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.run_sentiment_analysis" title="Link to this definition"></a></dt>
+<dd><p>Runs sentiment analysis on the reviews of a lead.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.gpt_sentiment_analyze_review">
+<span class="sig-name descname"><span class="pre">gpt_sentiment_analyze_review</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#GPTReviewSentimentAnalyzer.gpt_sentiment_analyze_review"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.gpt_sentiment_analyze_review" title="Link to this definition"></a></dt>
+<dd><p>Calculates the sentiment score using GPT.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.extract_text_from_reviews">
+<span class="sig-name descname"><span class="pre">extract_text_from_reviews</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reviews_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#GPTReviewSentimentAnalyzer.extract_text_from_reviews"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.extract_text_from_reviews" title="Link to this definition"></a></dt>
+<dd><p>Extracts text from reviews and removes line characters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.num_tokens_from_string">
+<span class="sig-name descname"><span class="pre">num_tokens_from_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#GPTReviewSentimentAnalyzer.num_tokens_from_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.num_tokens_from_string" title="Link to this definition"></a></dt>
+<dd><p>Returns the number of tokens in a text string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.batch_reviews">
+<span class="sig-name descname"><span class="pre">batch_reviews</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reviews</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_tokens</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#GPTReviewSentimentAnalyzer.batch_reviews"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.batch_reviews" title="Link to this definition"></a></dt>
+<dd><p>Batches reviews into smaller batches based on token limit.</p>
+</dd></dl>
+
+<dl class="simple">
+<dt>Added Columns:</dt><dd><p>reviews_sentiment_score (float): The sentiment score of the reviews.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">MAX_PROMPT_TOKENS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4096</span></em><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">added_cols</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['reviews_sentiment_score']</span></em><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">batch_reviews</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reviews</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_tokens</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4096</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#GPTReviewSentimentAnalyzer.batch_reviews"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dd><p>Batches reviews into smaller batches based on token limit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reviews</strong> – The list of reviews.</p></li>
+<li><p><strong>max_tokens</strong> (<em>int</em>) – The maximum number of tokens allowed for a batch.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The list of batches.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">extract_text_from_reviews</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reviews_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#GPTReviewSentimentAnalyzer.extract_text_from_reviews"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<dd><p>Extracts text from reviews and removes line characters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>reviews_list</strong> – The list of reviews.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The list of formatted review texts.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">extracted_col_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'reviews_sentiment_score'</span></em><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">finish</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#GPTReviewSentimentAnalyzer.finish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
+<dd><p>Finish the execution. Print a report or clean up temporary files. Will not be executed if verify() fails.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">gpt</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.gpt_calculate_avg_sentiment_score">
+<span class="sig-name descname"><span class="pre">gpt_calculate_avg_sentiment_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reviews</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#GPTReviewSentimentAnalyzer.gpt_calculate_avg_sentiment_score"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.gpt_calculate_avg_sentiment_score" title="Link to this definition"></a></dt>
+<dd><p>Calculates the average sentiment score for a list of reviews using GPT.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>reviews</strong> (<em>list</em>) – A list of review texts.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The average sentiment score.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id10">
+<span class="sig-name descname"><span class="pre">gpt_required_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'place_id':</span> <span class="pre">'google_places_place_id'}</span></em><a class="headerlink" href="#id10" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id11">
+<span class="sig-name descname"><span class="pre">gpt_sentiment_analyze_review</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#GPTReviewSentimentAnalyzer.gpt_sentiment_analyze_review"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id11" title="Link to this definition"></a></dt>
+<dd><p>GPT calculates the sentiment score considering the reviews.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>review_list</strong> – The list of reviews.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The sentiment score calculated by GPT.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id12">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#GPTReviewSentimentAnalyzer.load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id12" title="Link to this definition"></a></dt>
+<dd><p>Loads the GPT model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id13">
+<span class="sig-name descname"><span class="pre">model</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'gpt-4'</span></em><a class="headerlink" href="#id13" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id14">
+<span class="sig-name descname"><span class="pre">model_encoding_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cl100k_base'</span></em><a class="headerlink" href="#id14" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id15">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'GPT-Review-Sentiment-Analyzer'</span></em><a class="headerlink" href="#id15" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id16">
+<span class="sig-name descname"><span class="pre">no_answer</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'None'</span></em><a class="headerlink" href="#id16" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id17">
+<span class="sig-name descname"><span class="pre">num_tokens_from_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#GPTReviewSentimentAnalyzer.num_tokens_from_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id17" title="Link to this definition"></a></dt>
+<dd><p>Returns the number of tokens in a text string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – The input text.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The number of tokens in the text.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.required_cols">
+<span class="sig-name descname"><span class="pre">required_cols</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">dict_values(['google_places_place_id'])</span></em><a class="headerlink" href="#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.required_cols" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id18">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#GPTReviewSentimentAnalyzer.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id18" title="Link to this definition"></a></dt>
+<dd><p>Runs the sentiment analysis on the reviews.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The DataFrame with the sentiment scores added.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id19">
+<span class="sig-name descname"><span class="pre">run_sentiment_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">place_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#GPTReviewSentimentAnalyzer.run_sentiment_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id19" title="Link to this definition"></a></dt>
+<dd><p>Runs sentiment analysis on reviews of lead extracted from company’s website.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>place_id</strong> – The ID of the place.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The average sentiment score of the reviews.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id20">
+<span class="sig-name descname"><span class="pre">system_message_for_sentiment_analysis</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&quot;You</span> <span class="pre">are</span> <span class="pre">review</span> <span class="pre">sentiment</span> <span class="pre">analyzer,</span> <span class="pre">you</span> <span class="pre">being</span> <span class="pre">provided</span> <span class="pre">reviews</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">companies.</span> <span class="pre">You</span> <span class="pre">analyze</span> <span class="pre">the</span> <span class="pre">review</span> <span class="pre">and</span> <span class="pre">come</span> <span class="pre">up</span> <span class="pre">with</span> <span class="pre">the</span> <span class="pre">score</span> <span class="pre">between</span> <span class="pre">range</span> <span class="pre">[-1,</span> <span class="pre">1],</span> <span class="pre">if</span> <span class="pre">no</span> <span class="pre">reviews</span> <span class="pre">then</span> <span class="pre">just</span> <span class="pre">answer</span> <span class="pre">with</span> <span class="pre">'None'&quot;</span></em><a class="headerlink" href="#id20" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.text_analyzer">
+<span class="sig-name descname"><span class="pre">text_analyzer</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;bdc.steps.helpers.text_analyzer.TextAnalyzer</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.text_analyzer" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.textblob_calculate_avg_sentiment_score">
+<span class="sig-name descname"><span class="pre">textblob_calculate_avg_sentiment_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reviews</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#GPTReviewSentimentAnalyzer.textblob_calculate_avg_sentiment_score"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_reviews.GPTReviewSentimentAnalyzer.textblob_calculate_avg_sentiment_score" title="Link to this definition"></a></dt>
+<dd><p>Calculates the average sentiment score for a list of reviews using TextBlob sentiment analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>reviews</strong> (<em>list</em>) – A list of dictionaries containing review text and language information.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The average sentiment score for the reviews.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id21">
+<span class="sig-name descname"><span class="pre">user_message_for_sentiment_analysis</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Sentiment</span> <span class="pre">analyze</span> <span class="pre">the</span> <span class="pre">reviews</span>&#160; <span class="pre">and</span> <span class="pre">provide</span> <span class="pre">me</span> <span class="pre">a</span> <span class="pre">score</span> <span class="pre">between</span> <span class="pre">range</span> <span class="pre">[-1,</span> <span class="pre">1]</span>&#160; <span class="pre">:</span> <span class="pre">{}'</span></em><a class="headerlink" href="#id21" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id22">
+<span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#GPTReviewSentimentAnalyzer.verify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id22" title="Link to this definition"></a></dt>
+<dd><p>Verifies the validity of the API key and DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the API key and DataFrame are valid, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bdc.steps.analyze_reviews.</span></span><span class="sig-name descname"><span class="pre">SmartReviewInsightsEnhancer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force_refresh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#SmartReviewInsightsEnhancer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bdc.steps.step.Step" title="bdc.steps.step.Step"><code class="xref py py-class docutils literal notranslate"><span class="pre">Step</span></code></a></p>
+<p>A step class that enhances review insights for smart review analysis.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.name" title="Link to this definition"></a></dt>
+<dd><p>The name of the step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.required_fields">
+<span class="sig-name descname"><span class="pre">required_fields</span></span><a class="headerlink" href="#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.required_fields" title="Link to this definition"></a></dt>
+<dd><p>A dictionary of required fields for the step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.language_tools">
+<span class="sig-name descname"><span class="pre">language_tools</span></span><a class="headerlink" href="#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.language_tools" title="Link to this definition"></a></dt>
+<dd><p>A dictionary of language tools for different languages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.MIN_RATINGS_COUNT">
+<span class="sig-name descname"><span class="pre">MIN_RATINGS_COUNT</span></span><a class="headerlink" href="#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.MIN_RATINGS_COUNT" title="Link to this definition"></a></dt>
+<dd><p>The minimum number of ratings required to identify polarization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.RATING_DOMINANCE_THRESHOLD">
+<span class="sig-name descname"><span class="pre">RATING_DOMINANCE_THRESHOLD</span></span><a class="headerlink" href="#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.RATING_DOMINANCE_THRESHOLD" title="Link to this definition"></a></dt>
+<dd><p>The threshold for high or low rating dominance in decimal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.added_cols">
+<span class="sig-name descname"><span class="pre">added_cols</span></span><a class="headerlink" href="#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.added_cols" title="Link to this definition"></a></dt>
+<dd><p>A list of added columns for the enhanced review insights.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#SmartReviewInsightsEnhancer.load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.load_data" title="Link to this definition"></a></dt>
+<dd><p>Loads the data for the step.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.verify">
+<span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#SmartReviewInsightsEnhancer.verify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.verify" title="Link to this definition"></a></dt>
+<dd><p>Verifies if the required fields are present in the data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#SmartReviewInsightsEnhancer.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.run" title="Link to this definition"></a></dt>
+<dd><p>Runs the step and enhances the review insights.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.finish">
+<span class="sig-name descname"><span class="pre">finish</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#SmartReviewInsightsEnhancer.finish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.finish" title="Link to this definition"></a></dt>
+<dd><p>Finishes the step.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._get_language_tool">
+<span class="sig-name descname"><span class="pre">_get_language_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lang</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._get_language_tool" title="Link to this definition"></a></dt>
+<dd><p>Get the language tool for the specified language.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._enhance_review_insights">
+<span class="sig-name descname"><span class="pre">_enhance_review_insights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lead</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#SmartReviewInsightsEnhancer._enhance_review_insights"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._enhance_review_insights" title="Link to this definition"></a></dt>
+<dd><p>Enhances the review insights for a given lead.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._analyze_rating_trend">
+<span class="sig-name descname"><span class="pre">_analyze_rating_trend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rating_time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#SmartReviewInsightsEnhancer._analyze_rating_trend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._analyze_rating_trend" title="Link to this definition"></a></dt>
+<dd><p>Analyzes the general trend of ratings over time.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._quantify_polarization">
+<span class="sig-name descname"><span class="pre">_quantify_polarization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ratings</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#SmartReviewInsightsEnhancer._quantify_polarization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._quantify_polarization" title="Link to this definition"></a></dt>
+<dd><p>Analyzes and quantifies the polarization in a list of ratings.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._determine_polarization_type">
+<span class="sig-name descname"><span class="pre">_determine_polarization_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">polarization_score</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highest_rating_ratio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowest_rating_ratio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#SmartReviewInsightsEnhancer._determine_polarization_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._determine_polarization_type" title="Link to this definition"></a></dt>
+<dd><p>Determines the type of polarization based on rating ratios and a threshold.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._calculate_average_grammatical_score">
+<span class="sig-name descname"><span class="pre">_calculate_average_grammatical_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reviews</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#SmartReviewInsightsEnhancer._calculate_average_grammatical_score"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._calculate_average_grammatical_score" title="Link to this definition"></a></dt>
+<dd><p>Calculates the average grammatical score for a list of reviews.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._calculate_score">
+<span class="sig-name descname"><span class="pre">_calculate_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#SmartReviewInsightsEnhancer._calculate_score"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._calculate_score" title="Link to this definition"></a></dt>
+<dd><p>Calculates the score for a review.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._grammatical_errors">
+<span class="sig-name descname"><span class="pre">_grammatical_errors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lang</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer._grammatical_errors" title="Link to this definition"></a></dt>
+<dd><p>Calculates the number of grammatical errors in a text.</p>
+</dd></dl>
+
+<dl class="simple">
+<dt>Added Columns:</dt><dd><p>review_avg_grammatical_score (float): The average grammatical score of the reviews.
+review_polarization_type (str): The type of polarization in the reviews.
+review_polarization_score (float): The score of polarization in the reviews.
+review_highest_rating_ratio (float): The ratio of highest ratings in the reviews.
+review_lowest_rating_ratio (float): The ratio of lowest ratings in the reviews.
+review_rating_trend (float): The trend of ratings over time.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id23">
+<span class="sig-name descname"><span class="pre">MIN_RATINGS_COUNT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#id23" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id24">
+<span class="sig-name descname"><span class="pre">RATING_DOMINANCE_THRESHOLD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.4</span></em><a class="headerlink" href="#id24" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id25">
+<span class="sig-name descname"><span class="pre">added_cols</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['review_avg_grammatical_score',</span> <span class="pre">'review_polarization_type',</span> <span class="pre">'review_polarization_score',</span> <span class="pre">'review_highest_rating_ratio',</span> <span class="pre">'review_lowest_rating_ratio',</span> <span class="pre">'review_rating_trend']</span></em><a class="headerlink" href="#id25" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id26">
+<span class="sig-name descname"><span class="pre">finish</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#SmartReviewInsightsEnhancer.finish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id26" title="Link to this definition"></a></dt>
+<dd><p>Finishes the step.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id27">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#SmartReviewInsightsEnhancer.load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id27" title="Link to this definition"></a></dt>
+<dd><p>Loads the data for the step.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id28">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Smart-Review-Insights-Enhancer'</span></em><a class="headerlink" href="#id28" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id29">
+<span class="sig-name descname"><span class="pre">required_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'place_id':</span> <span class="pre">'google_places_place_id'}</span></em><a class="headerlink" href="#id29" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id30">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#SmartReviewInsightsEnhancer.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id30" title="Link to this definition"></a></dt>
+<dd><p>Runs the step and enhances the review insights.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The enhanced DataFrame with the added review insights.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.text_analyzer">
+<span class="sig-name descname"><span class="pre">text_analyzer</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;bdc.steps.helpers.text_analyzer.TextAnalyzer</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#bdc.steps.analyze_reviews.SmartReviewInsightsEnhancer.text_analyzer" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id31">
+<span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#SmartReviewInsightsEnhancer.verify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id31" title="Link to this definition"></a></dt>
+<dd><p>Verifies if the required fields are present in the data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the required fields are present, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.check_api_key">
+<span class="sig-prename descclassname"><span class="pre">bdc.steps.analyze_reviews.</span></span><span class="sig-name descname"><span class="pre">check_api_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#check_api_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_reviews.check_api_key" title="Link to this definition"></a></dt>
+<dd><p>Checks if an API key is provided for a specific API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> (<em>str</em>) – The API key to be checked.</p></li>
+<li><p><strong>api_name</strong> (<em>str</em>) – The name of the API.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#bdc.steps.step.StepError" title="bdc.steps.step.StepError"><strong>StepError</strong></a> – If the API key is not provided.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the API key is provided, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.is_review_valid">
+<span class="sig-prename descclassname"><span class="pre">bdc.steps.analyze_reviews.</span></span><span class="sig-name descname"><span class="pre">is_review_valid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/analyze_reviews.html#is_review_valid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.analyze_reviews.is_review_valid" title="Link to this definition"></a></dt>
+<dd><p>Checks if the review is valid (has text and original language).</p>
+<p>Parameters:
+review (dict): A dictionary representing a review.</p>
+<p>Returns:
+bool: True if the review is valid, False otherwise.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="bdc.steps.analyze_reviews.log">
+<span class="sig-prename descclassname"><span class="pre">bdc.steps.analyze_reviews.</span></span><span class="sig-name descname"><span class="pre">log</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CustomLogger</span> <span class="pre">AMOS-APP</span> <span class="pre">(DEBUG)&gt;</span></em><a class="headerlink" href="#bdc.steps.analyze_reviews.log" title="Link to this definition"></a></dt>
+<dd><p>HELPER FUNCTIONS</p>
+</dd></dl>
+
+</section>
+<section id="module-bdc.steps.google_places">
+<span id="bdc-steps-google-places-module"></span><h2>bdc.steps.google_places module<a class="headerlink" href="#module-bdc.steps.google_places" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bdc.steps.google_places.GooglePlaces">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bdc.steps.google_places.</span></span><span class="sig-name descname"><span class="pre">GooglePlaces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force_refresh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/google_places.html#GooglePlaces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.google_places.GooglePlaces" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bdc.steps.step.Step" title="bdc.steps.step.Step"><code class="xref py py-class docutils literal notranslate"><span class="pre">Step</span></code></a></p>
+<p>The GooglePlaces step will try to find the correct business entry in the Google Maps database. It will save basic
+information along with the place id, that can be used to retrieve further detailed information and a confidence
+score that should indicate the confidence in having found the correct result. Confidence can vary based on the data
+source used for identifying the business and if multiple sources are used confidence is higher when results match.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.google_places.GooglePlaces.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#bdc.steps.google_places.GooglePlaces.name" title="Link to this definition"></a></dt>
+<dd><p>Name of this step, used for logging and as a column prefix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.google_places.GooglePlaces.added_cols">
+<span class="sig-name descname"><span class="pre">added_cols</span></span><a class="headerlink" href="#bdc.steps.google_places.GooglePlaces.added_cols" title="Link to this definition"></a></dt>
+<dd><p>List of fields that will be added to the main dataframe by executing this step</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.google_places.GooglePlaces.required_cols">
+<span class="sig-name descname"><span class="pre">required_cols</span></span><a class="headerlink" href="#bdc.steps.google_places.GooglePlaces.required_cols" title="Link to this definition"></a></dt>
+<dd><p>List of fields that are required to be existent in the input dataframe before performing this step</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="simple">
+<dt>Added Columns:</dt><dd><p>google_places_place_id (str): The place id of the business
+google_places_business_status (str): The business status of the business
+google_places_formatted_address (str): The formatted address of the business
+google_places_name (str): The name of the business
+google_places_user_ratings_total (int): The number of user ratings of the business
+google_places_rating (float): The rating of the business
+google_places_price_level (int): The price level of the business
+google_places_candidate_count_mail (int): The number of candidates found by mail search
+google_places_candidate_count_phone (int): The number of candidates found by phone search
+google_places_place_id_matches_phone_search (bool): Whether the place id found by mail search matches the one found by phone search
+google_places_confidence (float): A confidence score for the results</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id32">
+<span class="sig-name descname"><span class="pre">added_cols</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['google_places_place_id',</span> <span class="pre">'google_places_business_status',</span> <span class="pre">'google_places_formatted_address',</span> <span class="pre">'google_places_name',</span> <span class="pre">'google_places_user_ratings_total',</span> <span class="pre">'google_places_rating',</span> <span class="pre">'google_places_price_level',</span> <span class="pre">'google_places_candidate_count_mail',</span> <span class="pre">'google_places_candidate_count_phone',</span> <span class="pre">'google_places_place_id_matches_phone_search',</span> <span class="pre">'google_places_confidence']</span></em><a class="headerlink" href="#id32" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.google_places.GooglePlaces.api_fields">
+<span class="sig-name descname"><span class="pre">api_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['place_id',</span> <span class="pre">'business_status',</span> <span class="pre">'formatted_address',</span> <span class="pre">'name',</span> <span class="pre">'user_ratings_total',</span> <span class="pre">'rating',</span> <span class="pre">'price_level']</span></em><a class="headerlink" href="#bdc.steps.google_places.GooglePlaces.api_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.google_places.GooglePlaces.calculate_confidence">
+<span class="sig-name descname"><span class="pre">calculate_confidence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lead</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bdc/steps/google_places.html#GooglePlaces.calculate_confidence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.google_places.GooglePlaces.calculate_confidence" title="Link to this definition"></a></dt>
+<dd><p>Calculate some confidence score, representing how sure we are to have found the correct Google Place
+(using super secret, patented AI algorithm :P)
+:param results_list:
+:return: confidence</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.google_places.GooglePlaces.df_fields">
+<span class="sig-name descname"><span class="pre">df_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['place_id',</span> <span class="pre">'business_status',</span> <span class="pre">'formatted_address',</span> <span class="pre">'name',</span> <span class="pre">'user_ratings_total',</span> <span class="pre">'rating',</span> <span class="pre">'price_level',</span> <span class="pre">'candidate_count_mail',</span> <span class="pre">'candidate_count_phone',</span> <span class="pre">'place_id_matches_phone_search',</span> <span class="pre">'confidence']</span></em><a class="headerlink" href="#bdc.steps.google_places.GooglePlaces.df_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.google_places.GooglePlaces.finish">
+<span class="sig-name descname"><span class="pre">finish</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bdc/steps/google_places.html#GooglePlaces.finish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.google_places.GooglePlaces.finish" title="Link to this definition"></a></dt>
+<dd><p>Finish the execution. Print a report or clean up temporary files. Will not be executed if verify() fails.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.google_places.GooglePlaces.get_data_from_google_api">
+<span class="sig-name descname"><span class="pre">get_data_from_google_api</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lead_row</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/google_places.html#GooglePlaces.get_data_from_google_api"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.google_places.GooglePlaces.get_data_from_google_api" title="Link to this definition"></a></dt>
+<dd><p>Request Google Places Text Search API</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.google_places.GooglePlaces.get_first_place_candidate">
+<span class="sig-name descname"><span class="pre">get_first_place_candidate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_type)</span> <span class="pre">-&gt;</span> <span class="pre">(&lt;class</span> <span class="pre">'dict'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">&lt;class</span> <span class="pre">'int'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/google_places.html#GooglePlaces.get_first_place_candidate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.google_places.GooglePlaces.get_first_place_candidate" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.google_places.GooglePlaces.gmaps">
+<span class="sig-name descname"><span class="pre">gmaps</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#bdc.steps.google_places.GooglePlaces.gmaps" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.google_places.GooglePlaces.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bdc/steps/google_places.html#GooglePlaces.load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.google_places.GooglePlaces.load_data" title="Link to this definition"></a></dt>
+<dd><p>Make sure that the API key for Google places is present and construct the API client</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id33">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Google_Places'</span></em><a class="headerlink" href="#id33" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id34">
+<span class="sig-name descname"><span class="pre">required_cols</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['Email',</span> <span class="pre">'domain',</span> <span class="pre">'first_name_in_account',</span> <span class="pre">'last_name_in_account',</span> <span class="pre">'number_formatted']</span></em><a class="headerlink" href="#id34" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.google_places.GooglePlaces.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/bdc/steps/google_places.html#GooglePlaces.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.google_places.GooglePlaces.run" title="Link to this definition"></a></dt>
+<dd><p>Perform the actual processing step. Will not be executed if verify() fails.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p>StepError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.google_places.GooglePlaces.verify">
+<span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/bdc/steps/google_places.html#GooglePlaces.verify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.google_places.GooglePlaces.verify" title="Link to this definition"></a></dt>
+<dd><p>Verify that the data has been loaded correctly and is present in a format that can be processed by this step.
+If this fails, run() and finish() will not be executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bdc.steps.google_places_detailed">
+<span id="bdc-steps-google-places-detailed-module"></span><h2>bdc.steps.google_places_detailed module<a class="headerlink" href="#module-bdc.steps.google_places_detailed" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bdc.steps.google_places_detailed.GooglePlacesDetailed">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bdc.steps.google_places_detailed.</span></span><span class="sig-name descname"><span class="pre">GooglePlacesDetailed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force_refresh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/google_places_detailed.html#GooglePlacesDetailed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.google_places_detailed.GooglePlacesDetailed" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bdc.steps.step.Step" title="bdc.steps.step.Step"><code class="xref py py-class docutils literal notranslate"><span class="pre">Step</span></code></a></p>
+<p>The GooglePlacesDetailed step will try to gather detailed information for a given google business entry, identified
+by the place ID. This information could be the website link, the review text and the business type. Reviews will
+be saved to a separate location based on the persistence settings this could be local or AWS S3.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.google_places_detailed.GooglePlacesDetailed.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#bdc.steps.google_places_detailed.GooglePlacesDetailed.name" title="Link to this definition"></a></dt>
+<dd><p>Name of this step, used for logging</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.google_places_detailed.GooglePlacesDetailed.added_cols">
+<span class="sig-name descname"><span class="pre">added_cols</span></span><a class="headerlink" href="#bdc.steps.google_places_detailed.GooglePlacesDetailed.added_cols" title="Link to this definition"></a></dt>
+<dd><p>List of fields that will be added to the main dataframe by executing this step</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.google_places_detailed.GooglePlacesDetailed.required_cols">
+<span class="sig-name descname"><span class="pre">required_cols</span></span><a class="headerlink" href="#bdc.steps.google_places_detailed.GooglePlacesDetailed.required_cols" title="Link to this definition"></a></dt>
+<dd><p>List of fields that are required to be existent in the input dataframe before performing this step</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="simple">
+<dt>Added Columns:</dt><dd><p>google_places_detailed_website (str): The website of the company from google places
+google_places_detailed_type (str): The type of the company from google places</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id35">
+<span class="sig-name descname"><span class="pre">added_cols</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['google_places_detailed_website',</span> <span class="pre">'google_places_detailed_type']</span></em><a class="headerlink" href="#id35" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.google_places_detailed.GooglePlacesDetailed.api_fields">
+<span class="sig-name descname"><span class="pre">api_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['website',</span> <span class="pre">'type',</span> <span class="pre">'reviews']</span></em><a class="headerlink" href="#bdc.steps.google_places_detailed.GooglePlacesDetailed.api_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.google_places_detailed.GooglePlacesDetailed.api_fields_output">
+<span class="sig-name descname"><span class="pre">api_fields_output</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['website',</span> <span class="pre">'types']</span></em><a class="headerlink" href="#bdc.steps.google_places_detailed.GooglePlacesDetailed.api_fields_output" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.google_places_detailed.GooglePlacesDetailed.df_fields">
+<span class="sig-name descname"><span class="pre">df_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['website',</span> <span class="pre">'type']</span></em><a class="headerlink" href="#bdc.steps.google_places_detailed.GooglePlacesDetailed.df_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.google_places_detailed.GooglePlacesDetailed.finish">
+<span class="sig-name descname"><span class="pre">finish</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bdc/steps/google_places_detailed.html#GooglePlacesDetailed.finish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.google_places_detailed.GooglePlacesDetailed.finish" title="Link to this definition"></a></dt>
+<dd><p>Finish the execution. Print a report or clean up temporary files. Will not be executed if verify() fails.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.google_places_detailed.GooglePlacesDetailed.get_data_from_detailed_google_api">
+<span class="sig-name descname"><span class="pre">get_data_from_detailed_google_api</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lead_row</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/google_places_detailed.html#GooglePlacesDetailed.get_data_from_detailed_google_api"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.google_places_detailed.GooglePlacesDetailed.get_data_from_detailed_google_api" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.google_places_detailed.GooglePlacesDetailed.gmaps">
+<span class="sig-name descname"><span class="pre">gmaps</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#bdc.steps.google_places_detailed.GooglePlacesDetailed.gmaps" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.google_places_detailed.GooglePlacesDetailed.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bdc/steps/google_places_detailed.html#GooglePlacesDetailed.load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.google_places_detailed.GooglePlacesDetailed.load_data" title="Link to this definition"></a></dt>
+<dd><p>Load data for this processing step. This could be an API call or reading from a CSV file. Can also be empty
+if self.df is used.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id36">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Google_Places_Detailed'</span></em><a class="headerlink" href="#id36" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id37">
+<span class="sig-name descname"><span class="pre">required_cols</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['google_places_place_id']</span></em><a class="headerlink" href="#id37" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.google_places_detailed.GooglePlacesDetailed.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/bdc/steps/google_places_detailed.html#GooglePlacesDetailed.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.google_places_detailed.GooglePlacesDetailed.run" title="Link to this definition"></a></dt>
+<dd><p>Perform the actual processing step. Will not be executed if verify() fails.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p>StepError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.google_places_detailed.GooglePlacesDetailed.verify">
+<span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/bdc/steps/google_places_detailed.html#GooglePlacesDetailed.verify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.google_places_detailed.GooglePlacesDetailed.verify" title="Link to this definition"></a></dt>
+<dd><p>Verify that the data has been loaded correctly and is present in a format that can be processed by this step.
+If this fails, run() and finish() will not be executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bdc.steps.gpt_summarizer">
+<span id="bdc-steps-gpt-summarizer-module"></span><h2>bdc.steps.gpt_summarizer module<a class="headerlink" href="#module-bdc.steps.gpt_summarizer" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bdc.steps.gpt_summarizer.GPTSummarizer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bdc.steps.gpt_summarizer.</span></span><span class="sig-name descname"><span class="pre">GPTSummarizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force_refresh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/gpt_summarizer.html#GPTSummarizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.gpt_summarizer.GPTSummarizer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bdc.steps.step.Step" title="bdc.steps.step.Step"><code class="xref py py-class docutils literal notranslate"><span class="pre">Step</span></code></a></p>
+<p>The GPTSummarizer step will attempt to download a businesses website in raw html format and pass this information
+to OpenAIs GPT, which will then attempt to summarize the raw contents and extract valuable information for a
+salesperson.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.gpt_summarizer.GPTSummarizer.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#bdc.steps.gpt_summarizer.GPTSummarizer.name" title="Link to this definition"></a></dt>
+<dd><p>Name of this step, used for logging</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.gpt_summarizer.GPTSummarizer.added_cols">
+<span class="sig-name descname"><span class="pre">added_cols</span></span><a class="headerlink" href="#bdc.steps.gpt_summarizer.GPTSummarizer.added_cols" title="Link to this definition"></a></dt>
+<dd><p>List of fields that will be added to the main dataframe by executing this step</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.gpt_summarizer.GPTSummarizer.required_cols">
+<span class="sig-name descname"><span class="pre">required_cols</span></span><a class="headerlink" href="#bdc.steps.gpt_summarizer.GPTSummarizer.required_cols" title="Link to this definition"></a></dt>
+<dd><p>List of fields that are required to be existent in the input dataframe before performing this
+step</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="simple">
+<dt>Added Columns:</dt><dd><p>sales_person_summary (str): The summary of the company website for the salesperson using GPT</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id38">
+<span class="sig-name descname"><span class="pre">added_cols</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['sales_person_summary']</span></em><a class="headerlink" href="#id38" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.gpt_summarizer.GPTSummarizer.client">
+<span class="sig-name descname"><span class="pre">client</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#bdc.steps.gpt_summarizer.GPTSummarizer.client" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.gpt_summarizer.GPTSummarizer.extract_the_raw_html_and_parse">
+<span class="sig-name descname"><span class="pre">extract_the_raw_html_and_parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/gpt_summarizer.html#GPTSummarizer.extract_the_raw_html_and_parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.gpt_summarizer.GPTSummarizer.extract_the_raw_html_and_parse" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.gpt_summarizer.GPTSummarizer.extracted_col_name_website_summary">
+<span class="sig-name descname"><span class="pre">extracted_col_name_website_summary</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sales_person_summary'</span></em><a class="headerlink" href="#bdc.steps.gpt_summarizer.GPTSummarizer.extracted_col_name_website_summary" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.gpt_summarizer.GPTSummarizer.finish">
+<span class="sig-name descname"><span class="pre">finish</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bdc/steps/gpt_summarizer.html#GPTSummarizer.finish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.gpt_summarizer.GPTSummarizer.finish" title="Link to this definition"></a></dt>
+<dd><p>Finish the execution. Print a report or clean up temporary files. Will not be executed if verify() fails.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.gpt_summarizer.GPTSummarizer.gpt_required_fields">
+<span class="sig-name descname"><span class="pre">gpt_required_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'place_id':</span> <span class="pre">'google_places_place_id',</span> <span class="pre">'website':</span> <span class="pre">'google_places_detailed_website'}</span></em><a class="headerlink" href="#bdc.steps.gpt_summarizer.GPTSummarizer.gpt_required_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.gpt_summarizer.GPTSummarizer.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bdc/steps/gpt_summarizer.html#GPTSummarizer.load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.gpt_summarizer.GPTSummarizer.load_data" title="Link to this definition"></a></dt>
+<dd><p>Load data for this processing step. This could be an API call or reading from a CSV file. Can also be empty
+if self.df is used.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.gpt_summarizer.GPTSummarizer.model">
+<span class="sig-name descname"><span class="pre">model</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'gpt-4'</span></em><a class="headerlink" href="#bdc.steps.gpt_summarizer.GPTSummarizer.model" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id39">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'GPT-Summarizer'</span></em><a class="headerlink" href="#id39" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.gpt_summarizer.GPTSummarizer.no_answer">
+<span class="sig-name descname"><span class="pre">no_answer</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'None'</span></em><a class="headerlink" href="#bdc.steps.gpt_summarizer.GPTSummarizer.no_answer" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id40">
+<span class="sig-name descname"><span class="pre">required_cols</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">dict_values(['google_places_detailed_website',</span> <span class="pre">'google_places_place_id'])</span></em><a class="headerlink" href="#id40" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.gpt_summarizer.GPTSummarizer.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/bdc/steps/gpt_summarizer.html#GPTSummarizer.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.gpt_summarizer.GPTSummarizer.run" title="Link to this definition"></a></dt>
+<dd><p>Perform the actual processing step. Will not be executed if verify() fails.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p>StepError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.gpt_summarizer.GPTSummarizer.summarize_the_company_website">
+<span class="sig-name descname"><span class="pre">summarize_the_company_website</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">website</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">place_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/gpt_summarizer.html#GPTSummarizer.summarize_the_company_website"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.gpt_summarizer.GPTSummarizer.summarize_the_company_website" title="Link to this definition"></a></dt>
+<dd><p>Summarise client website using GPT. Handles exceptions that mightarise from the API call.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.gpt_summarizer.GPTSummarizer.system_message_for_website_summary">
+<span class="sig-name descname"><span class="pre">system_message_for_website_summary</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&quot;You</span> <span class="pre">are</span> <span class="pre">html</span> <span class="pre">summarizer,</span> <span class="pre">you</span> <span class="pre">being</span> <span class="pre">provided</span> <span class="pre">the</span> <span class="pre">companies'</span> <span class="pre">htmls</span> <span class="pre">and</span> <span class="pre">you</span> <span class="pre">answer</span> <span class="pre">with</span> <span class="pre">the</span> <span class="pre">summary</span> <span class="pre">of</span> <span class="pre">three</span> <span class="pre">to</span> <span class="pre">five</span> <span class="pre">sentences</span> <span class="pre">including</span> <span class="pre">all</span> <span class="pre">the</span> <span class="pre">necessary</span> <span class="pre">information</span> <span class="pre">which</span> <span class="pre">might</span> <span class="pre">be</span> <span class="pre">useful</span> <span class="pre">for</span> <span class="pre">salesperson.</span> <span class="pre">If</span> <span class="pre">no</span> <span class="pre">html</span> <span class="pre">then</span> <span class="pre">just</span> <span class="pre">answer</span> <span class="pre">with</span> <span class="pre">'None'&quot;</span></em><a class="headerlink" href="#bdc.steps.gpt_summarizer.GPTSummarizer.system_message_for_website_summary" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.gpt_summarizer.GPTSummarizer.user_message_for_website_summary">
+<span class="sig-name descname"><span class="pre">user_message_for_website_summary</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Give</span> <span class="pre">salesperson</span> <span class="pre">a</span> <span class="pre">summary</span> <span class="pre">using</span> <span class="pre">following</span> <span class="pre">html:</span> <span class="pre">{}'</span></em><a class="headerlink" href="#bdc.steps.gpt_summarizer.GPTSummarizer.user_message_for_website_summary" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.gpt_summarizer.GPTSummarizer.verify">
+<span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/bdc/steps/gpt_summarizer.html#GPTSummarizer.verify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.gpt_summarizer.GPTSummarizer.verify" title="Link to this definition"></a></dt>
+<dd><p>Verify that the data has been loaded correctly and is present in a format that can be processed by this step.
+If this fails, run() and finish() will not be executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bdc.steps.hash_generator">
+<span id="bdc-steps-hash-generator-module"></span><h2>bdc.steps.hash_generator module<a class="headerlink" href="#module-bdc.steps.hash_generator" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bdc.steps.hash_generator.HashGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bdc.steps.hash_generator.</span></span><span class="sig-name descname"><span class="pre">HashGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force_refresh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/hash_generator.html#HashGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.hash_generator.HashGenerator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bdc.steps.step.Step" title="bdc.steps.step.Step"><code class="xref py py-class docutils literal notranslate"><span class="pre">Step</span></code></a></p>
+<p>A pipeline step computing the hashed value of a lead using the basic data that should
+be present for every lead. These data include:</p>
+<ul class="simple">
+<li><p>First Name</p></li>
+<li><p>Last Name</p></li>
+<li><p>Company / Account</p></li>
+<li><p>Phone</p></li>
+<li><p>Email</p></li>
+</ul>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.hash_generator.HashGenerator.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#bdc.steps.hash_generator.HashGenerator.name" title="Link to this definition"></a></dt>
+<dd><p>Name of this step, used for logging</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.hash_generator.HashGenerator.added_cols">
+<span class="sig-name descname"><span class="pre">added_cols</span></span><a class="headerlink" href="#bdc.steps.hash_generator.HashGenerator.added_cols" title="Link to this definition"></a></dt>
+<dd><p>List of fields that will be added to the main dataframe by executing this step</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.hash_generator.HashGenerator.required_cols">
+<span class="sig-name descname"><span class="pre">required_cols</span></span><a class="headerlink" href="#bdc.steps.hash_generator.HashGenerator.required_cols" title="Link to this definition"></a></dt>
+<dd><p>List of fields that are required to be existent in the input dataframe before performing this step</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id41">
+<span class="sig-name descname"><span class="pre">added_cols</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['lead_hash']</span></em><a class="headerlink" href="#id41" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.hash_generator.HashGenerator.finish">
+<span class="sig-name descname"><span class="pre">finish</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bdc/steps/hash_generator.html#HashGenerator.finish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.hash_generator.HashGenerator.finish" title="Link to this definition"></a></dt>
+<dd><p>Finish the execution. Print a report or clean up temporary files. Will not be executed if verify() fails.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.hash_generator.HashGenerator.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bdc/steps/hash_generator.html#HashGenerator.load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.hash_generator.HashGenerator.load_data" title="Link to this definition"></a></dt>
+<dd><p>Load data for this processing step. This could be an API call or reading from a CSV file. Can also be empty
+if self.df is used.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id42">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Hash-Generator'</span></em><a class="headerlink" href="#id42" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id43">
+<span class="sig-name descname"><span class="pre">required_cols</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['First</span> <span class="pre">Name',</span> <span class="pre">'Last</span> <span class="pre">Name',</span> <span class="pre">'Company</span> <span class="pre">/</span> <span class="pre">Account',</span> <span class="pre">'Phone',</span> <span class="pre">'Email']</span></em><a class="headerlink" href="#id43" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.hash_generator.HashGenerator.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/bdc/steps/hash_generator.html#HashGenerator.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.hash_generator.HashGenerator.run" title="Link to this definition"></a></dt>
+<dd><p>Perform the actual processing step. Will not be executed if verify() fails.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p>StepError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.hash_generator.HashGenerator.verify">
+<span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/bdc/steps/hash_generator.html#HashGenerator.verify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.hash_generator.HashGenerator.verify" title="Link to this definition"></a></dt>
+<dd><p>Verify that the data has been loaded correctly and is present in a format that can be processed by this step.
+If this fails, run() and finish() will not be executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bdc.steps.preprocess_phonenumbers">
+<span id="bdc-steps-preprocess-phonenumbers-module"></span><h2>bdc.steps.preprocess_phonenumbers module<a class="headerlink" href="#module-bdc.steps.preprocess_phonenumbers" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bdc.steps.preprocess_phonenumbers.</span></span><span class="sig-name descname"><span class="pre">PreprocessPhonenumbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force_refresh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/preprocess_phonenumbers.html#PreprocessPhonenumbers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bdc.steps.step.Step" title="bdc.steps.step.Step"><code class="xref py py-class docutils literal notranslate"><span class="pre">Step</span></code></a></p>
+<p>The PreprocessPhonenumbers step will check if the provided phone numbers are valid and extract geo information
+if possible.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.name" title="Link to this definition"></a></dt>
+<dd><p>Name of this step, used for logging</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.added_cols">
+<span class="sig-name descname"><span class="pre">added_cols</span></span><a class="headerlink" href="#bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.added_cols" title="Link to this definition"></a></dt>
+<dd><p>List of fields that will be added to the main dataframe by executing this step</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.required_cols">
+<span class="sig-name descname"><span class="pre">required_cols</span></span><a class="headerlink" href="#bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.required_cols" title="Link to this definition"></a></dt>
+<dd><p>List of fields that are required to be existent in the input dataframe before performing this
+step</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="simple">
+<dt>Added Columns:</dt><dd><p>number_formatted (str): The formatted phone number, e.g. +49 123 456789
+number_country (str): The country of the phone number, e.g. Germany
+number_area (str): The area of the phone number, e.g. Berlin
+number_valid (bool): Whether the phone number is valid
+number_possible (bool): Whether the phone number is possible</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id44">
+<span class="sig-name descname"><span class="pre">added_cols</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['number_formatted',</span> <span class="pre">'number_country',</span> <span class="pre">'number_area',</span> <span class="pre">'number_valid',</span> <span class="pre">'number_possible']</span></em><a class="headerlink" href="#id44" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.check_number">
+<span class="sig-name descname"><span class="pre">check_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phone_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bdc/steps/preprocess_phonenumbers.html#PreprocessPhonenumbers.check_number"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.check_number" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.finish">
+<span class="sig-name descname"><span class="pre">finish</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/preprocess_phonenumbers.html#PreprocessPhonenumbers.finish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.finish" title="Link to this definition"></a></dt>
+<dd><p>Finish the execution. Print a report or clean up temporary files. Will not be executed if verify() fails.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/preprocess_phonenumbers.html#PreprocessPhonenumbers.load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.load_data" title="Link to this definition"></a></dt>
+<dd><p>Load data for this processing step. This could be an API call or reading from a CSV file. Can also be empty
+if self.df is used.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id45">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Preprocess-Phonenumbers'</span></em><a class="headerlink" href="#id45" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.process_row">
+<span class="sig-name descname"><span class="pre">process_row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/preprocess_phonenumbers.html#PreprocessPhonenumbers.process_row"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.process_row" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id46">
+<span class="sig-name descname"><span class="pre">required_cols</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['Phone']</span></em><a class="headerlink" href="#id46" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/preprocess_phonenumbers.html#PreprocessPhonenumbers.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.run" title="Link to this definition"></a></dt>
+<dd><p>Perform the actual processing step. Will not be executed if verify() fails.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p>StepError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.verify">
+<span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/preprocess_phonenumbers.html#PreprocessPhonenumbers.verify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.preprocess_phonenumbers.PreprocessPhonenumbers.verify" title="Link to this definition"></a></dt>
+<dd><p>Verify that the data has been loaded correctly and is present in a format that can be processed by this step.
+If this fails, run() and finish() will not be executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bdc.steps.regionalatlas">
+<span id="bdc-steps-regionalatlas-module"></span><h2>bdc.steps.regionalatlas module<a class="headerlink" href="#module-bdc.steps.regionalatlas" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bdc.steps.regionalatlas.RegionalAtlas">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bdc.steps.regionalatlas.</span></span><span class="sig-name descname"><span class="pre">RegionalAtlas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force_refresh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/regionalatlas.html#RegionalAtlas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.regionalatlas.RegionalAtlas" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bdc.steps.step.Step" title="bdc.steps.step.Step"><code class="xref py py-class docutils literal notranslate"><span class="pre">Step</span></code></a></p>
+<dl class="simple">
+<dt>The RegionalAtlas step will query the RegionalAtlas database for location based geographic and demographic</dt><dd><p>information, based on the address that was found for a business (currently through Google API) or the
+area provided by the phonenumber (preprocess_phonenumbers.py).</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.regionalatlas.RegionalAtlas.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#bdc.steps.regionalatlas.RegionalAtlas.name" title="Link to this definition"></a></dt>
+<dd><p>Name of this step, used for logging</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.regionalatlas.RegionalAtlas.reagionalatlas_feature_keys">
+<span class="sig-name descname"><span class="pre">reagionalatlas_feature_keys</span></span><a class="headerlink" href="#bdc.steps.regionalatlas.RegionalAtlas.reagionalatlas_feature_keys" title="Link to this definition"></a></dt>
+<dd><p>Dictionary to translate between the keys in the merged.geojson and the used column names in the df</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.regionalatlas.RegionalAtlas.df_fields">
+<span class="sig-name descname"><span class="pre">df_fields</span></span><a class="headerlink" href="#bdc.steps.regionalatlas.RegionalAtlas.df_fields" title="Link to this definition"></a></dt>
+<dd><p>the keys of the merged.geojson</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.regionalatlas.RegionalAtlas.added_cols">
+<span class="sig-name descname"><span class="pre">added_cols</span></span><a class="headerlink" href="#bdc.steps.regionalatlas.RegionalAtlas.added_cols" title="Link to this definition"></a></dt>
+<dd><p>List of fields that will be added to the main dataframe by executing this step</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.regionalatlas.RegionalAtlas.required_cols">
+<span class="sig-name descname"><span class="pre">required_cols</span></span><a class="headerlink" href="#bdc.steps.regionalatlas.RegionalAtlas.required_cols" title="Link to this definition"></a></dt>
+<dd><p>List of fields that are required in the input dataframe before performing this step</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.regionalatlas.RegionalAtlas.regions_gdfs">
+<span class="sig-name descname"><span class="pre">regions_gdfs</span></span><a class="headerlink" href="#bdc.steps.regionalatlas.RegionalAtlas.regions_gdfs" title="Link to this definition"></a></dt>
+<dd><p>dataframe that includes all keys/values from the merged.geojson</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.regionalatlas.RegionalAtlas.empty_result">
+<span class="sig-name descname"><span class="pre">empty_result</span></span><a class="headerlink" href="#bdc.steps.regionalatlas.RegionalAtlas.empty_result" title="Link to this definition"></a></dt>
+<dd><p>empty result that will be used in case there are problems with the data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.regionalatlas.RegionalAtlas.epsg_code_etrs">
+<span class="sig-name descname"><span class="pre">epsg_code_etrs</span></span><a class="headerlink" href="#bdc.steps.regionalatlas.RegionalAtlas.epsg_code_etrs" title="Link to this definition"></a></dt>
+<dd><p>25832 is the standard used by RegionAtlas</p>
+</dd></dl>
+
+<dl class="simple">
+<dt>Added Columns:</dt><dd><p>pop_density (float): Population density of the searched city
+pop_development (float): Population development of the searched city
+age_0 (float): Population age group 0-18 of the searched city
+age_1 (float): Population age group 18-30 of the searched city
+age_2 (float): Population age group 30-45 of the searched city
+age_3 (float): Population age group 45-60 of the searched city
+age_4 (float): Population age group 60+ of the searched city
+pop_avg_age (float): Average age of the searched city
+per_service_sector (float): Percentage of the service sector of the searched city
+per_trade (float): Percentage of the trade sector of the searched city
+employment_rate (float): Employment rate of the searched city
+unemployment_rate (float): Unemployment rate of the searched city
+per_long_term_unemployment (float): Percentage of long term unemployment of the searched city
+investments_p_employee (float): Investments per employee of the searched city
+gross_salary_p_employee (float): Gross salary per employee of the searched city
+disp_income_p_inhabitant (float): Disposable income per inhabitant of the searched city
+tot_income_p_taxpayer (float): Total income per taxpayer of the searched city
+gdp_p_employee (float): GDP per employee of the searched city
+gdp_development (float): GDP development of the searched city
+gdp_p_inhabitant (float): GDP per inhabitant of the searched city
+gdp_p_workhours (float): GDP per workhour of the searched city
+pop_avg_age_zensus (float): Average age of the searched city (zensus)
+unemployment_rate (float): Unemployment rate of the searched city (zensus)
+regional_score (float): Regional score of the searched city</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id47">
+<span class="sig-name descname"><span class="pre">added_cols</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['regional_atlas_pop_density',</span> <span class="pre">'regional_atlas_pop_development',</span> <span class="pre">'regional_atlas_age_0',</span> <span class="pre">'regional_atlas_age_1',</span> <span class="pre">'regional_atlas_age_2',</span> <span class="pre">'regional_atlas_age_3',</span> <span class="pre">'regional_atlas_age_4',</span> <span class="pre">'regional_atlas_pop_avg_age',</span> <span class="pre">'regional_atlas_per_service_sector',</span> <span class="pre">'regional_atlas_per_trade',</span> <span class="pre">'regional_atlas_employment_rate',</span> <span class="pre">'regional_atlas_unemployment_rate',</span> <span class="pre">'regional_atlas_per_long_term_unemployment',</span> <span class="pre">'regional_atlas_investments_p_employee',</span> <span class="pre">'regional_atlas_gross_salary_p_employee',</span> <span class="pre">'regional_atlas_disp_income_p_inhabitant',</span> <span class="pre">'regional_atlas_tot_income_p_taxpayer',</span> <span class="pre">'regional_atlas_gdp_p_employee',</span> <span class="pre">'regional_atlas_gdp_development',</span> <span class="pre">'regional_atlas_gdp_p_inhabitant',</span> <span class="pre">'regional_atlas_gdp_p_workhours',</span> <span class="pre">'regional_atlas_pop_avg_age_zensus',</span> <span class="pre">'regional_atlas_regional_score']</span></em><a class="headerlink" href="#id47" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.regionalatlas.RegionalAtlas.calculate_regional_score">
+<span class="sig-name descname"><span class="pre">calculate_regional_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lead</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bdc/steps/regionalatlas.html#RegionalAtlas.calculate_regional_score"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.regionalatlas.RegionalAtlas.calculate_regional_score" title="Link to this definition"></a></dt>
+<dd><p>Calculate a regional score for a lead based on information from the RegionalAtlas API.</p>
+<p>This function uses population density, employment rate, and average income to compute
+the buying power of potential customers in the area in millions of euro.</p>
+<dl class="simple">
+<dt>The score is computed as:</dt><dd><p>(population density * employment rate * average income) / 1,000,000</p>
+</dd>
+</dl>
+<p>Possible extensions could include:
+- Population age groups</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>lead</strong> – Lead for which to compute the score</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>float | None - The computed score if the necessary fields are present for the lead. None otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id48">
+<span class="sig-name descname"><span class="pre">df_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">dict_values(['ai0201',</span> <span class="pre">'ai0202',</span> <span class="pre">'ai0203',</span> <span class="pre">'ai0204',</span> <span class="pre">'ai0205',</span> <span class="pre">'ai0206',</span> <span class="pre">'ai0207',</span> <span class="pre">'ai0218',</span> <span class="pre">'ai0706',</span> <span class="pre">'ai0707',</span> <span class="pre">'ai0710',</span> <span class="pre">'ai_z08',</span> <span class="pre">'ai0808',</span> <span class="pre">'ai1001',</span> <span class="pre">'ai1002',</span> <span class="pre">'ai1601',</span> <span class="pre">'ai1602',</span> <span class="pre">'ai1701',</span> <span class="pre">'ai1702',</span> <span class="pre">'ai1703',</span> <span class="pre">'ai1704',</span> <span class="pre">'ai_z01'])</span></em><a class="headerlink" href="#id48" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id49">
+<span class="sig-name descname"><span class="pre">empty_result</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'ai0201':</span> <span class="pre">None,</span> <span class="pre">'ai0202':</span> <span class="pre">None,</span> <span class="pre">'ai0203':</span> <span class="pre">None,</span> <span class="pre">'ai0204':</span> <span class="pre">None,</span> <span class="pre">'ai0205':</span> <span class="pre">None,</span> <span class="pre">'ai0206':</span> <span class="pre">None,</span> <span class="pre">'ai0207':</span> <span class="pre">None,</span> <span class="pre">'ai0218':</span> <span class="pre">None,</span> <span class="pre">'ai0706':</span> <span class="pre">None,</span> <span class="pre">'ai0707':</span> <span class="pre">None,</span> <span class="pre">'ai0710':</span> <span class="pre">None,</span> <span class="pre">'ai0808':</span> <span class="pre">None,</span> <span class="pre">'ai1001':</span> <span class="pre">None,</span> <span class="pre">'ai1002':</span> <span class="pre">None,</span> <span class="pre">'ai1601':</span> <span class="pre">None,</span> <span class="pre">'ai1602':</span> <span class="pre">None,</span> <span class="pre">'ai1701':</span> <span class="pre">None,</span> <span class="pre">'ai1702':</span> <span class="pre">None,</span> <span class="pre">'ai1703':</span> <span class="pre">None,</span> <span class="pre">'ai1704':</span> <span class="pre">None,</span> <span class="pre">'ai_z01':</span> <span class="pre">None,</span> <span class="pre">'ai_z08':</span> <span class="pre">None}</span></em><a class="headerlink" href="#id49" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id50">
+<span class="sig-name descname"><span class="pre">epsg_code_etrs</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">25832</span></em><a class="headerlink" href="#id50" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.regionalatlas.RegionalAtlas.finish">
+<span class="sig-name descname"><span class="pre">finish</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bdc/steps/regionalatlas.html#RegionalAtlas.finish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.regionalatlas.RegionalAtlas.finish" title="Link to this definition"></a></dt>
+<dd><p>Finish the execution. Print a report or clean up temporary files. Will not be executed if verify() fails.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.regionalatlas.RegionalAtlas.get_data_from_address">
+<span class="sig-name descname"><span class="pre">get_data_from_address</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/regionalatlas.html#RegionalAtlas.get_data_from_address"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.regionalatlas.RegionalAtlas.get_data_from_address" title="Link to this definition"></a></dt>
+<dd><p>Retrieve the regional features for every lead. Every column of reagionalatlas_feature_keys is added.</p>
+<p>Based on the google places address or the phonenumber area. Checks if the centroid of the
+searched city is in a RegionalAtlas region.</p>
+<p>Possible extensions could include:
+- More RegionalAtlas features</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>row</strong> – Lead for which to retrieve the features</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict - The retrieved features if the necessary fields are present for the lead. Empty dictionary otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.regionalatlas.RegionalAtlas.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bdc/steps/regionalatlas.html#RegionalAtlas.load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.regionalatlas.RegionalAtlas.load_data" title="Link to this definition"></a></dt>
+<dd><p>Load data for this processing step. This could be an API call or reading from a CSV file. Can also be empty
+if self.df is used.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id51">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Regional_Atlas'</span></em><a class="headerlink" href="#id51" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id52">
+<span class="sig-name descname"><span class="pre">reagionalatlas_feature_keys</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'age_0':</span> <span class="pre">'ai0203',</span> <span class="pre">'age_1':</span> <span class="pre">'ai0204',</span> <span class="pre">'age_2':</span> <span class="pre">'ai0205',</span> <span class="pre">'age_3':</span> <span class="pre">'ai0206',</span> <span class="pre">'age_4':</span> <span class="pre">'ai0207',</span> <span class="pre">'disp_income_p_inhabitant':</span> <span class="pre">'ai1601',</span> <span class="pre">'employment_rate':</span> <span class="pre">'ai0710',</span> <span class="pre">'gdp_development':</span> <span class="pre">'ai1702',</span> <span class="pre">'gdp_p_employee':</span> <span class="pre">'ai1701',</span> <span class="pre">'gdp_p_inhabitant':</span> <span class="pre">'ai1703',</span> <span class="pre">'gdp_p_workhours':</span> <span class="pre">'ai1704',</span> <span class="pre">'gross_salary_p_employee':</span> <span class="pre">'ai1002',</span> <span class="pre">'investments_p_employee':</span> <span class="pre">'ai1001',</span> <span class="pre">'per_long_term_unemployment':</span> <span class="pre">'ai0808',</span> <span class="pre">'per_service_sector':</span> <span class="pre">'ai0706',</span> <span class="pre">'per_trade':</span> <span class="pre">'ai0707',</span> <span class="pre">'pop_avg_age':</span> <span class="pre">'ai0218',</span> <span class="pre">'pop_avg_age_zensus':</span> <span class="pre">'ai_z01',</span> <span class="pre">'pop_density':</span> <span class="pre">'ai0201',</span> <span class="pre">'pop_development':</span> <span class="pre">'ai0202',</span> <span class="pre">'tot_income_p_taxpayer':</span> <span class="pre">'ai1602',</span> <span class="pre">'unemployment_rate':</span> <span class="pre">'ai_z08'}</span></em><a class="headerlink" href="#id52" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id53">
+<span class="sig-name descname"><span class="pre">regions_gdfs</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Empty</span> <span class="pre">GeoDataFrame</span> <span class="pre">Columns:</span> <span class="pre">[]</span> <span class="pre">Index:</span> <span class="pre">[]</span></em><a class="headerlink" href="#id53" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id54">
+<span class="sig-name descname"><span class="pre">required_cols</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['google_places_formatted_address']</span></em><a class="headerlink" href="#id54" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.regionalatlas.RegionalAtlas.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/bdc/steps/regionalatlas.html#RegionalAtlas.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.regionalatlas.RegionalAtlas.run" title="Link to this definition"></a></dt>
+<dd><p>Perform the actual processing step. Will not be executed if verify() fails.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p>StepError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.regionalatlas.RegionalAtlas.verify">
+<span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/bdc/steps/regionalatlas.html#RegionalAtlas.verify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.regionalatlas.RegionalAtlas.verify" title="Link to this definition"></a></dt>
+<dd><p>Verify that the data has been loaded correctly and is present in a format that can be processed by this step.
+If this fails, run() and finish() will not be executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bdc.steps.search_offeneregister">
+<span id="bdc-steps-search-offeneregister-module"></span><h2>bdc.steps.search_offeneregister module<a class="headerlink" href="#module-bdc.steps.search_offeneregister" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bdc.steps.search_offeneregister.SearchOffeneRegister">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bdc.steps.search_offeneregister.</span></span><span class="sig-name descname"><span class="pre">SearchOffeneRegister</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force_refresh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/search_offeneregister.html#SearchOffeneRegister"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.search_offeneregister.SearchOffeneRegister" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bdc.steps.step.Step" title="bdc.steps.step.Step"><code class="xref py py-class docutils literal notranslate"><span class="pre">Step</span></code></a></p>
+<p>This class represents a step in the sales lead qualification process that searches for company-related data
+using the OffeneRegisterAPI.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.search_offeneregister.SearchOffeneRegister.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#bdc.steps.search_offeneregister.SearchOffeneRegister.name" title="Link to this definition"></a></dt>
+<dd><p>The name of the step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.search_offeneregister.SearchOffeneRegister.required_cols">
+<span class="sig-name descname"><span class="pre">required_cols</span></span><a class="headerlink" href="#bdc.steps.search_offeneregister.SearchOffeneRegister.required_cols" title="Link to this definition"></a></dt>
+<dd><p>The list of required columns in the input DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.search_offeneregister.SearchOffeneRegister.added_cols">
+<span class="sig-name descname"><span class="pre">added_cols</span></span><a class="headerlink" href="#bdc.steps.search_offeneregister.SearchOffeneRegister.added_cols" title="Link to this definition"></a></dt>
+<dd><p>The list of columns to be added to the input DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.search_offeneregister.SearchOffeneRegister.offeneregisterAPI">
+<span class="sig-name descname"><span class="pre">offeneregisterAPI</span></span><a class="headerlink" href="#bdc.steps.search_offeneregister.SearchOffeneRegister.offeneregisterAPI" title="Link to this definition"></a></dt>
+<dd><p>An instance of the OffeneRegisterAPI class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="bdc.steps.helpers.html#bdc.steps.helpers.offeneregister_api.OffeneRegisterAPI" title="bdc.steps.helpers.offeneregister_api.OffeneRegisterAPI">OffeneRegisterAPI</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.search_offeneregister.SearchOffeneRegister.verify">
+<span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/search_offeneregister.html#SearchOffeneRegister.verify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.search_offeneregister.SearchOffeneRegister.verify" title="Link to this definition"></a></dt>
+<dd><p>Verifies if the step is ready to run.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.search_offeneregister.SearchOffeneRegister.finish">
+<span class="sig-name descname"><span class="pre">finish</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/search_offeneregister.html#SearchOffeneRegister.finish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.search_offeneregister.SearchOffeneRegister.finish" title="Link to this definition"></a></dt>
+<dd><p>Performs any necessary cleanup or finalization steps.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.search_offeneregister.SearchOffeneRegister.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/search_offeneregister.html#SearchOffeneRegister.load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.search_offeneregister.SearchOffeneRegister.load_data" title="Link to this definition"></a></dt>
+<dd><p>Loads any required data for the step.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.search_offeneregister.SearchOffeneRegister.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/search_offeneregister.html#SearchOffeneRegister.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.search_offeneregister.SearchOffeneRegister.run" title="Link to this definition"></a></dt>
+<dd><p>Executes the step and returns the modified DataFrame.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.search_offeneregister.SearchOffeneRegister._extract_company_related_data">
+<span class="sig-name descname"><span class="pre">_extract_company_related_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lead</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/search_offeneregister.html#SearchOffeneRegister._extract_company_related_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.search_offeneregister.SearchOffeneRegister._extract_company_related_data" title="Link to this definition"></a></dt>
+<dd><p>Extracts company-related data for a given lead.</p>
+</dd></dl>
+
+<dl class="simple">
+<dt>Added Columns:</dt><dd><p>company_name (str): The name of the company from offeneregister.de
+company_objective (str): The objective of the company offeneregister.de
+company_capital (float): The capital of the company offeneregister.de
+company_capital_currency (str): The currency of the company capital offeneregister.de
+company_address (str): The address of the company offeneregister.de</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id55">
+<span class="sig-name descname"><span class="pre">added_cols</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['company_name',</span> <span class="pre">'company_objective',</span> <span class="pre">'company_capital',</span> <span class="pre">'company_capital_currency',</span> <span class="pre">'compan_address']</span></em><a class="headerlink" href="#id55" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id56">
+<span class="sig-name descname"><span class="pre">finish</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/search_offeneregister.html#SearchOffeneRegister.finish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id56" title="Link to this definition"></a></dt>
+<dd><p>Finish the execution. Print a report or clean up temporary files. Will not be executed if verify() fails.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id57">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/search_offeneregister.html#SearchOffeneRegister.load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id57" title="Link to this definition"></a></dt>
+<dd><p>Load data for this processing step. This could be an API call or reading from a CSV file. Can also be empty
+if self.df is used.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id58">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'OffeneRegister'</span></em><a class="headerlink" href="#id58" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id59">
+<span class="sig-name descname"><span class="pre">offeneregisterAPI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;bdc.steps.helpers.offeneregister_api.OffeneRegisterAPI</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#id59" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id60">
+<span class="sig-name descname"><span class="pre">required_cols</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['Last</span> <span class="pre">Name',</span> <span class="pre">'First</span> <span class="pre">Name']</span></em><a class="headerlink" href="#id60" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id61">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/bdc/steps/search_offeneregister.html#SearchOffeneRegister.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id61" title="Link to this definition"></a></dt>
+<dd><p>Perform the actual processing step. Will not be executed if verify() fails.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p>StepError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id62">
+<span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/bdc/steps/search_offeneregister.html#SearchOffeneRegister.verify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id62" title="Link to this definition"></a></dt>
+<dd><p>Verify that the data has been loaded correctly and is present in a format that can be processed by this step.
+If this fails, run() and finish() will not be executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bdc.steps.step">
+<span id="bdc-steps-step-module"></span><h2>bdc.steps.step module<a class="headerlink" href="#module-bdc.steps.step" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bdc.steps.step.Step">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bdc.steps.step.</span></span><span class="sig-name descname"><span class="pre">Step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force_refresh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bdc/steps/step.html#Step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.step.Step" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Step is an abstract parent class for all steps of the data enrichment pipeline. Steps can be added to a list
+and then be passed to the pipeline for sequential execution.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.step.Step.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#bdc.steps.step.Step.name" title="Link to this definition"></a></dt>
+<dd><p>Name of this step, used for logging and as column prefix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.step.Step.added_cols">
+<span class="sig-name descname"><span class="pre">added_cols</span></span><a class="headerlink" href="#bdc.steps.step.Step.added_cols" title="Link to this definition"></a></dt>
+<dd><p>List of fields that will be added to the main dataframe by executing a step</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bdc.steps.step.Step.required_cols">
+<span class="sig-name descname"><span class="pre">required_cols</span></span><a class="headerlink" href="#bdc.steps.step.Step.required_cols" title="Link to this definition"></a></dt>
+<dd><p>List of fields that are required to be existent in the input dataframe before performing a step</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id63">
+<span class="sig-name descname"><span class="pre">added_cols</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#id63" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.step.Step.check_data_presence">
+<span class="sig-name descname"><span class="pre">check_data_presence</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/bdc/steps/step.html#Step.check_data_presence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.step.Step.check_data_presence" title="Link to this definition"></a></dt>
+<dd><p>Check whether the data this step collects is already present in the df.
+Can be forced to return False if self._force_execution is set to True.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bdc.steps.step.Step.df">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">df</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataFrame</span></em><a class="headerlink" href="#bdc.steps.step.Step.df" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.step.Step.finish">
+<span class="sig-name descname"><span class="pre">finish</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bdc/steps/step.html#Step.finish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.step.Step.finish" title="Link to this definition"></a></dt>
+<dd><p>Finish the execution. Print a report or clean up temporary files. Will not be executed if verify() fails.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.step.Step.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bdc/steps/step.html#Step.load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.step.Step.load_data" title="Link to this definition"></a></dt>
+<dd><p>Load data for this processing step. This could be an API call or reading from a CSV file. Can also be empty
+if self.df is used.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id64">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id64" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id65">
+<span class="sig-name descname"><span class="pre">required_cols</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#id65" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.step.Step.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/bdc/steps/step.html#Step.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.step.Step.run" title="Link to this definition"></a></dt>
+<dd><p>Perform the actual processing step. Will not be executed if verify() fails.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p>StepError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bdc.steps.step.Step.verify">
+<span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/bdc/steps/step.html#Step.verify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.step.Step.verify" title="Link to this definition"></a></dt>
+<dd><p>Verify that the data has been loaded correctly and is present in a format that can be processed by this step.
+If this fails, run() and finish() will not be executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="bdc.steps.step.StepError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bdc.steps.step.</span></span><span class="sig-name descname"><span class="pre">StepError</span></span><a class="reference internal" href="_modules/bdc/steps/step.html#StepError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bdc.steps.step.StepError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+</section>
+<section id="module-bdc.steps">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bdc.steps" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="bdc.html" class="btn btn-neutral float-left" title="bdc package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="bdc.steps.helpers.html" class="btn btn-neutral float-right" title="bdc.steps.helpers package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, SumInsights.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

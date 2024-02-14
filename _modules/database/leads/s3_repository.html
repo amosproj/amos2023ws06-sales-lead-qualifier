@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>database.leads.s3_repository &mdash; Sales Lead Qualifier 01.00.00 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=6386319a"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Sales Lead Qualifier
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme_link.html">Sales-Lead-Qualifier Project (AMOS WS 2023/24)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html">Build Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html#user-documentation">User Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html#design-documentation">Design Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html#classifier-comparison">Classifier Comparison</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html#concepts-unrealized-ideas-miscellaneous">Concepts, Unrealized Ideas &amp; Miscellaneous</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">src</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Sales Lead Qualifier</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../../database.html">database</a></li>
+      <li class="breadcrumb-item active">database.leads.s3_repository</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for database.leads.s3_repository</h1><div class="highlight"><pre>
+<span></span><span class="c1"># SPDX-License-Identifier: MIT</span>
+<span class="c1"># SPDX-FileCopyrightText: 2023 Sophie Heasman &lt;sophieheasmann@gmail.com&gt;</span>
+
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
+
+<span class="kn">import</span> <span class="nn">boto3</span>
+<span class="kn">import</span> <span class="nn">botocore.exceptions</span>
+<span class="kn">import</span> <span class="nn">joblib</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">AWS_ACCESS_KEY_ID</span><span class="p">,</span> <span class="n">AWS_SECRET_ACCESS_KEY</span>
+<span class="kn">from</span> <span class="nn">logger</span> <span class="kn">import</span> <span class="n">get_logger</span>
+
+<span class="kn">from</span> <span class="nn">.repository</span> <span class="kn">import</span> <span class="n">Repository</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">()</span>
+<span class="n">s3</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span>
+    <span class="s2">&quot;s3&quot;</span><span class="p">,</span>
+    <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">AWS_ACCESS_KEY_ID</span><span class="p">,</span>
+    <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">AWS_SECRET_ACCESS_KEY</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="decode_s3_url">
+<a class="viewcode-back" href="../../../database.leads.html#database.leads.s3_repository.decode_s3_url">[docs]</a>
+<span class="k">def</span> <span class="nf">decode_s3_url</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieve the bucket and object key from object url</span>
+<span class="sd">    :return: bucket string, object key string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">obj_identifier</span> <span class="o">=</span> <span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;//&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+    <span class="n">bucket</span> <span class="o">=</span> <span class="n">obj_identifier</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">obj_key</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">obj_identifier</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+    <span class="k">return</span> <span class="n">bucket</span><span class="p">,</span> <span class="n">obj_key</span></div>
+
+
+
+<div class="viewcode-block" id="S3Repository">
+<a class="viewcode-back" href="../../../database.leads.html#database.leads.s3_repository.S3Repository">[docs]</a>
+<span class="k">class</span> <span class="nc">S3Repository</span><span class="p">(</span><span class="n">Repository</span><span class="p">):</span>
+    <span class="n">EVENTS_BUCKET</span> <span class="o">=</span> <span class="s2">&quot;amos--data--events&quot;</span>
+    <span class="n">FEATURES_BUCKET</span> <span class="o">=</span> <span class="s2">&quot;amos--data--features&quot;</span>
+    <span class="n">MODELS_BUCKET</span> <span class="o">=</span> <span class="s2">&quot;amos--models&quot;</span>
+    <span class="n">DF_INPUT</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;s3://</span><span class="si">{</span><span class="n">EVENTS_BUCKET</span><span class="si">}</span><span class="s2">/leads/enriched.csv&quot;</span>
+    <span class="n">DF_OUTPUT</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;s3://</span><span class="si">{</span><span class="n">EVENTS_BUCKET</span><span class="si">}</span><span class="s2">/leads/enriched.csv&quot;</span>
+    <span class="n">DF_HISTORICAL_OUTPUT</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;s3://</span><span class="si">{</span><span class="n">EVENTS_BUCKET</span><span class="si">}</span><span class="s2">/historical_data/100k_historic_enriched.csv&quot;</span>
+    <span class="p">)</span>
+    <span class="n">DF_PREDICTION_OUTPUT</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;s3://</span><span class="si">{</span><span class="n">EVENTS_BUCKET</span><span class="si">}</span><span class="s2">/leads/leads_predicted_size.csv&quot;</span>
+    <span class="n">DF_PREPROCESSED_INPUT</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;s3://</span><span class="si">{</span><span class="n">FEATURES_BUCKET</span><span class="si">}</span><span class="s2">/preprocessed_data_files/&quot;</span>
+    <span class="n">REVIEWS</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;s3://</span><span class="si">{</span><span class="n">EVENTS_BUCKET</span><span class="si">}</span><span class="s2">/reviews/&quot;</span>
+    <span class="n">SNAPSHOTS</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;s3://</span><span class="si">{</span><span class="n">EVENTS_BUCKET</span><span class="si">}</span><span class="s2">/snapshots/&quot;</span>
+    <span class="n">LOOKUP_TABLES</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;s3://</span><span class="si">{</span><span class="n">EVENTS_BUCKET</span><span class="si">}</span><span class="s2">/lookup_tables/&quot;</span>
+    <span class="n">GPT_RESULTS</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;s3://</span><span class="si">{</span><span class="n">EVENTS_BUCKET</span><span class="si">}</span><span class="s2">/gpt-results/&quot;</span>
+    <span class="n">ML_MODELS</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;s3://</span><span class="si">{</span><span class="n">MODELS_BUCKET</span><span class="si">}</span><span class="s2">/models/&quot;</span>
+    <span class="n">CLASSIFICATION_REPORTS</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;s3://</span><span class="si">{</span><span class="n">MODELS_BUCKET</span><span class="si">}</span><span class="s2">/classification_reports/&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_download</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Download database from specified DF path</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">DF_INPUT</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;s3://&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">DF_OUTPUT</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
+            <span class="s2">&quot;s3://&quot;</span>
+        <span class="p">):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;S3 location has to be defined like this: s3://&lt;BUCKET&gt;/&lt;OBJECT_KEY&gt;&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">source</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">remote_dataset</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">bucket</span><span class="p">,</span> <span class="n">obj_key</span> <span class="o">=</span> <span class="n">decode_s3_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DF_INPUT</span><span class="p">)</span>
+            <span class="n">remote_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_object_s3</span><span class="p">(</span><span class="n">bucket</span><span class="p">,</span> <span class="n">obj_key</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;S3 location has to be defined like this: s3://&lt;BUCKET&gt;/&lt;OBJECT_KEY&gt;&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">remote_dataset</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="s2">&quot;Body&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">remote_dataset</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Couldn&#39;t find dataset in S3 bucket </span><span class="si">{</span><span class="n">bucket</span><span class="si">}</span><span class="s2"> and key </span><span class="si">{</span><span class="n">obj_key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="n">remote_dataset</span><span class="p">[</span><span class="s2">&quot;Body&quot;</span><span class="p">]</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error: Could not find input file for Pipeline.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_fetch_object_s3</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bucket</span><span class="p">,</span> <span class="n">obj_key</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tries to read an object from S3.</span>
+<span class="sd">        :return: s3 object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">s3</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="n">bucket</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">obj_key</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">botocore</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ClientError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;Error&#39;</span><span class="p">][</span><span class="s1">&#39;Code&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;Error&#39;</span><span class="p">][</span><span class="s1">&#39;Message&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> (s3://</span><span class="si">{</span><span class="n">bucket</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">obj_key</span><span class="si">}</span><span class="s2">)&quot;</span>
+                <span class="k">if</span> <span class="s2">&quot;Error&quot;</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">response</span>
+                <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;Error while getting object s3://</span><span class="si">{</span><span class="n">bucket</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">obj_key</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">obj</span>
+
+    <span class="k">def</span> <span class="nf">_is_object_exists_on_S3</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bucket</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">s3</span><span class="o">.</span><span class="n">head_object</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="n">bucket</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_load_from_s3</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bucket</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load a file from S3</span>
+<span class="sd">        :param bucket: The name of the S3 bucket</span>
+<span class="sd">        :param key: The key of the object in the S3 bucket</span>
+<span class="sd">        :return: The contents of the file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">s3</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="n">bucket</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">file_content</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;Body&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">file_content</span>
+
+<div class="viewcode-block" id="S3Repository.save_dataframe">
+<a class="viewcode-back" href="../../../database.leads.html#database.leads.s3_repository.S3Repository.save_dataframe">[docs]</a>
+    <span class="k">def</span> <span class="nf">save_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save dataframe in df attribute in chosen output location</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bucket</span><span class="p">,</span> <span class="n">obj_key</span> <span class="o">=</span> <span class="n">decode_s3_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DF_OUTPUT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_backup_data</span><span class="p">()</span>
+        <span class="n">csv_buffer</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">csv_buffer</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_to_s3</span><span class="p">(</span><span class="n">csv_buffer</span><span class="o">.</span><span class="n">getvalue</span><span class="p">(),</span> <span class="n">bucket</span><span class="p">,</span> <span class="n">obj_key</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Successfully saved enriched leads to s3://</span><span class="si">{</span><span class="n">bucket</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">obj_key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="S3Repository.save_prediction">
+<a class="viewcode-back" href="../../../database.leads.html#database.leads.s3_repository.S3Repository.save_prediction">[docs]</a>
+    <span class="k">def</span> <span class="nf">save_prediction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save dataframe in df parameter in chosen output location</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bucket</span><span class="p">,</span> <span class="n">obj_key</span> <span class="o">=</span> <span class="n">decode_s3_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DF_PREDICTION_OUTPUT</span><span class="p">)</span>
+        <span class="n">csv_buffer</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">csv_buffer</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_to_s3</span><span class="p">(</span><span class="n">csv_buffer</span><span class="o">.</span><span class="n">getvalue</span><span class="p">(),</span> <span class="n">bucket</span><span class="p">,</span> <span class="n">obj_key</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Successfully saved prediction result to s3://</span><span class="si">{</span><span class="n">bucket</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">obj_key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_save_to_s3</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">bucket</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="n">s3</span><span class="o">.</span><span class="n">put_object</span><span class="p">(</span>
+            <span class="n">Bucket</span><span class="o">=</span><span class="n">bucket</span><span class="p">,</span>
+            <span class="n">Key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+            <span class="n">Body</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_backup_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Backup existing data to S3</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bucket</span><span class="p">,</span> <span class="n">obj_key</span> <span class="o">=</span> <span class="n">decode_s3_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DF_OUTPUT</span><span class="p">)</span>
+        <span class="n">old_leads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_object_s3</span><span class="p">(</span><span class="n">bucket</span><span class="p">,</span> <span class="n">obj_key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">old_leads</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="s2">&quot;Body&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">old_leads</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">old_hash</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">old_leads</span><span class="p">[</span><span class="s2">&quot;Body&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+        <span class="n">backup_key</span> <span class="o">=</span> <span class="s2">&quot;backup/&quot;</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span>
+            <span class="s2">&quot;%Y/%m/</span><span class="si">%d</span><span class="s2">/%H%M%S_&quot;</span> <span class="o">+</span> <span class="n">old_hash</span> <span class="o">+</span> <span class="s2">&quot;.csv&quot;</span>
+        <span class="p">)</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Bucket&quot;</span><span class="p">:</span> <span class="n">bucket</span><span class="p">,</span> <span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="n">obj_key</span><span class="p">}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">s3</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">bucket</span><span class="p">,</span> <span class="n">backup_key</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">botocore</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ClientError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;Error&#39;</span><span class="p">][</span><span class="s1">&#39;Code&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;Error&#39;</span><span class="p">][</span><span class="s1">&#39;Message&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">if</span> <span class="s2">&quot;Error&quot;</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">response</span>
+                <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;Error while backing up object s3://</span><span class="si">{</span><span class="n">bucket</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">obj_key</span><span class="si">}</span><span class="s2">. Object does not exist&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Successful backup to s3://</span><span class="si">{</span><span class="n">bucket</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">backup_key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="S3Repository.insert_data">
+<a class="viewcode-back" href="../../../database.leads.html#database.leads.s3_repository.S3Repository.insert_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">insert_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TODO: Insert new data into specified dataframe</span>
+<span class="sd">        :param data: Data to be inserted (desired format must be checked)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="S3Repository.save_review">
+<a class="viewcode-back" href="../../../database.leads.html#database.leads.s3_repository.S3Repository.save_review">[docs]</a>
+    <span class="k">def</span> <span class="nf">save_review</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">review</span><span class="p">,</span> <span class="n">place_id</span><span class="p">,</span> <span class="n">force_refresh</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Upload review to specified review path</span>
+<span class="sd">        :param review: json contents of the review to be uploaded</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Write the data to a JSON file</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="n">place_id</span> <span class="o">+</span> <span class="s2">&quot;_reviews.json&quot;</span>
+        <span class="n">bucket</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="n">decode_s3_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">REVIEWS</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">+=</span> <span class="n">file_name</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># HeadObject throws an exception if the file doesn&#39;t exist</span>
+            <span class="n">s3</span><span class="o">.</span><span class="n">head_object</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="n">bucket</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The file with key &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; exists in the bucket &#39;</span><span class="si">{</span><span class="n">bucket</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;The file with key &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; does not exist in the bucket &#39;</span><span class="si">{</span><span class="n">bucket</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+            <span class="p">)</span>
+            <span class="c1"># Upload the JSON string to S3</span>
+            <span class="n">reviews_str</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">review</span><span class="p">)</span>
+            <span class="n">s3</span><span class="o">.</span><span class="n">put_object</span><span class="p">(</span><span class="n">Body</span><span class="o">=</span><span class="n">reviews_str</span><span class="p">,</span> <span class="n">Bucket</span><span class="o">=</span><span class="n">bucket</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;reviews uploaded to s3&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="S3Repository.fetch_review">
+<a class="viewcode-back" href="../../../database.leads.html#database.leads.s3_repository.S3Repository.fetch_review">[docs]</a>
+    <span class="k">def</span> <span class="nf">fetch_review</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">place_id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fetch review for specified place_id</span>
+<span class="sd">        :return: json contents of desired review</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="n">place_id</span> <span class="o">+</span> <span class="s2">&quot;_reviews.json&quot;</span>
+        <span class="n">bucket</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="n">decode_s3_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">REVIEWS</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">+=</span> <span class="n">file_name</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">s3</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="n">bucket</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">file_content</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;Body&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+            <span class="n">json_content</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">file_content</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">json_content</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;No reviews in S3 for place with at s3://</span><span class="si">{</span><span class="n">bucket</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">. Error: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="p">[]</span></div>
+
+
+<div class="viewcode-block" id="S3Repository.create_snapshot">
+<a class="viewcode-back" href="../../../database.leads.html#database.leads.s3_repository.S3Repository.create_snapshot">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_snapshot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="n">full_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">SNAPSHOTS</span><span class="si">}{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">name</span><span class="si">}</span><span class="s2">_snapshot.csv&quot;</span>
+        <span class="n">bucket</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="n">decode_s3_url</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span>
+
+        <span class="n">csv_buffer</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">csv_buffer</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_to_s3</span><span class="p">(</span><span class="n">csv_buffer</span><span class="o">.</span><span class="n">getvalue</span><span class="p">(),</span> <span class="n">bucket</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="S3Repository.clean_snapshots">
+<a class="viewcode-back" href="../../../database.leads.html#database.leads.s3_repository.S3Repository.clean_snapshots">[docs]</a>
+    <span class="k">def</span> <span class="nf">clean_snapshots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="S3Repository.save_lookup_table">
+<a class="viewcode-back" href="../../../database.leads.html#database.leads.s3_repository.S3Repository.save_lookup_table">[docs]</a>
+    <span class="k">def</span> <span class="nf">save_lookup_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lookup_table</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">step_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">full_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">LOOKUP_TABLES</span><span class="si">}{</span><span class="n">step_name</span><span class="si">}</span><span class="s2">.csv&quot;</span>
+        <span class="n">bucket</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="n">decode_s3_url</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span>
+
+        <span class="n">csv_buffer</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+        <span class="n">csv_writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">csv_buffer</span><span class="p">)</span>
+        <span class="c1"># Write Header</span>
+        <span class="n">csv_writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="s2">&quot;HashedData&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;First Name&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Last Name&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Company / Account&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Phone&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Email&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Last Updated&quot;</span><span class="p">,</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="c1"># Write data rows</span>
+        <span class="k">for</span> <span class="n">hashed_data</span><span class="p">,</span> <span class="n">other_columns</span> <span class="ow">in</span> <span class="n">lookup_table</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">csv_writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="n">hashed_data</span><span class="p">]</span> <span class="o">+</span> <span class="n">other_columns</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_to_s3</span><span class="p">(</span><span class="n">csv_buffer</span><span class="o">.</span><span class="n">getvalue</span><span class="p">(),</span> <span class="n">bucket</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="S3Repository.load_lookup_table">
+<a class="viewcode-back" href="../../../database.leads.html#database.leads.s3_repository.S3Repository.load_lookup_table">[docs]</a>
+    <span class="k">def</span> <span class="nf">load_lookup_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">step_name</span><span class="si">}</span><span class="s2">.csv&quot;</span>
+        <span class="n">bucket</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="n">decode_s3_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">LOOKUP_TABLES</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">+=</span> <span class="n">file_name</span>
+
+        <span class="n">lookup_table_s3_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_object_s3</span><span class="p">(</span><span class="n">bucket</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="n">lookup_table</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">lookup_table_s3_obj</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="s2">&quot;Body&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lookup_table_s3_obj</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Couldn&#39;t find lookup table in S3 bucket </span><span class="si">{</span><span class="n">bucket</span><span class="si">}</span><span class="s2"> and key </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">lookup_table</span>
+
+        <span class="n">source</span> <span class="o">=</span> <span class="n">lookup_table_s3_obj</span><span class="p">[</span><span class="s2">&quot;Body&quot;</span><span class="p">]</span>
+        <span class="c1"># Read the CSV content from S3 into a string</span>
+        <span class="n">csv_content</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="c1"># Use StringIO to create a file-like object</span>
+        <span class="n">csv_buffer</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">csv_content</span><span class="p">)</span>
+        <span class="c1"># Use csv.reader to read the CSV content</span>
+        <span class="n">csv_reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">csv_buffer</span><span class="p">)</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">csv_reader</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">csv_reader</span><span class="p">:</span>
+            <span class="n">hashed_data</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">other_columns</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="n">lookup_table</span><span class="p">[</span><span class="n">hashed_data</span><span class="p">]</span> <span class="o">=</span> <span class="n">other_columns</span>
+        <span class="k">return</span> <span class="n">lookup_table</span></div>
+
+
+<div class="viewcode-block" id="S3Repository.fetch_gpt_result">
+<a class="viewcode-back" href="../../../database.leads.html#database.leads.s3_repository.S3Repository.fetch_gpt_result">[docs]</a>
+    <span class="k">def</span> <span class="nf">fetch_gpt_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_id</span><span class="p">,</span> <span class="n">operation_name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fetches the GPT result for a given file ID and operation name from S3</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Define the file name and path</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_id</span><span class="si">}</span><span class="s2">_gpt_result.json&quot;</span>
+        <span class="n">full_url_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">GPT_RESULTS</span><span class="si">}{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">bucket</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="n">decode_s3_url</span><span class="p">(</span><span class="n">full_url_path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_object_exists_on_S3</span><span class="p">(</span><span class="n">bucket</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="c1"># Read data from s3</span>
+        <span class="n">existing_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_load_from_s3</span><span class="p">(</span><span class="n">bucket</span><span class="p">,</span> <span class="n">key</span><span class="p">))</span>
+
+        <span class="c1"># check if the element with the operation name exists</span>
+        <span class="k">if</span> <span class="n">operation_name</span> <span class="ow">in</span> <span class="n">existing_data</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">existing_data</span><span class="p">[</span><span class="n">operation_name</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="S3Repository.save_gpt_result">
+<a class="viewcode-back" href="../../../database.leads.html#database.leads.s3_repository.S3Repository.save_gpt_result">[docs]</a>
+    <span class="k">def</span> <span class="nf">save_gpt_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gpt_result</span><span class="p">,</span> <span class="n">file_id</span><span class="p">,</span> <span class="n">operation_name</span><span class="p">,</span> <span class="n">force_refresh</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Saves the GPT result for a given file ID and operation name on S3</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Define the file name and path</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_id</span><span class="si">}</span><span class="s2">_gpt_result.json&quot;</span>
+        <span class="n">full_url_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">GPT_RESULTS</span><span class="si">}{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">bucket</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="n">decode_s3_url</span><span class="p">(</span><span class="n">full_url_path</span><span class="p">)</span>
+
+        <span class="c1"># Get current date and time</span>
+        <span class="n">current_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_current_time_as_string</span><span class="p">()</span>
+
+        <span class="c1"># Prepare the data to be saved</span>
+        <span class="n">data_to_save</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">gpt_result</span><span class="p">,</span> <span class="s2">&quot;last_update_date&quot;</span><span class="p">:</span> <span class="n">current_time</span><span class="p">}</span>
+
+        <span class="c1"># Check if the file already exists</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_object_exists_on_S3</span><span class="p">(</span><span class="n">bucket</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force_refresh</span><span class="p">:</span>
+            <span class="c1"># Load the existing data</span>
+            <span class="n">existing_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_load_from_s3</span><span class="p">(</span><span class="n">bucket</span><span class="p">,</span> <span class="n">key</span><span class="p">))</span>
+
+            <span class="c1"># Update the existing data with the new result</span>
+            <span class="n">existing_data</span><span class="p">[</span><span class="n">operation_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_to_save</span>
+
+            <span class="c1"># Save the updated data back to S3</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_save_to_s3</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">existing_data</span><span class="p">),</span> <span class="n">bucket</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Save the new result to S3</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_save_to_s3</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="n">operation_name</span><span class="p">:</span> <span class="n">data_to_save</span><span class="p">}),</span> <span class="n">bucket</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="S3Repository.load_ml_model">
+<a class="viewcode-back" href="../../../database.leads.html#database.leads.s3_repository.S3Repository.load_ml_model">[docs]</a>
+    <span class="k">def</span> <span class="nf">load_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">bucket</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="n">decode_s3_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ML_MODELS</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">+=</span> <span class="n">file_name</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+                <span class="n">s3</span><span class="o">.</span><span class="n">download_fileobj</span><span class="p">(</span><span class="n">Fileobj</span><span class="o">=</span><span class="n">fp</span><span class="p">,</span> <span class="n">Bucket</span><span class="o">=</span><span class="n">bucket</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+                <span class="n">fp</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">model</span> <span class="o">=</span> <span class="n">joblib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">model</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error loading model &#39;</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="S3Repository.save_ml_model">
+<a class="viewcode-back" href="../../../database.leads.html#database.leads.s3_repository.S3Repository.save_ml_model">[docs]</a>
+    <span class="k">def</span> <span class="nf">save_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">full_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ML_MODELS</span><span class="si">}{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">bucket</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="n">decode_s3_url</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+                <span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
+                <span class="n">fp</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">s3</span><span class="o">.</span><span class="n">upload_fileobj</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">bucket</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not save model for &#39;</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&#39; to S3: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="S3Repository.load_classification_report">
+<a class="viewcode-back" href="../../../database.leads.html#database.leads.s3_repository.S3Repository.load_classification_report">[docs]</a>
+    <span class="k">def</span> <span class="nf">load_classification_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">CLASSIFICATION_REPORTS</span><span class="si">}</span><span class="s2">report_</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">bucket</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="n">decode_s3_url</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+                <span class="n">s3</span><span class="o">.</span><span class="n">download_fileobj</span><span class="p">(</span><span class="n">Fileobj</span><span class="o">=</span><span class="n">fp</span><span class="p">,</span> <span class="n">Bucket</span><span class="o">=</span><span class="n">bucket</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+                <span class="n">fp</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">report</span> <span class="o">=</span> <span class="n">joblib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">report</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error loading model &#39;</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="S3Repository.save_classification_report">
+<a class="viewcode-back" href="../../../database.leads.html#database.leads.s3_repository.S3Repository.save_classification_report">[docs]</a>
+    <span class="k">def</span> <span class="nf">save_classification_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">CLASSIFICATION_REPORTS</span><span class="si">}</span><span class="s2">report_</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">bucket</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="n">decode_s3_url</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+                <span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">report</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
+                <span class="n">fp</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">s3</span><span class="o">.</span><span class="n">upload_fileobj</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">bucket</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not save report for &#39;</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&#39; to S3: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="S3Repository.get_preprocessed_data_path">
+<a class="viewcode-back" href="../../../database.leads.html#database.leads.s3_repository.S3Repository.get_preprocessed_data_path">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_preprocessed_data_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">historical</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;historical_preprocessed_data.csv&quot;</span>
+            <span class="k">if</span> <span class="n">historical</span>
+            <span class="k">else</span> <span class="s2">&quot;preprocessed_data.csv&quot;</span>
+        <span class="p">)</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DF_PREPROCESSED_INPUT</span> <span class="o">+</span> <span class="n">file_name</span>
+        <span class="k">return</span> <span class="n">file_path</span></div>
+
+
+<div class="viewcode-block" id="S3Repository.load_preprocessed_data">
+<a class="viewcode-back" href="../../../database.leads.html#database.leads.s3_repository.S3Repository.load_preprocessed_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">load_preprocessed_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">historical</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_preprocessed_data_path</span><span class="p">(</span><span class="n">historical</span><span class="p">)</span>
+
+        <span class="n">source</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">remote_dataset</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">bucket</span><span class="p">,</span> <span class="n">obj_key</span> <span class="o">=</span> <span class="n">decode_s3_url</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+            <span class="n">remote_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_object_s3</span><span class="p">(</span><span class="n">bucket</span><span class="p">,</span> <span class="n">obj_key</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;S3 location has to be defined like this: s3://&lt;BUCKET&gt;/&lt;OBJECT_KEY&gt;&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">remote_dataset</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="s2">&quot;Body&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">remote_dataset</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Couldn&#39;t find dataset in S3 bucket </span><span class="si">{</span><span class="n">bucket</span><span class="si">}</span><span class="s2"> and key </span><span class="si">{</span><span class="n">obj_key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="n">remote_dataset</span><span class="p">[</span><span class="s2">&quot;Body&quot;</span><span class="p">]</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error: Could not find input file for Pipeline.&quot;</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, SumInsights.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,37 @@
+database.leads package
+======================
+
+Submodules
+----------
+
+database.leads.local\_repository module
+---------------------------------------
+
+.. automodule:: database.leads.local_repository
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+database.leads.repository module
+--------------------------------
+
+.. automodule:: database.leads.repository
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+database.leads.s3\_repository module
+------------------------------------
+
+.. automodule:: database.leads.s3_repository
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: database.leads
+   :members:
+   :undoc-members:
+   :show-inheritance:

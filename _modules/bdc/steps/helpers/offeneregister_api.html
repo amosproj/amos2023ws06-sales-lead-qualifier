@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bdc.steps.helpers.offeneregister_api &mdash; Sales Lead Qualifier 01.00.00 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=6386319a"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            Sales Lead Qualifier
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../readme_link.html">Sales-Lead-Qualifier Project (AMOS WS 2023/24)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../documentation.html">Build Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../documentation.html#user-documentation">User Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../documentation.html#design-documentation">Design Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../documentation.html#classifier-comparison">Classifier Comparison</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../documentation.html#concepts-unrealized-ideas-miscellaneous">Concepts, Unrealized Ideas &amp; Miscellaneous</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">src</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Sales Lead Qualifier</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../helpers.html">bdc.steps.helpers</a></li>
+      <li class="breadcrumb-item active">bdc.steps.helpers.offeneregister_api</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for bdc.steps.helpers.offeneregister_api</h1><div class="highlight"><pre>
+<span></span><span class="c1"># SPDX-License-Identifier: MIT</span>
+<span class="c1"># SPDX-FileCopyrightText: 2023 Berkay Bozkurt &lt;resitberkaybozkurt@gmail.com&gt;</span>
+
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
+
+<span class="kn">from</span> <span class="nn">logger</span> <span class="kn">import</span> <span class="n">get_logger</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">()</span>
+
+<span class="n">OFFENREGISTER_BASE_URL</span> <span class="o">=</span> <span class="s2">&quot;https://db.offeneregister.de/&quot;</span>
+<span class="n">OFFENRENREGISTER_POSITIONS_URL</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">OFFENREGISTER_BASE_URL</span>
+    <span class="o">+</span> <span class="s2">&quot;openregister/Positions?firstName__exact=</span><span class="si">{}</span><span class="s2">&amp;lastName__exact=</span><span class="si">{}</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+
+<span class="n">OFFENREGISTER_CAPITAL_URL</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">OFFENREGISTER_BASE_URL</span> <span class="o">+</span> <span class="s2">&quot;openregister/Capital?companyId__exact=</span><span class="si">{}</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+
+<span class="n">OFFENREGISTER_ADDRESSES_URL</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">OFFENREGISTER_BASE_URL</span> <span class="o">+</span> <span class="s2">&quot;openregister/Addresses?companyId__exact=</span><span class="si">{}</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+
+<span class="n">OFFENREGISTER_NAMES_URL</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">OFFENREGISTER_BASE_URL</span> <span class="o">+</span> <span class="s2">&quot;openregister/Names?companyId__exact=</span><span class="si">{}</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+
+<span class="n">OFFENREGISTER_OBJECTIVES_URL</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">OFFENREGISTER_BASE_URL</span> <span class="o">+</span> <span class="s2">&quot;openregister/Objectives?companyId__exact=</span><span class="si">{}</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="OffeneRegisterAPI">
+<a class="viewcode-back" href="../../../../bdc.steps.helpers.html#bdc.steps.helpers.offeneregister_api.OffeneRegisterAPI">[docs]</a>
+<span class="k">class</span> <span class="nc">OffeneRegisterAPI</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class that retrieves company data from various sources based on given parameters.</span>
+
+<span class="sd">    Methods:</span>
+<span class="sd">        _find_from_Positions_by_firstName_and_lastName(last_name: str, first_name: str) -&gt; dict:</span>
+<span class="sd">            Retrieves company data from Positions table based on the last name and first name of a person.</span>
+
+<span class="sd">        _find_row_by_companyId(url: str, company_id: str) -&gt; dict:</span>
+<span class="sd">            Finds and retrieves the row data for a given company ID from a specified URL.</span>
+
+<span class="sd">        _find_from_Capital_by_companyId(company_id: str) -&gt; dict:</span>
+<span class="sd">            Retrieves company data from the Capital database using the provided company ID.</span>
+
+<span class="sd">        _find_from_Addresses_by_companyId(company_id: str) -&gt; dict:</span>
+<span class="sd">            Retrieves the row from the Addresses table based on the given company ID.</span>
+
+<span class="sd">        _find_from_Objectives_by_companyId(company_id: str) -&gt; dict:</span>
+<span class="sd">            Retrieves the row from Objectives by the given company ID.</span>
+
+<span class="sd">        _find_from_Names_by_companyId(company_id: str) -&gt; dict:</span>
+<span class="sd">            Retrieves company data by company ID from the offerenregister.de website.</span>
+
+<span class="sd">        find_companyName_by_lastName_firstName(last_name: str, first_name: str) -&gt; str:</span>
+<span class="sd">            Finds the company name by the last name and first name of a person.</span>
+
+<span class="sd">        find_companyCapitals_by_lastName_firstName(last_name: str, first_name: str) -&gt; tuple:</span>
+<span class="sd">            Retrieves the capital amount and currency of a company based on the last name and first name of a person.</span>
+
+<span class="sd">        find_companyObjective_by_lastName_firstName(last_name: str, first_name: str) -&gt; str or None:</span>
+<span class="sd">            Finds the company objective based on the last name and first name of a person.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_find_from_Positions_by_firstName_and_lastName</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">last_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">first_name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves company data from Positions by using the first name and last name of a person.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            last_name (str): The last name of the person.</span>
+<span class="sd">            first_name (str): The first name of the person.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: A dictionary containing class name and value pairs of the retrieved data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">OFFENRENREGISTER_POSITIONS_URL</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+
+        <span class="c1"># Check if the request was successful</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># get table with class name rows-and-columns</span>
+                <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s2">&quot;html.parser&quot;</span><span class="p">)</span>
+
+                <span class="c1"># Find the div with the specified class name</span>
+                <span class="n">div</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;table-wrapper&quot;</span><span class="p">})</span>
+
+                <span class="c1"># Find the table within the div</span>
+                <span class="n">table</span> <span class="o">=</span> <span class="n">div</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;table&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;rows-and-columns&quot;</span><span class="p">})</span>
+
+                <span class="c1"># Access the tbody element</span>
+                <span class="n">tbody</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">tbody</span>
+
+                <span class="c1"># Find all tr elements within the tbody</span>
+                <span class="n">rows</span> <span class="o">=</span> <span class="n">tbody</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;tr&quot;</span><span class="p">)</span>
+
+                <span class="c1"># Print the number of tr elements</span>
+                <span class="c1"># Get the first row</span>
+                <span class="n">first_row</span> <span class="o">=</span> <span class="n">rows</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="c1"># Find all td elements within the first row</span>
+                <span class="n">columns</span> <span class="o">=</span> <span class="n">first_row</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;td&quot;</span><span class="p">)</span>
+
+                <span class="c1"># Create a dictionary to store class name and value pairs</span>
+                <span class="n">col_dict</span> <span class="o">=</span> <span class="p">{}</span>
+
+                <span class="c1"># Iterate over each column</span>
+                <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">:</span>
+                    <span class="c1"># Get the class name of the column</span>
+                    <span class="n">class_name</span> <span class="o">=</span> <span class="n">column</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">column</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+
+                    <span class="c1"># Get the text within the column</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">column</span><span class="o">.</span><span class="n">text</span>
+
+                    <span class="c1"># Add the class name and value pair to the dictionary</span>
+                    <span class="k">if</span> <span class="n">class_name</span><span class="p">:</span>
+                        <span class="n">col_dict</span><span class="p">[</span><span class="n">class_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+                <span class="c1"># Print the dictionary</span>
+                <span class="k">return</span> <span class="n">col_dict</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exception occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Request failed with status code </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_find_row_by_companyId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">company_id</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finds and retrieves the row data for a given company ID from a specified URL.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            url (str): The URL to retrieve the data from.</span>
+<span class="sd">            company_id (str): The ID of the company to search for.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: A dictionary containing the class name and value pairs for the first row of the table,</span>
+<span class="sd">                  or None if the request fails or the company ID is not valid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">company_id</span><span class="p">:</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="n">url</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">company_id</span><span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+
+            <span class="c1"># Check if the request was successful</span>
+            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># get table with class name rows-and-columns</span>
+                    <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s2">&quot;html.parser&quot;</span><span class="p">)</span>
+
+                    <span class="c1"># Find the div with the specified class name</span>
+                    <span class="n">div</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;table-wrapper&quot;</span><span class="p">})</span>
+
+                    <span class="c1"># Find the table within the div</span>
+                    <span class="n">table</span> <span class="o">=</span> <span class="n">div</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;table&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;rows-and-columns&quot;</span><span class="p">})</span>
+
+                    <span class="c1"># Access the tbody element</span>
+                    <span class="n">tbody</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">tbody</span>
+                    <span class="c1"># Find all tr elements within the tbody</span>
+                    <span class="n">rows</span> <span class="o">=</span> <span class="n">tbody</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;tr&quot;</span><span class="p">)</span>
+
+                    <span class="c1"># Print the number of tr elements</span>
+                    <span class="c1"># Get the first row</span>
+                    <span class="n">first_row</span> <span class="o">=</span> <span class="n">rows</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+                    <span class="c1"># Find all td elements within the first row</span>
+                    <span class="n">columns</span> <span class="o">=</span> <span class="n">first_row</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;td&quot;</span><span class="p">)</span>
+
+                    <span class="c1"># Create a dictionary to store class name and value pairs</span>
+                    <span class="n">col_dict</span> <span class="o">=</span> <span class="p">{}</span>
+
+                    <span class="c1"># Iterate over each column</span>
+                    <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">:</span>
+                        <span class="c1"># Get the class name of the column</span>
+                        <span class="n">class_name</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">column</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">column</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+                        <span class="p">)</span>
+
+                        <span class="c1"># Get the text within the column</span>
+                        <span class="n">value</span> <span class="o">=</span> <span class="n">column</span><span class="o">.</span><span class="n">text</span>
+
+                        <span class="c1"># Add the class name and value pair to the dictionary</span>
+                        <span class="k">if</span> <span class="n">class_name</span><span class="p">:</span>
+                            <span class="n">col_dict</span><span class="p">[</span><span class="n">class_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+                    <span class="c1"># Print the dictionary</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">col_dict</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">col_dict</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exception occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Request failed with status code </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Company id is not valid&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_find_from_Capital_by_companyId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">company_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves company data from the Capital database using the provided company ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            company_id (str): The ID of the company to retrieve data for.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: A dictionary containing the retrieved company data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_row_by_companyId</span><span class="p">(</span><span class="n">OFFENREGISTER_CAPITAL_URL</span><span class="p">,</span> <span class="n">company_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_find_from_Addresses_by_companyId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">company_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the row from the Addresses table based on the given company ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            company_id (str): The ID of the company.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: The row from the Addresses table that matches the given company ID.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_row_by_companyId</span><span class="p">(</span><span class="n">OFFENREGISTER_ADDRESSES_URL</span><span class="p">,</span> <span class="n">company_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_find_from_Objectives_by_companyId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">company_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the row from Objectives by the given company ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            company_id (str): The ID of the company.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: The row containing the company data from Objectives.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_row_by_companyId</span><span class="p">(</span><span class="n">OFFENREGISTER_OBJECTIVES_URL</span><span class="p">,</span> <span class="n">company_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_find_from_Names_by_companyId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">company_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves company data by company ID from the offerenregister.de website.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            company_id (str): The ID of the company to retrieve data for.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: A dictionary containing the retrieved company data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_row_by_companyId</span><span class="p">(</span><span class="n">OFFENREGISTER_NAMES_URL</span><span class="p">,</span> <span class="n">company_id</span><span class="p">)</span>
+
+<div class="viewcode-block" id="OffeneRegisterAPI.find_companyName_by_lastName_firstName">
+<a class="viewcode-back" href="../../../../bdc.steps.helpers.html#bdc.steps.helpers.offeneregister_api.OffeneRegisterAPI.find_companyName_by_lastName_firstName">[docs]</a>
+    <span class="k">def</span> <span class="nf">find_companyName_by_lastName_firstName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">first_name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finds the company name by the last name and first name of a person.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            last_name (str): The last name of the person.</span>
+<span class="sd">            first_name (str): The first name of the person.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The name of the company if found, None otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Finding company name for </span><span class="si">{</span><span class="n">first_name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">last_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">pos_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_from_Positions_by_firstName_and_lastName</span><span class="p">(</span>
+            <span class="n">last_name</span><span class="p">,</span> <span class="n">first_name</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">pos_row</span><span class="p">:</span>
+            <span class="n">company_id</span> <span class="o">=</span> <span class="n">pos_row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;col-companyId&quot;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Company id: </span><span class="si">{</span><span class="n">company_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">name_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_from_Names_by_companyId</span><span class="p">(</span><span class="n">company_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">name_row</span><span class="p">:</span>
+                <span class="n">company_name</span> <span class="o">=</span> <span class="n">name_row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;col-name&quot;</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Company name: </span><span class="si">{</span><span class="n">company_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">company_name</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="OffeneRegisterAPI.find_companyCapitals_by_lastName_firstName">
+<a class="viewcode-back" href="../../../../bdc.steps.helpers.html#bdc.steps.helpers.offeneregister_api.OffeneRegisterAPI.find_companyCapitals_by_lastName_firstName">[docs]</a>
+    <span class="k">def</span> <span class="nf">find_companyCapitals_by_lastName_firstName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">first_name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the capital amount and currency of a company based on the last name and first name of a person.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            last_name (str): The last name of the person.</span>
+<span class="sd">            first_name (str): The first name of the person.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: A tuple containing the capital amount and currency of the company. If the company or capital information is not found, returns (None, None).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Finding company capital for </span><span class="si">{</span><span class="n">first_name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">last_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">pos_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_from_Positions_by_firstName_and_lastName</span><span class="p">(</span>
+            <span class="n">last_name</span><span class="p">,</span> <span class="n">first_name</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">pos_row</span><span class="p">:</span>
+            <span class="n">company_id</span> <span class="o">=</span> <span class="n">pos_row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;col-companyId&quot;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Company id: </span><span class="si">{</span><span class="n">company_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">capital_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_from_Capital_by_companyId</span><span class="p">(</span><span class="n">company_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">capital_row</span><span class="p">:</span>
+                <span class="n">cap_amount</span><span class="p">,</span> <span class="n">cap_currency</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">capital_row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;col-capitalAmount&quot;</span><span class="p">),</span>
+                    <span class="n">capital_row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;col-capitalCurrency&quot;</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Capital amount: </span><span class="si">{</span><span class="n">cap_amount</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Capital currency: </span><span class="si">{</span><span class="n">cap_currency</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">cap_amount</span><span class="p">,</span> <span class="n">cap_currency</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="OffeneRegisterAPI.find_companyObjective_by_lastName_firstName">
+<a class="viewcode-back" href="../../../../bdc.steps.helpers.html#bdc.steps.helpers.offeneregister_api.OffeneRegisterAPI.find_companyObjective_by_lastName_firstName">[docs]</a>
+    <span class="k">def</span> <span class="nf">find_companyObjective_by_lastName_firstName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">first_name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finds the company objective based on the last name and first name of a person.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            last_name (str): The last name of the person.</span>
+<span class="sd">            first_name (str): The first name of the person.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str or None: The company objective if found, None otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Finding company objective for </span><span class="si">{</span><span class="n">first_name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">last_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">pos_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_from_Positions_by_firstName_and_lastName</span><span class="p">(</span>
+            <span class="n">last_name</span><span class="p">,</span> <span class="n">first_name</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">pos_row</span><span class="p">:</span>
+            <span class="n">company_id</span> <span class="o">=</span> <span class="n">pos_row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;col-companyId&quot;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Company id: </span><span class="si">{</span><span class="n">company_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">objective_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_from_Objectives_by_companyId</span><span class="p">(</span><span class="n">company_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">objective_row</span><span class="p">:</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="n">objective_row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;col-objective&quot;</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Company objective: </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">obj</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="OffeneRegisterAPI.find_companyAddress_by_lastName_firstName">
+<a class="viewcode-back" href="../../../../bdc.steps.helpers.html#bdc.steps.helpers.offeneregister_api.OffeneRegisterAPI.find_companyAddress_by_lastName_firstName">[docs]</a>
+    <span class="k">def</span> <span class="nf">find_companyAddress_by_lastName_firstName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">first_name</span><span class="p">):</span>
+        <span class="n">pos_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_from_Positions_by_firstName_and_lastName</span><span class="p">(</span>
+            <span class="n">last_name</span><span class="p">,</span> <span class="n">first_name</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">pos_row</span><span class="p">:</span>
+            <span class="n">company_id</span> <span class="o">=</span> <span class="n">pos_row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;col-companyId&quot;</span><span class="p">)</span>
+            <span class="n">address_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_from_Addresses_by_companyId</span><span class="p">(</span><span class="n">company_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">address_row</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">address_row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;col-fullAddress&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, SumInsights.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

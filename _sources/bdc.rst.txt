@@ -1,0 +1,29 @@
+bdc package
+===========
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   bdc.steps
+
+Submodules
+----------
+
+bdc.pipeline module
+-------------------
+
+.. automodule:: bdc.pipeline
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: bdc
+   :members:
+   :undoc-members:
+   :show-inheritance:

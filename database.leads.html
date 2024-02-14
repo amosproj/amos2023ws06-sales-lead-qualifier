@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>database.leads package &mdash; Sales Lead Qualifier 01.00.00 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=6386319a"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="demo package" href="demo.html" />
+    <link rel="prev" title="database package" href="database.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Sales Lead Qualifier
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme_link.html">Sales-Lead-Qualifier Project (AMOS WS 2023/24)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html">Build Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html#user-documentation">User Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html#design-documentation">Design Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html#classifier-comparison">Classifier Comparison</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html#concepts-unrealized-ideas-miscellaneous">Concepts, Unrealized Ideas &amp; Miscellaneous</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="bdc.html">bdc package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config.html">config module</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="database.html">database package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="database.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">database.leads package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="database.html#module-database">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="demo.html">demo package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evp.html">evp package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logger.html">logger package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="preprocessing.html">preprocessing package</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Sales Lead Qualifier</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">src</a></li>
+          <li class="breadcrumb-item"><a href="database.html">database package</a></li>
+      <li class="breadcrumb-item active">database.leads package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/database.leads.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="database-leads-package">
+<h1>database.leads package<a class="headerlink" href="#database-leads-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-database.leads.local_repository">
+<span id="database-leads-local-repository-module"></span><h2>database.leads.local_repository module<a class="headerlink" href="#module-database.leads.local_repository" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">database.leads.local_repository.</span></span><span class="sig-name descname"><span class="pre">LocalRepository</span></span><a class="reference internal" href="_modules/database/leads/local_repository.html#LocalRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.local_repository.LocalRepository" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#database.leads.repository.Repository" title="database.leads.repository.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.BASE_PATH">
+<span class="sig-name descname"><span class="pre">BASE_PATH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/home/runner/work/amos2023ws06-sales-lead-qualifier/amos2023ws06-sales-lead-qualifier/src/database/leads'</span></em><a class="headerlink" href="#database.leads.local_repository.LocalRepository.BASE_PATH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.CLASSIFICATION_REPORTS">
+<span class="sig-name descname"><span class="pre">CLASSIFICATION_REPORTS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/home/runner/work/amos2023ws06-sales-lead-qualifier/amos2023ws06-sales-lead-qualifier/src/data/classification_reports'</span></em><a class="headerlink" href="#database.leads.local_repository.LocalRepository.CLASSIFICATION_REPORTS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.DF_HISTORICAL_OUTPUT">
+<span class="sig-name descname"><span class="pre">DF_HISTORICAL_OUTPUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/home/runner/work/amos2023ws06-sales-lead-qualifier/amos2023ws06-sales-lead-qualifier/src/data/100k_historic_enriched.csv'</span></em><a class="headerlink" href="#database.leads.local_repository.LocalRepository.DF_HISTORICAL_OUTPUT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.DF_INPUT">
+<span class="sig-name descname"><span class="pre">DF_INPUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/home/runner/work/amos2023ws06-sales-lead-qualifier/amos2023ws06-sales-lead-qualifier/src/data/sumup_leads_email.csv'</span></em><a class="headerlink" href="#database.leads.local_repository.LocalRepository.DF_INPUT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.DF_OUTPUT">
+<span class="sig-name descname"><span class="pre">DF_OUTPUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/home/runner/work/amos2023ws06-sales-lead-qualifier/amos2023ws06-sales-lead-qualifier/src/data/leads_enriched.csv'</span></em><a class="headerlink" href="#database.leads.local_repository.LocalRepository.DF_OUTPUT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.DF_PREDICTION_OUTPUT">
+<span class="sig-name descname"><span class="pre">DF_PREDICTION_OUTPUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/home/runner/work/amos2023ws06-sales-lead-qualifier/amos2023ws06-sales-lead-qualifier/src/data/leads_predicted_size.csv'</span></em><a class="headerlink" href="#database.leads.local_repository.LocalRepository.DF_PREDICTION_OUTPUT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.DF_PREPROCESSED_INPUT">
+<span class="sig-name descname"><span class="pre">DF_PREPROCESSED_INPUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/home/runner/work/amos2023ws06-sales-lead-qualifier/amos2023ws06-sales-lead-qualifier/src/data/preprocessed_data_files'</span></em><a class="headerlink" href="#database.leads.local_repository.LocalRepository.DF_PREPROCESSED_INPUT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.GPT_RESULTS">
+<span class="sig-name descname"><span class="pre">GPT_RESULTS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/home/runner/work/amos2023ws06-sales-lead-qualifier/amos2023ws06-sales-lead-qualifier/src/data/gpt-results'</span></em><a class="headerlink" href="#database.leads.local_repository.LocalRepository.GPT_RESULTS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.ML_MODELS">
+<span class="sig-name descname"><span class="pre">ML_MODELS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/home/runner/work/amos2023ws06-sales-lead-qualifier/amos2023ws06-sales-lead-qualifier/src/data/models'</span></em><a class="headerlink" href="#database.leads.local_repository.LocalRepository.ML_MODELS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.REVIEWS">
+<span class="sig-name descname"><span class="pre">REVIEWS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/home/runner/work/amos2023ws06-sales-lead-qualifier/amos2023ws06-sales-lead-qualifier/src/data/reviews'</span></em><a class="headerlink" href="#database.leads.local_repository.LocalRepository.REVIEWS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.SNAPSHOTS">
+<span class="sig-name descname"><span class="pre">SNAPSHOTS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/home/runner/work/amos2023ws06-sales-lead-qualifier/amos2023ws06-sales-lead-qualifier/src/data/snapshots'</span></em><a class="headerlink" href="#database.leads.local_repository.LocalRepository.SNAPSHOTS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.clean_snapshots">
+<span class="sig-name descname"><span class="pre">clean_snapshots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/local_repository.html#LocalRepository.clean_snapshots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.local_repository.LocalRepository.clean_snapshots" title="Link to this definition"></a></dt>
+<dd><p>Clean up the snapshots after a pipeline ran successfully
+:param prefix: Prefix of the current pipeline run used to identify all snapshots to delete</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.create_snapshot">
+<span class="sig-name descname"><span class="pre">create_snapshot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/local_repository.html#LocalRepository.create_snapshot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.local_repository.LocalRepository.create_snapshot" title="Link to this definition"></a></dt>
+<dd><p>Snapshot the current state of the dataframe
+:param df: Data to create a snapshot of
+:param prefix: Prefix for a group of snapshots belonging to a singe pipeline run, used to identify snapshots
+when cleaning up after a pipeline run
+:param name: Name of the snapshot
+:return: None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.fetch_gpt_result">
+<span class="sig-name descname"><span class="pre">fetch_gpt_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operation_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/local_repository.html#LocalRepository.fetch_gpt_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.local_repository.LocalRepository.fetch_gpt_result" title="Link to this definition"></a></dt>
+<dd><p>Fetches the GPT result for a given file ID and operation name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_id</strong> (<em>str</em>) – The ID of the file.</p></li>
+<li><p><strong>operation_name</strong> (<em>str</em>) – The name of the GPT operation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The GPT result for the specified file ID and operation name.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.fetch_review">
+<span class="sig-name descname"><span class="pre">fetch_review</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">place_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/local_repository.html#LocalRepository.fetch_review"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.local_repository.LocalRepository.fetch_review" title="Link to this definition"></a></dt>
+<dd><p>Fetch review for specified place_id
+:return: json contents of desired review</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.get_preprocessed_data_path">
+<span class="sig-name descname"><span class="pre">get_preprocessed_data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">historical</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/local_repository.html#LocalRepository.get_preprocessed_data_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.local_repository.LocalRepository.get_preprocessed_data_path" title="Link to this definition"></a></dt>
+<dd><p>Returns the path for a preprocessed data file (either historical or current)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.insert_data">
+<span class="sig-name descname"><span class="pre">insert_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/local_repository.html#LocalRepository.insert_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.local_repository.LocalRepository.insert_data" title="Link to this definition"></a></dt>
+<dd><p>TODO: Insert new data into specified dataframe
+:param data: Data to be inserted (desired format must be checked)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.load_classification_report">
+<span class="sig-name descname"><span class="pre">load_classification_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/local_repository.html#LocalRepository.load_classification_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.local_repository.LocalRepository.load_classification_report" title="Link to this definition"></a></dt>
+<dd><p>Load a given classification report to a file with a given name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model_name</strong> (<em>str</em>) – Model name that created the report</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.load_lookup_table">
+<span class="sig-name descname"><span class="pre">load_lookup_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/database/leads/local_repository.html#LocalRepository.load_lookup_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.local_repository.LocalRepository.load_lookup_table" title="Link to this definition"></a></dt>
+<dd><p>Create or load the lookup table of hashes for a given step
+:return: lookup table as a pandas DataFrame</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.load_ml_model">
+<span class="sig-name descname"><span class="pre">load_ml_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/local_repository.html#LocalRepository.load_ml_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.local_repository.LocalRepository.load_ml_model" title="Link to this definition"></a></dt>
+<dd><p>Load a ML model from a file with a given name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model_name</strong> (<em>str</em>) – File name</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.load_preprocessed_data">
+<span class="sig-name descname"><span class="pre">load_preprocessed_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">historical</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/local_repository.html#LocalRepository.load_preprocessed_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.local_repository.LocalRepository.load_preprocessed_data" title="Link to this definition"></a></dt>
+<dd><p>Load the preprocessed data from the given file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.save_classification_report">
+<span class="sig-name descname"><span class="pre">save_classification_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">report</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/local_repository.html#LocalRepository.save_classification_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.local_repository.LocalRepository.save_classification_report" title="Link to this definition"></a></dt>
+<dd><p>Save a given classification report to a file with a given name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>report</strong> – The classification report to save</p></li>
+<li><p><strong>model_name</strong> (<em>str</em>) – Model name that created the report</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.save_dataframe">
+<span class="sig-name descname"><span class="pre">save_dataframe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/local_repository.html#LocalRepository.save_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.local_repository.LocalRepository.save_dataframe" title="Link to this definition"></a></dt>
+<dd><p>Save dataframe in df attribute in chosen output location</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.save_gpt_result">
+<span class="sig-name descname"><span class="pre">save_gpt_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gpt_result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operation_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_refresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/local_repository.html#LocalRepository.save_gpt_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.local_repository.LocalRepository.save_gpt_result" title="Link to this definition"></a></dt>
+<dd><p>Save the results of GPT operations to a specified path
+:param gpt_results: The results of the GPT operations to be saved
+:param operation_name: The name of the GPT operation
+:param save_date: The date the results were saved</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.save_lookup_table">
+<span class="sig-name descname"><span class="pre">save_lookup_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lookup_table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/database/leads/local_repository.html#LocalRepository.save_lookup_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.local_repository.LocalRepository.save_lookup_table" title="Link to this definition"></a></dt>
+<dd><p>Save the lookup table for hashes for a given step</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.save_ml_model">
+<span class="sig-name descname"><span class="pre">save_ml_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/local_repository.html#LocalRepository.save_ml_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.local_repository.LocalRepository.save_ml_model" title="Link to this definition"></a></dt>
+<dd><p>Save a given ML model to a file with a given name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – Model to save</p></li>
+<li><p><strong>model_name</strong> (<em>str</em>) – File name</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.save_prediction">
+<span class="sig-name descname"><span class="pre">save_prediction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/local_repository.html#LocalRepository.save_prediction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.local_repository.LocalRepository.save_prediction" title="Link to this definition"></a></dt>
+<dd><p>Save dataframe in df parameter in chosen output location</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.local_repository.LocalRepository.save_review">
+<span class="sig-name descname"><span class="pre">save_review</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">place_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_refresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/local_repository.html#LocalRepository.save_review"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.local_repository.LocalRepository.save_review" title="Link to this definition"></a></dt>
+<dd><p>Upload review to specified review path
+:param review: json contents of the review to be uploaded</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-database.leads.repository">
+<span id="database-leads-repository-module"></span><h2>database.leads.repository module<a class="headerlink" href="#module-database.leads.repository" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="database.leads.repository.Repository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">database.leads.repository.</span></span><span class="sig-name descname"><span class="pre">Repository</span></span><a class="reference internal" href="_modules/database/leads/repository.html#Repository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.repository.Repository" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.DATETIME_FORMAT">
+<span class="sig-name descname"><span class="pre">DATETIME_FORMAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'%Y-%m-%d</span> <span class="pre">%H:%M:%S'</span></em><a class="headerlink" href="#database.leads.repository.Repository.DATETIME_FORMAT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.DF_HISTORICAL_OUTPUT">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DF_HISTORICAL_OUTPUT</span></span><a class="headerlink" href="#database.leads.repository.Repository.DF_HISTORICAL_OUTPUT" title="Link to this definition"></a></dt>
+<dd><p>Define database path to store historical enriched dataframe (used for preprocessing input)</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.DF_INPUT">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DF_INPUT</span></span><a class="headerlink" href="#database.leads.repository.Repository.DF_INPUT" title="Link to this definition"></a></dt>
+<dd><p>Define database path to load dataframe</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.DF_OUTPUT">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DF_OUTPUT</span></span><a class="headerlink" href="#database.leads.repository.Repository.DF_OUTPUT" title="Link to this definition"></a></dt>
+<dd><p>Define database path to store dataframe</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.GPT_RESULTS">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GPT_RESULTS</span></span><a class="headerlink" href="#database.leads.repository.Repository.GPT_RESULTS" title="Link to this definition"></a></dt>
+<dd><p>Define database path to store GPT operations</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.REVIEWS">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">REVIEWS</span></span><a class="headerlink" href="#database.leads.repository.Repository.REVIEWS" title="Link to this definition"></a></dt>
+<dd><p>Define database path to store reviews</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.SNAPSHOTS">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SNAPSHOTS</span></span><a class="headerlink" href="#database.leads.repository.Repository.SNAPSHOTS" title="Link to this definition"></a></dt>
+<dd><p>Define database path to store snapshots</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.clean_snapshots">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">clean_snapshots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/repository.html#Repository.clean_snapshots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.repository.Repository.clean_snapshots" title="Link to this definition"></a></dt>
+<dd><p>Clean up the snapshots after a pipeline ran successfully
+:param prefix: Prefix of the current pipeline run used to identify all snapshots to delete</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.create_snapshot">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_snapshot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/repository.html#Repository.create_snapshot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.repository.Repository.create_snapshot" title="Link to this definition"></a></dt>
+<dd><p>Snapshot the current state of the dataframe
+:param df: Data to create a snapshot of
+:param prefix: Prefix for a group of snapshots belonging to a singe pipeline run, used to identify snapshots
+when cleaning up after a pipeline run
+:param name: Name of the snapshot
+:return: None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.fetch_gpt_result">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch_gpt_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operation_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/repository.html#Repository.fetch_gpt_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.repository.Repository.fetch_gpt_result" title="Link to this definition"></a></dt>
+<dd><p>Fetches the GPT result for a given file ID and operation name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_id</strong> (<em>str</em>) – The ID of the file.</p></li>
+<li><p><strong>operation_name</strong> (<em>str</em>) – The name of the GPT operation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The GPT result for the specified file ID and operation name.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.fetch_review">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch_review</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">place_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/repository.html#Repository.fetch_review"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.repository.Repository.fetch_review" title="Link to this definition"></a></dt>
+<dd><p>Fetch review for specified place_id
+:return: json contents of desired review</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.get_dataframe">
+<span class="sig-name descname"><span class="pre">get_dataframe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/repository.html#Repository.get_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.repository.Repository.get_dataframe" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.get_enriched_data_path">
+<span class="sig-name descname"><span class="pre">get_enriched_data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">historical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/repository.html#Repository.get_enriched_data_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.repository.Repository.get_enriched_data_path" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.get_input_path">
+<span class="sig-name descname"><span class="pre">get_input_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/repository.html#Repository.get_input_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.repository.Repository.get_input_path" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.get_preprocessed_data_path">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_preprocessed_data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">historical</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/repository.html#Repository.get_preprocessed_data_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.repository.Repository.get_preprocessed_data_path" title="Link to this definition"></a></dt>
+<dd><p>Returns the path for a preprocessed data file (either historical or current)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.insert_data">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">insert_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/repository.html#Repository.insert_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.repository.Repository.insert_data" title="Link to this definition"></a></dt>
+<dd><p>Insert new data into specified dataframe
+:param data: Data to be inserted (desired format must be checked)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.load_classification_report">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_classification_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/repository.html#Repository.load_classification_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.repository.Repository.load_classification_report" title="Link to this definition"></a></dt>
+<dd><p>Load a given classification report to a file with a given name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model_name</strong> (<em>str</em>) – Model name that created the report</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.load_lookup_table">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_lookup_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/database/leads/repository.html#Repository.load_lookup_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.repository.Repository.load_lookup_table" title="Link to this definition"></a></dt>
+<dd><p>Create or load the lookup table of hashes for a given step
+:return: lookup table as a pandas DataFrame</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.load_ml_model">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_ml_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/repository.html#Repository.load_ml_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.repository.Repository.load_ml_model" title="Link to this definition"></a></dt>
+<dd><p>Load a ML model from a file with a given name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model_name</strong> (<em>str</em>) – File name</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.load_preprocessed_data">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_preprocessed_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">historical</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/repository.html#Repository.load_preprocessed_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.repository.Repository.load_preprocessed_data" title="Link to this definition"></a></dt>
+<dd><p>Load the preprocessed data from the given file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.save_classification_report">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">save_classification_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">report</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/repository.html#Repository.save_classification_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.repository.Repository.save_classification_report" title="Link to this definition"></a></dt>
+<dd><p>Save a given classification report to a file with a given name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>report</strong> – The classification report to save</p></li>
+<li><p><strong>model_name</strong> (<em>str</em>) – Model name that created the report</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.save_dataframe">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">save_dataframe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/repository.html#Repository.save_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.repository.Repository.save_dataframe" title="Link to this definition"></a></dt>
+<dd><p>Save dataframe in df attribute in chosen output location</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.save_gpt_result">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">save_gpt_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gpt_result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operation_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_refresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/repository.html#Repository.save_gpt_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.repository.Repository.save_gpt_result" title="Link to this definition"></a></dt>
+<dd><p>Saves the GPT result for a given file ID and operation name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gpt_result</strong> (<em>str</em>) – The GPT result to be saved.</p></li>
+<li><p><strong>file_id</strong> (<em>str</em>) – The ID of the file.</p></li>
+<li><p><strong>operation_name</strong> (<em>str</em>) – The name of the operation.</p></li>
+<li><p><strong>force_refresh</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to force a refresh of the saved result. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.save_lookup_table">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">save_lookup_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lookup_table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/database/leads/repository.html#Repository.save_lookup_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.repository.Repository.save_lookup_table" title="Link to this definition"></a></dt>
+<dd><p>Save the lookup table for hashes for a given step</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.save_ml_model">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">save_ml_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/repository.html#Repository.save_ml_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.repository.Repository.save_ml_model" title="Link to this definition"></a></dt>
+<dd><p>Save a given ML model to a file with a given name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – Model to save</p></li>
+<li><p><strong>model_name</strong> (<em>str</em>) – File name</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.save_prediction">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">save_prediction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/repository.html#Repository.save_prediction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.repository.Repository.save_prediction" title="Link to this definition"></a></dt>
+<dd><p>Save dataframe in df parameter in chosen output location</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.save_review">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">save_review</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">place_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_refresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/repository.html#Repository.save_review"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.repository.Repository.save_review" title="Link to this definition"></a></dt>
+<dd><p>Upload review to specified review path
+:param review: json contents of the review to be uploaded</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.repository.Repository.set_dataframe">
+<span class="sig-name descname"><span class="pre">set_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/repository.html#Repository.set_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.repository.Repository.set_dataframe" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-database.leads.s3_repository">
+<span id="database-leads-s3-repository-module"></span><h2>database.leads.s3_repository module<a class="headerlink" href="#module-database.leads.s3_repository" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">database.leads.s3_repository.</span></span><span class="sig-name descname"><span class="pre">S3Repository</span></span><a class="reference internal" href="_modules/database/leads/s3_repository.html#S3Repository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.s3_repository.S3Repository" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#database.leads.repository.Repository" title="database.leads.repository.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.CLASSIFICATION_REPORTS">
+<span class="sig-name descname"><span class="pre">CLASSIFICATION_REPORTS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'s3://amos--models/classification_reports/'</span></em><a class="headerlink" href="#database.leads.s3_repository.S3Repository.CLASSIFICATION_REPORTS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.DF_HISTORICAL_OUTPUT">
+<span class="sig-name descname"><span class="pre">DF_HISTORICAL_OUTPUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'s3://amos--data--events/historical_data/100k_historic_enriched.csv'</span></em><a class="headerlink" href="#database.leads.s3_repository.S3Repository.DF_HISTORICAL_OUTPUT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.DF_INPUT">
+<span class="sig-name descname"><span class="pre">DF_INPUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'s3://amos--data--events/leads/enriched.csv'</span></em><a class="headerlink" href="#database.leads.s3_repository.S3Repository.DF_INPUT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.DF_OUTPUT">
+<span class="sig-name descname"><span class="pre">DF_OUTPUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'s3://amos--data--events/leads/enriched.csv'</span></em><a class="headerlink" href="#database.leads.s3_repository.S3Repository.DF_OUTPUT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.DF_PREDICTION_OUTPUT">
+<span class="sig-name descname"><span class="pre">DF_PREDICTION_OUTPUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'s3://amos--data--events/leads/leads_predicted_size.csv'</span></em><a class="headerlink" href="#database.leads.s3_repository.S3Repository.DF_PREDICTION_OUTPUT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.DF_PREPROCESSED_INPUT">
+<span class="sig-name descname"><span class="pre">DF_PREPROCESSED_INPUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'s3://amos--data--features/preprocessed_data_files/'</span></em><a class="headerlink" href="#database.leads.s3_repository.S3Repository.DF_PREPROCESSED_INPUT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.EVENTS_BUCKET">
+<span class="sig-name descname"><span class="pre">EVENTS_BUCKET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'amos--data--events'</span></em><a class="headerlink" href="#database.leads.s3_repository.S3Repository.EVENTS_BUCKET" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.FEATURES_BUCKET">
+<span class="sig-name descname"><span class="pre">FEATURES_BUCKET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'amos--data--features'</span></em><a class="headerlink" href="#database.leads.s3_repository.S3Repository.FEATURES_BUCKET" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.GPT_RESULTS">
+<span class="sig-name descname"><span class="pre">GPT_RESULTS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'s3://amos--data--events/gpt-results/'</span></em><a class="headerlink" href="#database.leads.s3_repository.S3Repository.GPT_RESULTS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.LOOKUP_TABLES">
+<span class="sig-name descname"><span class="pre">LOOKUP_TABLES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'s3://amos--data--events/lookup_tables/'</span></em><a class="headerlink" href="#database.leads.s3_repository.S3Repository.LOOKUP_TABLES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.ML_MODELS">
+<span class="sig-name descname"><span class="pre">ML_MODELS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'s3://amos--models/models/'</span></em><a class="headerlink" href="#database.leads.s3_repository.S3Repository.ML_MODELS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.MODELS_BUCKET">
+<span class="sig-name descname"><span class="pre">MODELS_BUCKET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'amos--models'</span></em><a class="headerlink" href="#database.leads.s3_repository.S3Repository.MODELS_BUCKET" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.REVIEWS">
+<span class="sig-name descname"><span class="pre">REVIEWS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'s3://amos--data--events/reviews/'</span></em><a class="headerlink" href="#database.leads.s3_repository.S3Repository.REVIEWS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.SNAPSHOTS">
+<span class="sig-name descname"><span class="pre">SNAPSHOTS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'s3://amos--data--events/snapshots/'</span></em><a class="headerlink" href="#database.leads.s3_repository.S3Repository.SNAPSHOTS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.clean_snapshots">
+<span class="sig-name descname"><span class="pre">clean_snapshots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/s3_repository.html#S3Repository.clean_snapshots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.s3_repository.S3Repository.clean_snapshots" title="Link to this definition"></a></dt>
+<dd><p>Clean up the snapshots after a pipeline ran successfully
+:param prefix: Prefix of the current pipeline run used to identify all snapshots to delete</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.create_snapshot">
+<span class="sig-name descname"><span class="pre">create_snapshot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/s3_repository.html#S3Repository.create_snapshot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.s3_repository.S3Repository.create_snapshot" title="Link to this definition"></a></dt>
+<dd><p>Snapshot the current state of the dataframe
+:param df: Data to create a snapshot of
+:param prefix: Prefix for a group of snapshots belonging to a singe pipeline run, used to identify snapshots
+when cleaning up after a pipeline run
+:param name: Name of the snapshot
+:return: None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.fetch_gpt_result">
+<span class="sig-name descname"><span class="pre">fetch_gpt_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operation_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/s3_repository.html#S3Repository.fetch_gpt_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.s3_repository.S3Repository.fetch_gpt_result" title="Link to this definition"></a></dt>
+<dd><p>Fetches the GPT result for a given file ID and operation name from S3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.fetch_review">
+<span class="sig-name descname"><span class="pre">fetch_review</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">place_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/s3_repository.html#S3Repository.fetch_review"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.s3_repository.S3Repository.fetch_review" title="Link to this definition"></a></dt>
+<dd><p>Fetch review for specified place_id
+:return: json contents of desired review</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.get_preprocessed_data_path">
+<span class="sig-name descname"><span class="pre">get_preprocessed_data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">historical</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/s3_repository.html#S3Repository.get_preprocessed_data_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.s3_repository.S3Repository.get_preprocessed_data_path" title="Link to this definition"></a></dt>
+<dd><p>Returns the path for a preprocessed data file (either historical or current)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.insert_data">
+<span class="sig-name descname"><span class="pre">insert_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/s3_repository.html#S3Repository.insert_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.s3_repository.S3Repository.insert_data" title="Link to this definition"></a></dt>
+<dd><p>TODO: Insert new data into specified dataframe
+:param data: Data to be inserted (desired format must be checked)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.load_classification_report">
+<span class="sig-name descname"><span class="pre">load_classification_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/s3_repository.html#S3Repository.load_classification_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.s3_repository.S3Repository.load_classification_report" title="Link to this definition"></a></dt>
+<dd><p>Load a given classification report to a file with a given name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model_name</strong> (<em>str</em>) – Model name that created the report</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.load_lookup_table">
+<span class="sig-name descname"><span class="pre">load_lookup_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/database/leads/s3_repository.html#S3Repository.load_lookup_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.s3_repository.S3Repository.load_lookup_table" title="Link to this definition"></a></dt>
+<dd><p>Create or load the lookup table of hashes for a given step
+:return: lookup table as a pandas DataFrame</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.load_ml_model">
+<span class="sig-name descname"><span class="pre">load_ml_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/s3_repository.html#S3Repository.load_ml_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.s3_repository.S3Repository.load_ml_model" title="Link to this definition"></a></dt>
+<dd><p>Load a ML model from a file with a given name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model_name</strong> (<em>str</em>) – File name</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.load_preprocessed_data">
+<span class="sig-name descname"><span class="pre">load_preprocessed_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">historical</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/s3_repository.html#S3Repository.load_preprocessed_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.s3_repository.S3Repository.load_preprocessed_data" title="Link to this definition"></a></dt>
+<dd><p>Load the preprocessed data from the given file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.save_classification_report">
+<span class="sig-name descname"><span class="pre">save_classification_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">report</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/s3_repository.html#S3Repository.save_classification_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.s3_repository.S3Repository.save_classification_report" title="Link to this definition"></a></dt>
+<dd><p>Save a given classification report to a file with a given name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>report</strong> – The classification report to save</p></li>
+<li><p><strong>model_name</strong> (<em>str</em>) – Model name that created the report</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.save_dataframe">
+<span class="sig-name descname"><span class="pre">save_dataframe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/s3_repository.html#S3Repository.save_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.s3_repository.S3Repository.save_dataframe" title="Link to this definition"></a></dt>
+<dd><p>Save dataframe in df attribute in chosen output location</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.save_gpt_result">
+<span class="sig-name descname"><span class="pre">save_gpt_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gpt_result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operation_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_refresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/s3_repository.html#S3Repository.save_gpt_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.s3_repository.S3Repository.save_gpt_result" title="Link to this definition"></a></dt>
+<dd><p>Saves the GPT result for a given file ID and operation name on S3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.save_lookup_table">
+<span class="sig-name descname"><span class="pre">save_lookup_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lookup_table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/database/leads/s3_repository.html#S3Repository.save_lookup_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.s3_repository.S3Repository.save_lookup_table" title="Link to this definition"></a></dt>
+<dd><p>Save the lookup table for hashes for a given step</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.save_ml_model">
+<span class="sig-name descname"><span class="pre">save_ml_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/s3_repository.html#S3Repository.save_ml_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.s3_repository.S3Repository.save_ml_model" title="Link to this definition"></a></dt>
+<dd><p>Save a given ML model to a file with a given name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – Model to save</p></li>
+<li><p><strong>model_name</strong> (<em>str</em>) – File name</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.save_prediction">
+<span class="sig-name descname"><span class="pre">save_prediction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/s3_repository.html#S3Repository.save_prediction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.s3_repository.S3Repository.save_prediction" title="Link to this definition"></a></dt>
+<dd><p>Save dataframe in df parameter in chosen output location</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="database.leads.s3_repository.S3Repository.save_review">
+<span class="sig-name descname"><span class="pre">save_review</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">place_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_refresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/s3_repository.html#S3Repository.save_review"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.s3_repository.S3Repository.save_review" title="Link to this definition"></a></dt>
+<dd><p>Upload review to specified review path
+:param review: json contents of the review to be uploaded</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="database.leads.s3_repository.decode_s3_url">
+<span class="sig-prename descclassname"><span class="pre">database.leads.s3_repository.</span></span><span class="sig-name descname"><span class="pre">decode_s3_url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/leads/s3_repository.html#decode_s3_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.leads.s3_repository.decode_s3_url" title="Link to this definition"></a></dt>
+<dd><p>Retrieve the bucket and object key from object url
+:return: bucket string, object key string</p>
+</dd></dl>
+
+</section>
+<section id="module-database.leads">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-database.leads" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="database.html" class="btn btn-neutral float-left" title="database package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="demo.html" class="btn btn-neutral float-right" title="demo package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, SumInsights.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

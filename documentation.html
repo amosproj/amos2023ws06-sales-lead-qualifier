@@ -1,0 +1,2068 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Build Documentation &mdash; Sales Lead Qualifier 01.00.00 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=6386319a"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="src" href="modules.html" />
+    <link rel="prev" title="Sales-Lead-Qualifier Project (AMOS WS 2023/24)" href="readme_link.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Sales Lead Qualifier
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme_link.html">Sales-Lead-Qualifier Project (AMOS WS 2023/24)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Build Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#creating-the-environment">Creating the Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#build-process">Build Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-the-app">Running the app</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pre-commit-hooks">Pre-Commit Hooks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#user-documentation">User Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#project-vision">Project vision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#project-mission">Project mission</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#base-data-collector">(0) : Base Data Collector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data-preprocessing">(1) : Data preprocessing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ml-model-training">(2) : ML model training</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#merchant-size-predictor">(3) : Merchant Size Predictor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exit">(4) : Exit</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#design-documentation">Design Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#component-diagram">Component Diagram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#external-software">External Software</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#lead-form-lf">Lead Form (LF)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#customer-relationship-management-crm">Customer Relationship Management (CRM)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#components">Components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#base-data-collector-bdc">Base Data Collector (BDC)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#general-description">General description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#design">Design</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data-storage">Data storage</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#merchant-size-predictor-msp-estimated-value-predictor-evp">Merchant Size Predictor (MSP) / Estimated Value Predictor (EVP)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#historical-note">Historical Note</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1">Design</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#data-fields">Data Fields</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#data-field-definitions">Data Field Definitions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#data-field-table">Data Field Table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#links-to-data-sources">Links to Data Sources:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#data-fields-csv">Data Fields CSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#google-search-strategy">Google Search Strategy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#google-search-strategy">Google Search Strategy</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search-strategy">Search Strategy</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#openllm-business-type-analysis">OpenLLM Business Type Analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#business-type-analysis-research-and-proposed-solution">Business Type Analysis: Research and Proposed Solution</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#research">Research</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#proposed-solution">Proposed Solution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#conclusion">Conclusion</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#classifier-comparison">Classifier Comparison</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#classifier-comparison">Classifier Comparison</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#abstract">Abstract</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#experimental-attempts">Experimental Attempts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models-not-performing-well">Models not performing well</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#support-vector-machine-classifier-model">Support Vector Machine Classifier Model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fully-connected-neural-networks-classifier-model">Fully Connected Neural Networks Classifier Model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fully-connected-neural-networks-regression-model">Fully Connected Neural Networks Regression Model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qda-ridge-classifier">QDA &amp; Ridge Classifier</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tabnet-architecture">TabNet Architecture</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#well-performing-models">Well performing models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#feature-subsets">Feature subsets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#overall-results">Overall Results</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#results-for-each-class">Results for each class</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#conclusion">Conclusion</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#concepts-unrealized-ideas-miscellaneous">Concepts, Unrealized Ideas &amp; Miscellaneous</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#unused-ideas">Unused Ideas</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#deprecated">Deprecated</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#controller">Controller</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facebookgraphapi">FacebookGraphAPI</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scrapeaddresses">ScrapeAddresses</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#possible-ml-improvements">Possible ML improvements</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#creating-data-subsets">Creating data subsets</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#controller">Controller</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#automation">Automation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#diagrams">Diagrams</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#twitter-api-limitation">Twitter API Limitation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#limitations-of-twitter-api-for-user-information-retrieval-and-biased-sentiment-analysis">Limitations of Twitter API for user information retrieval and biased sentiment analysis</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#limitation-1-absence-of-usernames-in-provided-customer-data">Limitation 1: Absence of usernames in provided customer data:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#limitation-2-inherent-biases-in-tweet-content-for-sentiment-analysis">Limitation 2: Inherent Biases in Tweet Content for Sentiment Analysis:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#links-to-twitter-s-api-documentation">Links to Twitter’s API documentation:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#contribution">Contribution</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#contribution-workflow">Contribution Workflow</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#branching-strategy">Branching Strategy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#commits-and-pull-requests">Commits and Pull Requests</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pull-request-workflow">Pull Request Workflow</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#sbom-generator">SBOM Generator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#automatic-sbom-generation">Automatic SBOM generation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#miscellaneous">Miscellaneous</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#miscellaneous-content">Miscellaneous Content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#knowledge-base">Knowledge Base</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aws">AWS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pr-management">PR Management:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#branch-management">Branch-Management:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pre-commit">Pre-commit:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#features">Features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#storage">Storage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#control-flow-berkay">Control flow (Berkay)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ai">AI</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#troubleshooting">Troubleshooting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#build">Build</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bdc">BDC</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1">Branch-Management</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">src</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Sales Lead Qualifier</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Build Documentation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/documentation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="build-documentation">
+<h1>Build Documentation<a class="headerlink" href="#build-documentation" title="Link to this heading"></a></h1>
+<!--
+SPDX-License-Identifier: MIT
+SPDX-FileCopyrightText: 2023 Felix Zailskas <felixzailskas@gmail.com>
+-->
+<section id="creating-the-environment">
+<h2>Creating the Environment<a class="headerlink" href="#creating-the-environment" title="Link to this heading"></a></h2>
+<p>The repository contains the file <code class="docutils literal notranslate"><span class="pre">.env.template</span></code>. This file is a template for
+the environment variables that need to be set for the application to run. Copy
+this file into a file called <code class="docutils literal notranslate"><span class="pre">.env</span></code> at the root level of this repository and
+fill in all values with the corresponding secrets.</p>
+<p>To create the virtual environment in this project you must have <code class="docutils literal notranslate"><span class="pre">pipenv</span></code>
+installed on your machine. Then run the following commands:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># for development environment</span>
+pipenv<span class="w"> </span>install<span class="w"> </span>--dev
+<span class="c1"># for production environment</span>
+pipenv<span class="w"> </span>install
+</pre></div>
+</div>
+<p>To work within the environment you can now run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># to activate the virtual environment</span>
+pipenv<span class="w"> </span>shell
+<span class="c1"># to run a single command</span>
+pipenv<span class="w"> </span>run<span class="w"> </span>&lt;COMMAND&gt;
+</pre></div>
+</div>
+</section>
+<section id="build-process">
+<h2>Build Process<a class="headerlink" href="#build-process" title="Link to this heading"></a></h2>
+<p>This application is built and tested on every push and pull request creation
+through Github actions. For this, the <code class="docutils literal notranslate"><span class="pre">pipenv</span></code> environment is installed and then
+the code style is checked using <code class="docutils literal notranslate"><span class="pre">flake8</span></code>. Finally, the <code class="docutils literal notranslate"><span class="pre">tests/</span></code> directory is
+executed using <code class="docutils literal notranslate"><span class="pre">pytest</span></code> and a test coverage report is created using <code class="docutils literal notranslate"><span class="pre">coverage</span></code>.
+The test coverage report can be found in the Github actions output.</p>
+<p>In another task, all used packages are tested for their license to ensure that
+the software does not use any copy-left licenses and remains open source and
+free to use.</p>
+<p>If any of these steps fail for a pull request the pull request is blocked from
+being merged until the corresponding step is fixed.</p>
+<p>Furthermore, it is required to install the pre-commit hooks as described
+<a class="reference external" href="https://github.com/amosproj/amos2023ws06-sales-lead-qualifier/wiki/Knowledge#pre-commit">here</a>.
+This ensures uniform coding style throughout the project as well as that the
+software is compliant with the REUSE licensing specifications.</p>
+</section>
+<section id="running-the-app">
+<h2>Running the app<a class="headerlink" href="#running-the-app" title="Link to this heading"></a></h2>
+<p>To run the application the <code class="docutils literal notranslate"><span class="pre">pipenv</span></code> environment must be installed and all needed
+environment variables must be set in the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file. Then the application can
+be started via</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pipenv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>src/main.py
+</pre></div>
+</div>
+</section>
+<section id="pre-commit-hooks">
+<h2>Pre-Commit Hooks<a class="headerlink" href="#pre-commit-hooks" title="Link to this heading"></a></h2>
+<p>This repository uses <code class="docutils literal notranslate"><span class="pre">pre-commit</span></code> hooks to ensure a consistent and clean file organization. Each registered hook will be executed when committing to the repository. To ensure that the hooks will be executed they need to be installed using the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pre-commit<span class="w"> </span>install
+</pre></div>
+</div>
+<p>The following things are done by hooks automatically:</p>
+<ul class="simple">
+<li><p>formatting of python files using black and isort</p></li>
+<li><p>formatting of other files using prettier</p></li>
+<li><p>syntax check of JSON and yaml files</p></li>
+<li><p>adding new line at the end of files</p></li>
+<li><p>removing trailing whitespaces</p></li>
+<li><p>prevent commits to <code class="docutils literal notranslate"><span class="pre">dev</span></code> and <code class="docutils literal notranslate"><span class="pre">main</span></code> branch</p></li>
+<li><p>check adherence to REUSE licensing format</p></li>
+</ul>
+</section>
+</section>
+<section id="user-documentation">
+<h1>User Documentation<a class="headerlink" href="#user-documentation" title="Link to this heading"></a></h1>
+<!--
+SPDX-License-Identifier: MIT
+SPDX-FileCopyrightText: 2023 Felix Zailskas <felixzailskas@gmail.com>
+SPDX-FileCopyrightText: 2024 Ahmed Sheta <ahmed.sheta@fau.de>
+-->
+<section id="project-vision">
+<h2>Project vision<a class="headerlink" href="#project-vision" title="Link to this heading"></a></h2>
+<p>This product will give our industry partner a tool at hand, that can effectively
+increase conversion of their leads to customers, primarily by providing the
+sales team with valuable information. The modular architecture makes our product
+future-proof, by making it easy to add further data sources, employ improved
+prediction models or to adjust the output format if desired.</p>
+</section>
+<section id="project-mission">
+<h2>Project mission<a class="headerlink" href="#project-mission" title="Link to this heading"></a></h2>
+<p>The mission of this project is to enrich historical data about customers and
+recent data about leads (with information from external sources) and to leverage
+the enriched data in machine learning, so that the estimated Merchant Size of
+leads can be predicted.</p>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h2>
+<p>To execute the final program, ensure the environment is installed (refer to
+build-documents.md) and run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">.\src\main.py</span></code> either locally or via the
+build process. The user will be presented with the following options:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Choose<span class="w"> </span>demo:
+<span class="o">(</span><span class="m">0</span><span class="o">)</span><span class="w"> </span>:<span class="w"> </span>Base<span class="w"> </span>Data<span class="w"> </span>Collector
+<span class="o">(</span><span class="m">1</span><span class="o">)</span><span class="w"> </span>:<span class="w"> </span>Data<span class="w"> </span>preprocessing
+<span class="o">(</span><span class="m">2</span><span class="o">)</span><span class="w"> </span>:<span class="w"> </span>ML<span class="w"> </span>model<span class="w"> </span>training
+<span class="o">(</span><span class="m">3</span><span class="o">)</span><span class="w"> </span>:<span class="w"> </span>Merchant<span class="w"> </span>Size<span class="w"> </span>Predictor
+<span class="o">(</span><span class="m">4</span><span class="o">)</span><span class="w"> </span>:<span class="w"> </span>Exit
+</pre></div>
+</div>
+<section id="base-data-collector">
+<h3>(0) : Base Data Collector<a class="headerlink" href="#base-data-collector" title="Link to this heading"></a></h3>
+<p>This is the data enrichment pipeline, utilizing multiple data enrichment steps.
+Configuration options are presented:</p>
+<p><code class="docutils literal notranslate"><span class="pre">Do</span> <span class="pre">you</span> <span class="pre">want</span> <span class="pre">to</span> <span class="pre">list</span> <span class="pre">all</span> <span class="pre">available</span> <span class="pre">pipeline</span> <span class="pre">configs?</span> <span class="pre">(y/N)</span></code> If <code class="docutils literal notranslate"><span class="pre">y</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Please<span class="w"> </span>enter<span class="w"> </span>the<span class="w"> </span>index<span class="w"> </span>of<span class="w"> </span>requested<span class="w"> </span>pipeline<span class="w"> </span>config:
+<span class="o">(</span><span class="m">0</span><span class="o">)</span><span class="w"> </span>:<span class="w"> </span>config_sprint09_release.json
+<span class="o">(</span><span class="m">1</span><span class="o">)</span><span class="w"> </span>:<span class="w"> </span>just_run_search_offeneregister.json
+<span class="o">(</span><span class="m">2</span><span class="o">)</span><span class="w"> </span>:<span class="w"> </span>run_all_steps.json
+<span class="o">(</span><span class="m">3</span><span class="o">)</span><span class="w"> </span>:<span class="w"> </span>Exit
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>(0) Coniguration used in sprint 9.</p></li>
+<li><p>(1) Coniguration for OffeneRegister.</p></li>
+<li><p>(2) Running all the steps of the pipeline without steps selection.</p></li>
+<li><p>(3) Exit to the pipeline step selection.</p></li>
+</ul>
+<p>If <code class="docutils literal notranslate"><span class="pre">n</span></code>: proceed to pipeline step selection for data enrichment. Subsequent
+questions arise:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Run<span class="w"> </span>Scrape<span class="w"> </span>Address<span class="w"> </span><span class="o">(</span>will<span class="w"> </span>take<span class="w"> </span>a<span class="w"> </span>long<span class="w"> </span><span class="nb">time</span><span class="o">)(</span>y/N<span class="o">)</span>?
+Run<span class="w"> </span>Search<span class="w"> </span>OffeneRegister<span class="w"> </span><span class="o">(</span>will<span class="w"> </span>take<span class="w"> </span>a<span class="w"> </span>long<span class="w"> </span><span class="nb">time</span><span class="o">)(</span>y/N<span class="o">)</span>?
+Run<span class="w"> </span>Phone<span class="w"> </span>Number<span class="w"> </span>Validation<span class="w"> </span><span class="o">(</span>y/N<span class="o">)</span>?
+Run<span class="w"> </span>Google<span class="w"> </span>API<span class="w"> </span><span class="o">(</span>will<span class="w"> </span>use<span class="w"> </span>token<span class="w"> </span>and<span class="w"> </span>generate<span class="w"> </span>cost!<span class="o">)(</span>y/N<span class="o">)</span>?
+Run<span class="w"> </span>Google<span class="w"> </span>API<span class="w"> </span>Detailed<span class="w"> </span><span class="o">(</span>will<span class="w"> </span>use<span class="w"> </span>token<span class="w"> </span>and<span class="w"> </span>generate<span class="w"> </span>cost!<span class="o">)(</span>y/N<span class="o">)</span>?
+Run<span class="w"> </span>openAI<span class="w"> </span>GPT<span class="w"> </span>Sentiment<span class="w"> </span>Analyzer<span class="w"> </span><span class="o">(</span>will<span class="w"> </span>use<span class="w"> </span>token<span class="w"> </span>and<span class="w"> </span>generate<span class="w"> </span>cost!<span class="o">)(</span>y/N<span class="o">)</span>?
+Run<span class="w"> </span>openAI<span class="w"> </span>GPT<span class="w"> </span>Summarizer<span class="w"> </span><span class="o">(</span>will<span class="w"> </span>use<span class="w"> </span>token<span class="w"> </span>and<span class="w"> </span>generate<span class="w"> </span>cost!<span class="o">)(</span>y/N<span class="o">)</span>?
+Run<span class="w"> </span>Smart<span class="w"> </span>Review<span class="w"> </span>Insights<span class="w"> </span><span class="o">(</span>will<span class="w"> </span>take<span class="w"> </span>looong<span class="w"> </span>time!<span class="o">)(</span>y/N<span class="o">)</span>?
+Run<span class="w"> </span>Regionalatlas<span class="w"> </span><span class="o">(</span>y/N<span class="o">)</span>?
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Scrape</span> <span class="pre">Address</span> <span class="pre">(will</span> <span class="pre">take</span> <span class="pre">a</span> <span class="pre">long</span> <span class="pre">time)(y/N)?</span></code>: This enrichment step
+scrapes the leads website for an address using regex.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Search</span> <span class="pre">OffeneRegister</span> <span class="pre">(will</span> <span class="pre">take</span> <span class="pre">a</span> <span class="pre">long</span> <span class="pre">time)(y/N)?</span></code>: This enrichment
+step searches for company-related data using the OffeneRegisterAPI.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Phone</span> <span class="pre">Number</span> <span class="pre">Validation</span> <span class="pre">(y/N)?</span></code>: This enrichment step checks if the
+provided phone numbers are valid and extract geographical information using
+geocoder.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Google</span> <span class="pre">API</span> <span class="pre">(will</span> <span class="pre">use</span> <span class="pre">token</span> <span class="pre">and</span> <span class="pre">generate</span> <span class="pre">cost!)(y/N)?</span></code>: This enrichment
+step tries to the correct business entry in the Google Maps database. It will
+save basic information along with the place id, that can be used to retrieve
+further detailed information and a confidence score that should indicate the
+confidence in having found the correct result.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Google</span> <span class="pre">API</span> <span class="pre">Detailed</span> <span class="pre">(will</span> <span class="pre">use</span> <span class="pre">token</span> <span class="pre">and</span> <span class="pre">generate</span> <span class="pre">cost!)(y/N)?</span></code>: This
+enrichment step tries to gather detailed information for a given google
+business entry, identified by the place ID.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">openAI</span> <span class="pre">GPT</span> <span class="pre">Sentiment</span> <span class="pre">Analyzer</span> <span class="pre">(will</span> <span class="pre">use</span> <span class="pre">token</span> <span class="pre">and</span> <span class="pre">generate</span> <span class="pre">cost!)(y/N)?</span></code>:
+This enrichment step performs sentiment analysis on reviews using GPT-4 model.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">openAI</span> <span class="pre">GPT</span> <span class="pre">Summarizer</span> <span class="pre">(will</span> <span class="pre">use</span> <span class="pre">token</span> <span class="pre">and</span> <span class="pre">generate</span> <span class="pre">cost!)(y/N)?</span></code>: This
+enrichment step attempts to download a businesses website in raw html format
+and pass this information to OpenAIs GPT, which will then attempt to summarize
+the raw contents and extract valuable information for a salesperson.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Smart</span> <span class="pre">Review</span> <span class="pre">Insights</span> <span class="pre">(will</span> <span class="pre">take</span> <span class="pre">looong</span> <span class="pre">time!)(y/N)?</span></code>: This enrichment
+step enhances review insights for smart review analysis</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Regionalatlas</span> <span class="pre">(y/N)?</span></code>: This enrichment step will query the RegionalAtlas
+database for location based geographic and demographic information, based on
+the address that was found for a business through Google API.</p></li>
+</ul>
+<p>It is emphasized that some steps are dependent on others, and excluding one
+might result in dependency issues for subsequent steps.</p>
+<p>After selecting the desired enrichtment steps, a prompt asks the user to
+<code class="docutils literal notranslate"><span class="pre">Set</span> <span class="pre">limit</span> <span class="pre">for</span> <span class="pre">data</span> <span class="pre">points</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">processed</span> <span class="pre">(0=No</span> <span class="pre">limit)</span></code> such that the user
+chooses whether it apply the data enrichment steps for all the leads (no limit)
+or for a certain number of leads.</p>
+<p><strong>Note</strong>: In case <code class="docutils literal notranslate"><span class="pre">DATABASE_TYPE=&quot;S3&quot;</span></code> in your <code class="docutils literal notranslate"><span class="pre">.env</span></code> file, the limit will be
+removed, in order to enrich all the data into <code class="docutils literal notranslate"><span class="pre">s3://amos--data--events</span></code> S3
+bucket.</p>
+</section>
+<section id="data-preprocessing">
+<h3>(1) : Data preprocessing<a class="headerlink" href="#data-preprocessing" title="Link to this heading"></a></h3>
+<p>Post data enrichment, preprocessing is crucial for machine learning models,
+involving scaling, numerical outlier removal, and categorical one-hot encoding.
+The user is prompted with questions:</p>
+<p><code class="docutils literal notranslate"><span class="pre">Filter</span> <span class="pre">out</span> <span class="pre">the</span> <span class="pre">API-irrelevant</span> <span class="pre">data?</span> <span class="pre">(y/n)</span></code>: This will filter out all the leads
+that couldn’t be enriched during the data enrichtment steps, removing them would
+be useful for the Machine Learning algorithms, to avoid any bias introduced,
+even if we pad the features with zeros.
+<code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">on</span> <span class="pre">historical</span> <span class="pre">data</span> <span class="pre">?</span> <span class="pre">(y/n)</span> <span class="pre">Note:</span> <span class="pre">DATABASE_TYPE</span> <span class="pre">should</span> <span class="pre">be</span> <span class="pre">S3!</span></code>: The user has
+to have <code class="docutils literal notranslate"><span class="pre">DATABASE_TYPE=&quot;S3&quot;</span></code> in <code class="docutils literal notranslate"><span class="pre">.env</span></code> file in order to run on historical data,
+otherwise, it will run locally. After preprocessing, the log will show where the
+preprocessed_data is stored.</p>
+</section>
+<section id="ml-model-training">
+<h3>(2) : ML model training<a class="headerlink" href="#ml-model-training" title="Link to this heading"></a></h3>
+<p>Six machine learning models are available:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">(</span><span class="m">0</span><span class="o">)</span><span class="w"> </span>:<span class="w"> </span>Random<span class="w"> </span>Forest
+<span class="o">(</span><span class="m">1</span><span class="o">)</span><span class="w"> </span>:<span class="w"> </span>XGBoost
+<span class="o">(</span><span class="m">2</span><span class="o">)</span><span class="w"> </span>:<span class="w"> </span>Naive<span class="w"> </span>Bayes
+<span class="o">(</span><span class="m">3</span><span class="o">)</span><span class="w"> </span>:<span class="w"> </span>KNN<span class="w"> </span>Classifier
+<span class="o">(</span><span class="m">4</span><span class="o">)</span><span class="w"> </span>:<span class="w"> </span>AdaBoost
+<span class="o">(</span><span class="m">5</span><span class="o">)</span><span class="w"> </span>:<span class="w"> </span>LightGBM
+</pre></div>
+</div>
+<p>After selection of the desired machine learning model, the user would be
+prompted with a series of questions:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Load</span> <span class="pre">model</span> <span class="pre">from</span> <span class="pre">file?</span> <span class="pre">(y/N)</span></code> : In case of <code class="docutils literal notranslate"><span class="pre">y</span></code>, the program will ask for a
+file location of a previously saved model to use for predictions and testing.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Use</span> <span class="pre">3</span> <span class="pre">classes</span> <span class="pre">({XS},</span> <span class="pre">{S,</span> <span class="pre">M,</span> <span class="pre">L},</span> <span class="pre">{XL})</span> <span class="pre">instead</span> <span class="pre">of</span> <span class="pre">5</span> <span class="pre">classes</span> <span class="pre">({XS},</span> <span class="pre">{S},</span> <span class="pre">{M},</span> <span class="pre">{L},</span> <span class="pre">{XL})?</span> <span class="pre">(y/N)</span></code>:
+In case of <code class="docutils literal notranslate"><span class="pre">y</span></code>, the S, M, L labels of the data would be grouped alltogether as
+one class such that the training would be on 3 classes ({XS}, {S, M, L}, {XL})
+instead of the 5 classes. It is worth noting that grouping the S, M and L
+classes alltogether as one class resulted in boosting the classification
+performance.</p></li>
+<li><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Do<span class="w"> </span>you<span class="w"> </span>want<span class="w"> </span>to<span class="w"> </span>train<span class="w"> </span>on<span class="w"> </span>a<span class="w"> </span>subset<span class="w"> </span>of<span class="w"> </span>features?
+<span class="o">(</span><span class="m">0</span><span class="o">)</span><span class="w"> </span>:<span class="w"> </span><span class="o">[</span><span class="s1">&#39;Include all features&#39;</span><span class="o">]</span>
+<span class="o">(</span><span class="m">1</span><span class="o">)</span><span class="w"> </span>:<span class="w"> </span><span class="o">[</span><span class="s1">&#39;google_places_rating&#39;</span>,<span class="w"> </span><span class="s1">&#39;google_places_user_ratings_total&#39;</span>,<span class="w"> </span><span class="s1">&#39;google_places_confidence&#39;</span>,<span class="w"> </span><span class="s1">&#39;regional_atlas_regional_score&#39;</span><span class="o">]</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">0</span></code> would include all the numerical and categorical one-hot encoded features,
+while <code class="docutils literal notranslate"><span class="pre">1</span></code> would choose a small subset of data as features for the machine
+learning models</p>
+<p>Then, the user would be given multiple options:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">(</span><span class="m">1</span><span class="o">)</span><span class="w"> </span>Train
+<span class="o">(</span><span class="m">2</span><span class="o">)</span><span class="w"> </span>Test
+<span class="o">(</span><span class="m">3</span><span class="o">)</span><span class="w"> </span>Predict<span class="w"> </span>on<span class="w"> </span>single<span class="w"> </span>lead
+<span class="o">(</span><span class="m">4</span><span class="o">)</span><span class="w"> </span>Save<span class="w"> </span>model
+<span class="o">(</span><span class="m">5</span><span class="o">)</span><span class="w"> </span>Exit
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>(1): Train the current model on the current trainig dataset.</p></li>
+<li><p>(2): Test the current model on the test dataset, displaying the mean squared
+error.</p></li>
+<li><p>(3): Choose a single lead from the test dataset and display the prediction and
+true label.</p></li>
+<li><p>(4): Save the current model to the <code class="docutils literal notranslate"><span class="pre">amos--models/models</span></code> on S3 in case of
+<code class="docutils literal notranslate"><span class="pre">DATABASE_TYPE=S3</span></code>, otherwise it will save it locally.</p></li>
+<li><p>(5): Exit the EVP submenu</p></li>
+</ul>
+</section>
+<section id="merchant-size-predictor">
+<h3>(3) : Merchant Size Predictor<a class="headerlink" href="#merchant-size-predictor" title="Link to this heading"></a></h3>
+<p>After training, testing, and saving the model, the true essence of models lies
+not just in crucial task of generating forecasted predictions for previously
+unseen leads.</p>
+</section>
+<section id="exit">
+<h3>(4) : Exit<a class="headerlink" href="#exit" title="Link to this heading"></a></h3>
+<p>Gracefully exit the program.</p>
+</section>
+</section>
+</section>
+<section id="design-documentation">
+<h1>Design Documentation<a class="headerlink" href="#design-documentation" title="Link to this heading"></a></h1>
+<!--
+SPDX-License-Identifier: MIT
+SPDX-FileCopyrightText: 2023 Felix Zailskas <felixzailskas@gmail.com>
+SPDX-FileCopyrightText: 2024 Ahmed Sheta <ahmed.sheta@fau.de>
+SPDX-FileCopyrightText: 2024 Simon Zimmermann <tim.simon.zimmermann@fau.de>
+-->
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h2>
+<p>This application serves as a pivotal tool employed by our esteemed industry
+partner, SumUp, for the enrichment of information pertaining to potential leads
+garnered through their sign-up website. The refined data obtained undergoes
+utilization in the prediction of potential value that a lead could contribute to
+SumUp, facilitated by a sophisticated machine learning model. The application is
+branched into two integral components: the Base Data Collector (BDC) and the
+Merchant Size Predictor (MSP).</p>
+<section id="component-diagram">
+<h3>Component Diagram<a class="headerlink" href="#component-diagram" title="Link to this heading"></a></h3>
+<p><img alt="Component Diagram" src="_images/component-diagram.svg" /></p>
+</section>
+<section id="external-software">
+<h3>External Software<a class="headerlink" href="#external-software" title="Link to this heading"></a></h3>
+<section id="lead-form-lf">
+<h4>Lead Form (LF)<a class="headerlink" href="#lead-form-lf" title="Link to this heading"></a></h4>
+<p>The <em>Lead Form</em> is submitted by every new lead and provides a small set of data
+about the lead.</p>
+</section>
+<section id="customer-relationship-management-crm">
+<h4>Customer Relationship Management (CRM)<a class="headerlink" href="#customer-relationship-management-crm" title="Link to this heading"></a></h4>
+<p>The project output is made available to the sales team. This can be done in
+different ways, e.g. writing to a Google Sheet or pushing directly to
+SalesForce.</p>
+</section>
+</section>
+<section id="components">
+<h3>Components<a class="headerlink" href="#components" title="Link to this heading"></a></h3>
+</section>
+<section id="base-data-collector-bdc">
+<h3>Base Data Collector (BDC)<a class="headerlink" href="#base-data-collector-bdc" title="Link to this heading"></a></h3>
+<section id="general-description">
+<h4>General description<a class="headerlink" href="#general-description" title="Link to this heading"></a></h4>
+<p>The Base Data Collector (BDC) plays a crucial role in enriching the dataset
+related to potential client leads. The initial dataset solely comprises
+fundamental lead information, encompassing the lead’s first and last name, phone
+number, email address, and company name. Recognizing the insufficiency of this
+baseline data for value prediction, the BDC is designed to query diverse data
+sources, incorporating various Application Programming Interfaces (APIs), to
+enrich the provided lead data.</p>
+</section>
+<section id="design">
+<h4>Design<a class="headerlink" href="#design" title="Link to this heading"></a></h4>
+<p>The different data sources are organised as steps in the program. Each step
+extends from a common parent class and implements methods to validate that it
+can run, perform the data collection from the source and perform clean up and
+statistics reports for itself. These steps are then collected in a pipeline
+object sequentially performing the steps to enhance the given data with all
+chosen data sources. The data sources include:</p>
+<ul class="simple">
+<li><p>inspecting the possible custom domain of the email address.</p></li>
+<li><p>retrieving multiple data from the Google Places API.</p></li>
+<li><p>analysing the sentiment of Google reviews using GPT.</p></li>
+<li><p>inspecting the surrounding areas of the business using the Regional Atlas API.</p></li>
+<li><p>searching for company-related data using the OffeneRegisterAPI.</p></li>
+<li><p>performing sentiment analysis on reviews using GPT-4 model.</p></li>
+</ul>
+</section>
+<section id="data-storage">
+<h4>Data storage<a class="headerlink" href="#data-storage" title="Link to this heading"></a></h4>
+<p>All data for this project is stored in CSV files in the client’s AWS S3 storage.
+The files here are split into three buckets. The input data and enhanced data
+are stored in the events bucket, pre-processed data ready for use of ML models
+is stored in the features bucket and the used model and inference is stored in
+the model bucket. Data preprocessing Following data enrichment, a pivotal phase
+in the machine learning pipeline is data preprocessing, an essential process
+encompassing scaling operations, numerical outlier elimination, and categorical
+one-hot encoding. This preprocessing stage serves transforms the output
+originating from the BDC into feature vectors, thereby rendering them amenable
+for predictive analysis by the machine learning model.</p>
+</section>
+</section>
+<section id="merchant-size-predictor-msp-estimated-value-predictor-evp">
+<h3>Merchant Size Predictor (MSP) / Estimated Value Predictor (EVP)<a class="headerlink" href="#merchant-size-predictor-msp-estimated-value-predictor-evp" title="Link to this heading"></a></h3>
+<section id="historical-note">
+<h4>Historical Note<a class="headerlink" href="#historical-note" title="Link to this heading"></a></h4>
+<p>The primary objective of the Estimated Value Predictor was initially oriented
+towards forecasting the estimated life-time value of leads. However, this
+objective evolved during the project’s progression, primarily influenced by
+labelling considerations. The main objective has therefore changed to predicting
+only the size of a given lead, which can then be used as an indication for their
+potential life-time value. As a consequence, the component in questions is now
+(somewhat inconsistently) either referred to as the Estimated Value Predictor
+(EVP) or as the Merchant Size Predictor (MSP).</p>
+</section>
+<section id="id1">
+<h4>Design<a class="headerlink" href="#id1" title="Link to this heading"></a></h4>
+<p>In the context of Merchant Size Prediction, our aim is to leverage pre-trained
+ML models on new lead data. By applying these models, we intend to predict the
+potential Merchant Size, thereby assisting SumUp in prioritizing leads and
+making informed decisions on which leads to contact first. This predictive
+approach enhances the efficiency of lead management and optimizes resource
+allocation for maximum impact.</p>
+<p>The machine learning model, integral to the MSP, undergoes training on
+proprietary historical data sourced from SumUp. The training process aims to
+discern discriminative features that effectively stratify each class within the
+Merchant Size taxonomy. It is imperative to note that the confidentiality of the
+underlying data prohibits its public disclosure.</p>
+</section>
+</section>
+</section>
+<section id="data-fields">
+<h2>Data Fields<a class="headerlink" href="#data-fields" title="Link to this heading"></a></h2>
+<!--
+SPDX-License-Identifier: MIT
+SPDX-FileCopyrightText: 2023 Sophie Heasman <sophieheasmann@gmail.com>
+SPDX-FileCopyrightText: 2024 Simon Zimmermann <tim.simon.zimmermann@fau.de>
+-->
+<section id="data-field-definitions">
+<h3>Data Field Definitions<a class="headerlink" href="#data-field-definitions" title="Link to this heading"></a></h3>
+<p>This document outlines the data fields obtained for each lead. The data can be
+sourced from the online <em>Lead Form</em> or be retrieved from the internet using
+APIs.</p>
+<section id="data-field-table">
+<h4>Data Field Table<a class="headerlink" href="#data-field-table" title="Link to this heading"></a></h4>
+<p>The most recent Data Fields table can now be found in a
+<a class="reference internal" href="#data-fields-csv"><span class="std std-ref">separate CSV File</span></a>.</p>
+</section>
+<section id="links-to-data-sources">
+<h4>Links to Data Sources:<a class="headerlink" href="#links-to-data-sources" title="Link to this heading"></a></h4>
+<p>Lead form: https://www.sumup.com/de-de/kontaktieren-vertriebsteam/ <br />
+Google Places API: https://developers.google.com/maps/documentation/places/web-service/overview <br />
+OpenAI API: https://platform.openai.com/docs/overview <br />
+Meta API: https://developers.facebook.com/docs/graph-api/overview</p>
+</section>
+</section>
+</section>
+<section id="data-fields-csv">
+<span id="id1"></span><h2>Data Fields CSV<a class="headerlink" href="#data-fields-csv" title="Link to this heading"></a></h2>
+<p>The following table highlights the data fields obtained for each lead.
+The acquisition of such data may derive from the Lead Form or may be extracted from external sources utilizing APIs.</p>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Data Field Definition</span><a class="headerlink" href="#id2" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Field Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Data source</p></th>
+<th class="head"><p>Dependencies</p></th>
+<th class="head"><p>Example</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Last Name</p></td>
+<td><p>string</p></td>
+<td><p>Last name of the lead</p></td>
+<td><p>Lead data</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Mustermann</p></td>
+</tr>
+<tr class="row-odd"><td><p>First Name</p></td>
+<td><p>string</p></td>
+<td><p>First name of the lead</p></td>
+<td><p>Lead data</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Mustername</p></td>
+</tr>
+<tr class="row-even"><td><p>Company / Account</p></td>
+<td><p>string</p></td>
+<td><p>Company name of the lead</p></td>
+<td><p>Lead data</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Mustercompany</p></td>
+</tr>
+<tr class="row-odd"><td><p>Phone</p></td>
+<td><p>string</p></td>
+<td><p>Phone number of the lead</p></td>
+<td><p>Lead data</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>49 1234 56789</p></td>
+</tr>
+<tr class="row-even"><td><p>Email</p></td>
+<td><p>string</p></td>
+<td><p>Email of the lead</p></td>
+<td><p>Lead data</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p><a class="reference external" href="mailto:musteremail&#37;&#52;&#48;example&#46;com">musteremail<span>&#64;</span>example<span>&#46;</span>com</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>domain</p></td>
+<td><p>string</p></td>
+<td><p>The domain of the email is the part that follows the “&#64;” symbol, indicating the organization or service hosting the email address.</p></td>
+<td><p>processing</p></td>
+<td><p>Email</p></td>
+<td><p>example.com</p></td>
+</tr>
+<tr class="row-even"><td><p>email_valid</p></td>
+<td><p>boolean</p></td>
+<td><p>Checks if the email is valid.</p></td>
+<td><p>email_validator package</p></td>
+<td><p>Email</p></td>
+<td><p>True/False</p></td>
+</tr>
+<tr class="row-odd"><td><p>first_name_in_account</p></td>
+<td><p>boolean</p></td>
+<td><p>Checks if first name is written in “Account” input</p></td>
+<td><p>processing</p></td>
+<td><p>First Name</p></td>
+<td><p>True/False</p></td>
+</tr>
+<tr class="row-even"><td><p>last_name_in_account</p></td>
+<td><p>boolean</p></td>
+<td><p>Checks if last name is written in “Account” input</p></td>
+<td><p>processing</p></td>
+<td><p>Last Name</p></td>
+<td><p>True/False</p></td>
+</tr>
+<tr class="row-odd"><td><p>number_formatted</p></td>
+<td><p>string</p></td>
+<td><p>Phone number (formatted)</p></td>
+<td><p>phonenumbers package</p></td>
+<td><p>Phone</p></td>
+<td><p>49123456789</p></td>
+</tr>
+<tr class="row-even"><td><p>number_country</p></td>
+<td><p>string</p></td>
+<td><p>Country derived from phone number</p></td>
+<td><p>phonenumbers package</p></td>
+<td><p>Phone</p></td>
+<td><p>Germany</p></td>
+</tr>
+<tr class="row-odd"><td><p>number_area</p></td>
+<td><p>string</p></td>
+<td><p>Area derived from phone number</p></td>
+<td><p>phonenumbers package</p></td>
+<td><p>Phone</p></td>
+<td><p>Erlangen</p></td>
+</tr>
+<tr class="row-even"><td><p>number_valid</p></td>
+<td><p>boolean</p></td>
+<td><p>Indicator weather a phone number is valid</p></td>
+<td><p>phonenumbers package</p></td>
+<td><p>Phone</p></td>
+<td><p>True/False</p></td>
+</tr>
+<tr class="row-odd"><td><p>number_possible</p></td>
+<td><p>boolean</p></td>
+<td><p>Indicator weather a phone number is possible</p></td>
+<td><p>phonenumbers package</p></td>
+<td><p>Phone</p></td>
+<td><p>True/False</p></td>
+</tr>
+<tr class="row-even"><td><p>google_places_place_id</p></td>
+<td><p>string</p></td>
+<td><p>Place ID used by Google</p></td>
+<td><p>Google Places API</p></td>
+<td><p>Company / Account</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>google_places_business_status</p></td>
+<td><p>string</p></td>
+<td><p>Business Status</p></td>
+<td><p>Google Places API</p></td>
+<td><p>Company / Account</p></td>
+<td><p>Operational</p></td>
+</tr>
+<tr class="row-even"><td><p>google_places_formatted_address</p></td>
+<td><p>string</p></td>
+<td><p>Formatted address</p></td>
+<td><p>Google Places API</p></td>
+<td><p>Company / Account</p></td>
+<td><p>Musterstr.1</p></td>
+</tr>
+<tr class="row-odd"><td><p>google_places_name</p></td>
+<td><p>string</p></td>
+<td><p>Business Name</p></td>
+<td><p>Google Places API</p></td>
+<td><p>Company / Account</p></td>
+<td><p>Mustername</p></td>
+</tr>
+<tr class="row-even"><td><p>google_places_user_ratings_total</p></td>
+<td><p>integer</p></td>
+<td><p>Total number of ratings</p></td>
+<td><p>Google Places API</p></td>
+<td><p>Company / Account</p></td>
+<td><p>100</p></td>
+</tr>
+<tr class="row-odd"><td><p>google_places_rating</p></td>
+<td><p>float</p></td>
+<td><p>Average star rating</p></td>
+<td><p>Google Places API</p></td>
+<td><p>Company / Account</p></td>
+<td><p>4.5</p></td>
+</tr>
+<tr class="row-even"><td><p>google_places_price_level</p></td>
+<td><p>float</p></td>
+<td><p>Price level (1-3)</p></td>
+<td><p>Google Places API</p></td>
+<td><p>Company / Account</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>google_places_candidate_count_mail</p></td>
+<td><p>integer</p></td>
+<td><p>Number of results from E-Mail based search</p></td>
+<td><p>Google Places API</p></td>
+<td><p>Company / Account</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>google_places_candidate_count_phone</p></td>
+<td><p>integer</p></td>
+<td><p>Number of results from Phone based search</p></td>
+<td><p>Google Places API</p></td>
+<td><p>Company / Account</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>google_places_place_id_matches_phone_search</p></td>
+<td><p>boolean</p></td>
+<td><p>Indicator weather phone based and EMail based search gave the same result</p></td>
+<td><p>Google Places API</p></td>
+<td><p>Company / Account</p></td>
+<td><p>True/False</p></td>
+</tr>
+<tr class="row-even"><td><p>google_places_confidence</p></td>
+<td><p>float</p></td>
+<td><p>Indicator of confidence in the Google result</p></td>
+<td><p>processing</p></td>
+<td></td>
+<td><p>0.9</p></td>
+</tr>
+<tr class="row-odd"><td><p>google_places_detailed_website</p></td>
+<td><p>string</p></td>
+<td><p>Link to business website</p></td>
+<td><p>Google Places API</p></td>
+<td><p>Company / Account</p></td>
+<td><p>www.musterwebsite.de</p></td>
+</tr>
+<tr class="row-even"><td><p>google_places_detailed_type</p></td>
+<td><p>list</p></td>
+<td><p>Type of business</p></td>
+<td><p>Google Places API</p></td>
+<td><p>Company / Account</p></td>
+<td><p>[“florist”, “store”]</p></td>
+</tr>
+<tr class="row-odd"><td><p>reviews_sentiment_score</p></td>
+<td><p>float</p></td>
+<td><p>Sentiment score between -1 and 1 for the reviews</p></td>
+<td><p>GPT</p></td>
+<td><p>Google reviews</p></td>
+<td><p>0.9</p></td>
+</tr>
+<tr class="row-even"><td><p>regional_atlas_pop_density</p></td>
+<td><p>float</p></td>
+<td><p>Population density</p></td>
+<td><p>Regional Atlas</p></td>
+<td><p>google_places_formatted_address</p></td>
+<td><p>2649.6</p></td>
+</tr>
+<tr class="row-odd"><td><p>regional_atlas_pop_development</p></td>
+<td><p>float</p></td>
+<td><p>Population development</p></td>
+<td><p>Regional Atlas</p></td>
+<td><p>google_places_formatted_address</p></td>
+<td><p>-96.5</p></td>
+</tr>
+<tr class="row-even"><td><p>regional_atlas_age_0</p></td>
+<td><p>float</p></td>
+<td><p>Age group</p></td>
+<td><p>Regional Atlas</p></td>
+<td><p>google_places_formatted_address</p></td>
+<td><p>16.3</p></td>
+</tr>
+<tr class="row-odd"><td><p>regional_atlas_age_1</p></td>
+<td><p>float</p></td>
+<td><p>Age group</p></td>
+<td><p>Regional Atlas</p></td>
+<td><p>google_places_formatted_address</p></td>
+<td><p>8.2</p></td>
+</tr>
+<tr class="row-even"><td><p>regional_atlas_age_2</p></td>
+<td><p>float</p></td>
+<td><p>Age group</p></td>
+<td><p>Regional Atlas</p></td>
+<td><p>google_places_formatted_address</p></td>
+<td><p>31.1</p></td>
+</tr>
+<tr class="row-odd"><td><p>regional_atlas_age_3</p></td>
+<td><p>float</p></td>
+<td><p>Age group</p></td>
+<td><p>Regional Atlas</p></td>
+<td><p>google_places_formatted_address</p></td>
+<td><p>26.8</p></td>
+</tr>
+<tr class="row-even"><td><p>regional_atlas_age_4</p></td>
+<td><p>float</p></td>
+<td><p>Age group</p></td>
+<td><p>Regional Atlas</p></td>
+<td><p>google_places_formatted_address</p></td>
+<td><p>17.7</p></td>
+</tr>
+<tr class="row-odd"><td><p>regional_atlas_pop_avg_age</p></td>
+<td><p>float</p></td>
+<td><p>Average population age</p></td>
+<td><p>Regional Atlas</p></td>
+<td><p>google_places_formatted_address</p></td>
+<td><p>42.1</p></td>
+</tr>
+<tr class="row-even"><td><p>regional_atlas_per_service_sector</p></td>
+<td><p>float</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Regional Atlas</p></td>
+<td><p>google_places_formatted_address</p></td>
+<td><p>88.4</p></td>
+</tr>
+<tr class="row-odd"><td><p>regional_atlas_per_trade</p></td>
+<td><p>float</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Regional Atlas</p></td>
+<td><p>google_places_formatted_address</p></td>
+<td><p>28.9</p></td>
+</tr>
+<tr class="row-even"><td><p>regional_atlas_employment_rate</p></td>
+<td><p>float</p></td>
+<td><p>Employment rate</p></td>
+<td><p>Regional Atlas</p></td>
+<td><p>google_places_formatted_address</p></td>
+<td><p>59.9</p></td>
+</tr>
+<tr class="row-odd"><td><p>regional_atlas_unemployment_rate</p></td>
+<td><p>float</p></td>
+<td><p>Unemployment rate</p></td>
+<td><p>Regional Atlas</p></td>
+<td><p>google_places_formatted_address</p></td>
+<td><p>6.4</p></td>
+</tr>
+<tr class="row-even"><td><p>regional_atlas_per_long_term_unemployment</p></td>
+<td><p>float</p></td>
+<td><p>Long term unemployment</p></td>
+<td><p>Regional Atlas</p></td>
+<td><p>google_places_formatted_address</p></td>
+<td><p>49.9</p></td>
+</tr>
+<tr class="row-odd"><td><p>regional_atlas_investments_p_employee</p></td>
+<td><p>float</p></td>
+<td><p>Investments per employee</p></td>
+<td><p>Regional Atlas</p></td>
+<td><p>google_places_formatted_address</p></td>
+<td><p>6.8</p></td>
+</tr>
+<tr class="row-even"><td><p>regional_atlas_gross_salary_p_employee</p></td>
+<td><p>float</p></td>
+<td><p>Gross salary per employee</p></td>
+<td><p>Regional Atlas</p></td>
+<td><p>google_places_formatted_address</p></td>
+<td><p>63.9</p></td>
+</tr>
+<tr class="row-odd"><td><p>regional_atlas_disp_income_p_inhabitant</p></td>
+<td><p>float</p></td>
+<td><p>Income per inhabitant</p></td>
+<td><p>Regional Atlas</p></td>
+<td><p>google_places_formatted_address</p></td>
+<td><p>23703</p></td>
+</tr>
+<tr class="row-even"><td><p>regional_atlas_tot_income_p_taxpayer</p></td>
+<td><p>float</p></td>
+<td><p>Income per taxpayer</p></td>
+<td><p>Regional Atlas</p></td>
+<td><p>google_places_formatted_address</p></td>
+<td><p>45.2</p></td>
+</tr>
+<tr class="row-odd"><td><p>regional_atlas_gdp_p_employee</p></td>
+<td><p>float</p></td>
+<td><p>GDP per employee</p></td>
+<td><p>Regional Atlas</p></td>
+<td><p>google_places_formatted_address</p></td>
+<td><p>84983</p></td>
+</tr>
+<tr class="row-even"><td><p>regional_atlas_gdp_development</p></td>
+<td><p>float</p></td>
+<td><p>GDP development</p></td>
+<td><p>Regional Atlas</p></td>
+<td><p>google_places_formatted_address</p></td>
+<td><p>5.2</p></td>
+</tr>
+<tr class="row-odd"><td><p>regional_atlas_gdp_p_inhabitant</p></td>
+<td><p>float</p></td>
+<td><p>GDP per inhabitant</p></td>
+<td><p>Regional Atlas</p></td>
+<td><p>google_places_formatted_address</p></td>
+<td><p>61845</p></td>
+</tr>
+<tr class="row-even"><td><p>regional_atlas_gdp_p_workhours</p></td>
+<td><p>float</p></td>
+<td><p>GDP per workhours</p></td>
+<td><p>Regional Atlas</p></td>
+<td><p>google_places_formatted_address</p></td>
+<td><p>60.7</p></td>
+</tr>
+<tr class="row-odd"><td><p>regional_atlas_pop_avg_age_zensus</p></td>
+<td><p>float</p></td>
+<td><p>Average population age (from zensus)</p></td>
+<td><p>Regional Atlas</p></td>
+<td><p>google_places_formatted_address</p></td>
+<td><p>41.3</p></td>
+</tr>
+<tr class="row-even"><td><p>regional_atlas_regional_score</p></td>
+<td><p>float</p></td>
+<td><p>Regional score</p></td>
+<td><p>Regional Atlas</p></td>
+<td><p>google_places_formatted_address</p></td>
+<td><p>3761.93</p></td>
+</tr>
+<tr class="row-odd"><td><p>review_avg_grammatical_score</p></td>
+<td><p>float</p></td>
+<td><p>Average grammatical score of reviews</p></td>
+<td><p>processing</p></td>
+<td><p>google_places_place_id</p></td>
+<td><p>0.56</p></td>
+</tr>
+<tr class="row-even"><td><p>review_polarization_type</p></td>
+<td><p>string</p></td>
+<td><p>Polarization type of review ratings</p></td>
+<td><p>processing</p></td>
+<td><p>google_places_place_id</p></td>
+<td><p>High-Rating Dominance</p></td>
+</tr>
+<tr class="row-odd"><td><p>review_polarization_score</p></td>
+<td><p>float</p></td>
+<td><p>Polarization score of review ratings</p></td>
+<td><p>processing</p></td>
+<td><p>google_places_place_id</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>review_highest_rating_ratio</p></td>
+<td><p>float</p></td>
+<td><p>Ratio of the highest review ratings</p></td>
+<td><p>processing</p></td>
+<td><p>google_places_place_id</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>review_lowest_rating_ratio</p></td>
+<td><p>float</p></td>
+<td><p>Ratio of the lowest review ratings</p></td>
+<td><p>processing</p></td>
+<td><p>google_places_place_id</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p>review_rating_trend</p></td>
+<td><p>float</p></td>
+<td><p>Value indicating the trend of ratings</p></td>
+<td><p>processing</p></td>
+<td><p>google_places_place_id</p></td>
+<td><p>0</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="google-search-strategy">
+<h2>Google Search Strategy<a class="headerlink" href="#google-search-strategy" title="Link to this heading"></a></h2>
+<!--
+SPDX-License-Identifier: MIT
+SPDX-FileCopyrightText: 2023 Lucca Baumgärtner <lucca.baumgaertner@fau.de>
+-->
+<section id="google-search-strategy">
+<h3>Google Search Strategy<a class="headerlink" href="#google-search-strategy" title="Link to this heading"></a></h3>
+<section id="introduction">
+<h4>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h4>
+<p>In order to gather more information about a lead, we query the Google Places API. The API has
+multiple endpoints, enabling different search method. To have the best chances at correctly identifying a lead
+we try to combine the search methods and derive the most probable result.</p>
+<section id="available-lead-information">
+<h5>Available Lead Information<a class="headerlink" href="#available-lead-information" title="Link to this heading"></a></h5>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>First Name</p></th>
+<th class="head"><p>Last Name</p></th>
+<th class="head"><p>Phone Number</p></th>
+<th class="head"><p>Email</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Max</p></td>
+<td><p>Muster</p></td>
+<td><p>+491721234567</p></td>
+<td><p>max-muster&#64;mybusiness.com</p></td>
+</tr>
+<tr class="row-odd"><td><p>Melanie</p></td>
+<td><p>Muster</p></td>
+<td><p>+491322133321</p></td>
+<td><p>melanies-flowershop&#64;gmail.nl</p></td>
+</tr>
+<tr class="row-even"><td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="available-search-methods">
+<h5>Available Search Methods<a class="headerlink" href="#available-search-methods" title="Link to this heading"></a></h5>
+<ol class="arabic simple">
+<li><p>Fulltext Search (used with components of the E-Mail address)</p></li>
+<li><p>Phone Number Search</p></li>
+</ol>
+</section>
+</section>
+<section id="search-strategy">
+<h4>Search Strategy<a class="headerlink" href="#search-strategy" title="Link to this heading"></a></h4>
+<ol class="arabic simple">
+<li><p>Phone Number Search 2) If there’s a valid phone number, look it up</p></li>
+<li><p>Email Based Search 3) If there’s a custom domain, look it up 4) Else: Unless it contains the full name, look up the E-Mail account (everything before the <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> sing)</p></li>
+<li><p>If Email-based Search returned any results, use those</p></li>
+<li><p>Else: Return Phone-based search results</p></li>
+<li><p>Else: Return nothing</p></li>
+</ol>
+<p><img alt="Search Strategy" src="_images/google_places_strategy.drawio.png" /></p>
+</section>
+</section>
+</section>
+<section id="openllm-business-type-analysis">
+<h2>OpenLLM Business Type Analysis<a class="headerlink" href="#openllm-business-type-analysis" title="Link to this heading"></a></h2>
+<!--
+SPDX-License-Identifier: MIT
+SPDX-FileCopyrightText: 2024 Ruchita Nathani <ruchita.nathani@fau.de>
+-->
+<section id="business-type-analysis-research-and-proposed-solution">
+<h3>Business Type Analysis: Research and Proposed Solution<a class="headerlink" href="#business-type-analysis-research-and-proposed-solution" title="Link to this heading"></a></h3>
+<section id="research">
+<h4>Research<a class="headerlink" href="#research" title="Link to this heading"></a></h4>
+<p><strong>1. Open-source LLM Model :</strong>
+I explored an open-source LLM model named CrystalChat available on Hugging Face (https://huggingface.co/LLM360/CrystalChat). Despite its capabilities, it has some limitations:</p>
+<ul class="simple">
+<li><p><strong>Computational Intensity:</strong> CrystalChat is computationally heavy and cannot be run efficiently on local machines.</p></li>
+<li><p><strong>Infrastructure Constraints:</strong> Running the model on Colab, although feasible, faces GPU limitations.</p></li>
+</ul>
+<p><strong>2. OpenAI as an Alternative :</strong>
+Given the challenges with the open LLM model, OpenAI’s GPT models provide a viable solution. While GPT is known for its computational costs, it offers unparalleled language understanding and generation capabilities.</p>
+</section>
+<section id="proposed-solution">
+<h4>Proposed Solution<a class="headerlink" href="#proposed-solution" title="Link to this heading"></a></h4>
+<p>Considering the limitations of CrystalChat and the potential infrastructure costs associated with running an open LLM model on local machines, I propose the following solution:</p>
+<ol class="arabic simple">
+<li><p><strong>Utilize OpenAI Models:</strong> Leverage OpenAI models, which are known for their robust language capabilities.</p></li>
+<li><p><strong>Manage Costs:</strong> Acknowledge the computational costs associated with GPT models and explore efficient usage options, such as optimizing queries or using cost-effective computing environments.</p></li>
+<li><p><strong>Experiment with CrystalChat on AWS SageMaker:</strong> As part of due diligence, consider executing CrystalChat on AWS SageMaker to evaluate its performance and potential integration.</p></li>
+<li><p><strong>Decision Making:</strong> After the experimentation phase, evaluate the performance, costs, and feasibility of both OpenAI and CrystalChat. Make an informed decision based on the achieved results.</p></li>
+</ol>
+</section>
+<section id="conclusion">
+<h4>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading"></a></h4>
+<p>Leveraging OpenAI’s GPT models offers advanced language understanding. To explore the potential of open-source LLM models, an experiment with CrystalChat on AWS SageMaker is suggested before making a final decision.</p>
+</section>
+</section>
+</section>
+</section>
+<section id="classifier-comparison">
+<h1>Classifier Comparison<a class="headerlink" href="#classifier-comparison" title="Link to this heading"></a></h1>
+<!--
+SPDX-License-Identifier: MIT
+SPDX-FileCopyrightText: 2024 Felix Zailskas <felixzailskas@gmail.com>
+SPDX-FileCopyrightText: 2024 Ahmed Sheta <ahmed.sheta@fau.de>
+-->
+<section id="classifier-comparison">
+<h2>Classifier Comparison<a class="headerlink" href="#classifier-comparison" title="Link to this heading"></a></h2>
+<section id="abstract">
+<h3>Abstract<a class="headerlink" href="#abstract" title="Link to this heading"></a></h3>
+<p>This report presents a comprehensive evaluation of various classifiers trained on the historical dataset, which has been enriched and preprocessed through our pipeline. Each model type was tested on two splits of the data set. The used data set has five
+classes for prediction corresponding to different merchant sizes, namely XS, S, M, L, and XL. The first split of the data set used exactly these classes for the prediction corresponding to the exact classes given by SumUp. The other data set split grouped the classes S, M, and L into one new class resulting in three classes of the form {XS}, {S, M, L}, and {XL}. While this does not exactly correspond to the given classes from SumUp, this simplification ofthe prediction task generally resulted in a better F1-score across models.</p>
+</section>
+<section id="experimental-attempts">
+<h3>Experimental Attempts<a class="headerlink" href="#experimental-attempts" title="Link to this heading"></a></h3>
+<p>In accordance with the free lunch theorem, indicating no universal model superiority, multiple attempts were made to find the optimal solution. Unfortunately, certain models did not perform satisfactorily. Here are the experimented models and methodolgies</p>
+<ul class="simple">
+<li><p>Quadratic Discriminant Analysis (QDA)</p></li>
+<li><p>Ridge Classifier</p></li>
+<li><p>Random Forest</p></li>
+<li><p>Support Vecotr Machine (SVM)</p></li>
+<li><p>Fully Connected Neural Networks Classifier Model (FCNNC)</p></li>
+<li><p>Fully Connected Neural Networks Regression Model (FCNNR)</p></li>
+<li><p>XGBoost Classifier Model</p></li>
+<li><p>K Nearest Neighbor Classifier (KNN)</p></li>
+<li><p>Bernoulli Naive Bayes Classifier</p></li>
+<li><p>LightGBM</p></li>
+</ul>
+</section>
+<section id="models-not-performing-well">
+<h3>Models not performing well<a class="headerlink" href="#models-not-performing-well" title="Link to this heading"></a></h3>
+<section id="support-vector-machine-classifier-model">
+<h4>Support Vector Machine Classifier Model<a class="headerlink" href="#support-vector-machine-classifier-model" title="Link to this heading"></a></h4>
+<p>Training Support Vector Machine (SVM) took a while such that the training never ended. We believe that it is the case because SVMs are very sensitive to the misclassifications and it finds a hard time minimizing them, given the data.</p>
+</section>
+<section id="fully-connected-neural-networks-classifier-model">
+<h4>Fully Connected Neural Networks Classifier Model<a class="headerlink" href="#fully-connected-neural-networks-classifier-model" title="Link to this heading"></a></h4>
+<p>Fully Connected Neural Networks (FCNN) achieved overall lower performance than that Random Forest Classifier, mainly it had f1 score 0.84 on the XS class, while having 0.00 f1 scores on the other class, it learned only the XS class. the FCNN consisted of 4 layers overall, RELU activation function in each layer, except in the logits layer the activation function is Softmax. The loss functions investigated were Cross-Entropy and L2 Loss. The Optimizers were Adam and Sctohastic Gradient Descent. Moreover, Skip connections, L1 and L2 Regularization techniques and class weights have been investigated as well. Unfortunately we haven’t found any FCNN that outperforms the simpler ML models.</p>
+</section>
+<section id="fully-connected-neural-networks-regression-model">
+<h4>Fully Connected Neural Networks Regression Model<a class="headerlink" href="#fully-connected-neural-networks-regression-model" title="Link to this heading"></a></h4>
+<p>There has been an idea written in the scientific paper “Inter-species cell detection -
+datasets on pulmonary hemosiderophages in equine, human and feline specimens” by Marzahl et al. (https://www.nature.com/articles/s41597-022-01389-0) where they proposed using regression model on a classification task. The idea is to train the regression model on the class values, whereas the model predicts a continous values and learns the relation between the classes. The output is then subjected to threshholds (0-0.49,0.5-1.49,1.5-2.49,2.5-3.49,3.5-4.5) for classes XS, S, M, L, XL respectivly. This yielded better performance than the FCNN classifier but still was worse than that of the Random Forest.</p>
+</section>
+<section id="qda-ridge-classifier">
+<h4>QDA &amp; Ridge Classifier<a class="headerlink" href="#qda-ridge-classifier" title="Link to this heading"></a></h4>
+<p>Both of these classifiers could not produce a satisfactory performance on either data set
+split. While the prediction on the XS class was satisfactory (F1-score of ~0.84) all other
+classes had F1-scores of ~0.00-0.15. For this reason we are not considering these predictors
+in future experiments. This resulted in an overall F1-score of ~0.11, which is significantly
+outperformed by the other tested models.</p>
+</section>
+<section id="tabnet-architecture">
+<h4>TabNet Architecture<a class="headerlink" href="#tabnet-architecture" title="Link to this heading"></a></h4>
+<p>TabNet, short for “Tabular Neural Network,” is a novel neural network architecture specifically designed for tabular data, commonly encountered in structured data, such as databases and CSV files. It was introduced in the paper titled “TabNet: Attentive Interpretable Tabular Learning” by Arik et al. (https://arxiv.org/abs/1908.07442). TabNet uses sequential attention to choose which features to reason from at each decision step, enabling interpretability and more efficient learning as the learning capacity is used for the most salient features. Unfortunately, TabNet similarly to our proposed 4 layer network, TabNet only learned the features of the XS class with XS f1 score of 0.84, while the other f1 scores of other classes are zeros. The underlying data does not seem to respond positively to neural network-based approaches.</p>
+</section>
+</section>
+<section id="well-performing-models">
+<h3>Well performing models<a class="headerlink" href="#well-performing-models" title="Link to this heading"></a></h3>
+<p>In this sub-section we will discuss the results of well performing models, which arer XGBoost, LightGBM, K-Nearest Neighbor (KNN), Random Forest, AdaBoost and Naive Bayes.</p>
+<section id="feature-subsets">
+<h4>Feature subsets<a class="headerlink" href="#feature-subsets" title="Link to this heading"></a></h4>
+<p>We have collected a lot of features (~54 data points) for the leads, additionally one-hot encoding the categorical variables
+results in a high dimensional feature space (132 features). Not all features might be equally relevant for our classification task
+so we want to try different subsets.</p>
+<p>The following subsets are available:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">google_places_rating</span></code>, <code class="docutils literal notranslate"><span class="pre">google_places_user_ratings_total</span></code>, <code class="docutils literal notranslate"><span class="pre">google_places_confidence</span></code>, <code class="docutils literal notranslate"><span class="pre">regional_atlas_regional_score</span></code></p></li>
+</ol>
+</section>
+<section id="overall-results">
+<h4>Overall Results<a class="headerlink" href="#overall-results" title="Link to this heading"></a></h4>
+<p><strong><em>Notes:</em></strong></p>
+<ul class="simple">
+<li><p>The Random Forest Classifier used 100 estimators.</p></li>
+<li><p>The AdaBoost Classifier used 100 DecisionTree classifiers.</p></li>
+<li><p>The KNN classifier used a distance based weighting for the evaluated neighbors and considered 10 neighbors in the 5-class split and 19 neighbors for the 3-class split.</p></li>
+<li><p>The XGBoost was trained for 10000 rounds.</p></li>
+<li><p>The LightGBM was trained with 2000 number of leaves</p></li>
+</ul>
+<p>In the following table we can see the model’s overall weighted F1-score on the 3-class and
+5-class data set split. The best performing classifiers per row is marked <strong>bold</strong>.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p>KNN</p></th>
+<th class="head"><p>Naive Bayes</p></th>
+<th class="head"><p>Random Forest</p></th>
+<th class="head"><p>XGBoost</p></th>
+<th class="head"><p>AdaBoost</p></th>
+<th class="head"><p>LightGBM</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>5-Class</p></td>
+<td><p>0.6314</p></td>
+<td><p>0.6073</p></td>
+<td><p>0.6150</p></td>
+<td><p><strong>0.6442</strong></p></td>
+<td><p>0.6098</p></td>
+<td><p>0.6405</p></td>
+</tr>
+<tr class="row-odd"><td><p>3-Class</p></td>
+<td><p>0.6725</p></td>
+<td><p>0.6655</p></td>
+<td><p>0.6642</p></td>
+<td><p><strong>0.6967</strong></p></td>
+<td><p>0.6523</p></td>
+<td><p>0.6956</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p>KNN (subset=1)</p></th>
+<th class="head"><p>Naive Bayes (subset=1)</p></th>
+<th class="head"><p>RandomForest (subset=1)</p></th>
+<th class="head"><p>XGBoost (subset=1)</p></th>
+<th class="head"><p>AdaBoost (subset=1)</p></th>
+<th class="head"><p>LightGBM (subset=1)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>5-Class</p></td>
+<td><p>0.6288</p></td>
+<td><p>0.6075</p></td>
+<td><p>0.5995</p></td>
+<td><p><strong>0.6198</strong></p></td>
+<td><p>0.6090</p></td>
+<td><p>0.6252</p></td>
+</tr>
+<tr class="row-odd"><td><p>3-Class</p></td>
+<td><p>0.6680</p></td>
+<td><p>0.6075</p></td>
+<td><p>0.6506</p></td>
+<td><p><strong>0.6664</strong></p></td>
+<td><p>0.6591</p></td>
+<td><p>0.6644</p></td>
+</tr>
+</tbody>
+</table>
+<p>We can see that all classifiers perform better on the 3-class data set split and that the XGBoost classifier is the best performing for both data set splits. These results are consistent for both the full dataset as well as subset 1. We observe a slight performance for almost all classifiers when using subset 1 compared to the full dataset (except AdaBoost/3-class and Naive Bayes/5-class). This indicates that the few features retained in subset 1 are not the sole discriminant features of the dataset. However, the performance is still high enough to suggest that the features in subset 1 are highly relevant to make classifications on the data.</p>
+</section>
+<section id="results-for-each-class">
+<h4>Results for each class<a class="headerlink" href="#results-for-each-class" title="Link to this heading"></a></h4>
+<section id="class-split">
+<h5>5-class split<a class="headerlink" href="#class-split" title="Link to this heading"></a></h5>
+<p>In the following table we can see the F1-score of each model for each class in the 5-class split:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Class</p></th>
+<th class="head"><p>KNN</p></th>
+<th class="head"><p>Naive Bayes</p></th>
+<th class="head"><p>Random Forest</p></th>
+<th class="head"><p>XGBoost</p></th>
+<th class="head"><p>AdaBoost</p></th>
+<th class="head"><p>LightGBM</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>XS</p></td>
+<td><p>0.82</p></td>
+<td><p>0.83</p></td>
+<td><p>0.81</p></td>
+<td><p><strong>0.84</strong></p></td>
+<td><p>0.77</p></td>
+<td><p>0.83</p></td>
+</tr>
+<tr class="row-odd"><td><p>S</p></td>
+<td><p>0.15</p></td>
+<td><p>0.02</p></td>
+<td><p>0.13</p></td>
+<td><p>0.13</p></td>
+<td><p><strong>0.22</strong></p></td>
+<td><p>0.14</p></td>
+</tr>
+<tr class="row-even"><td><p>M</p></td>
+<td><p>0.08</p></td>
+<td><p>0.02</p></td>
+<td><p>0.09</p></td>
+<td><p>0.08</p></td>
+<td><p><strong>0.14</strong></p></td>
+<td><p>0.09</p></td>
+</tr>
+<tr class="row-odd"><td><p>L</p></td>
+<td><p>0.06</p></td>
+<td><p>0.00</p></td>
+<td><p><strong>0.08</strong></p></td>
+<td><p>0.06</p></td>
+<td><p>0.07</p></td>
+<td><p>0.05</p></td>
+</tr>
+<tr class="row-even"><td><p>XL</p></td>
+<td><p>0.18</p></td>
+<td><p>0.10</p></td>
+<td><p>0.15</p></td>
+<td><p>0.16</p></td>
+<td><p>0.14</p></td>
+<td><p><strong>0.21</strong></p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Class</p></th>
+<th class="head"><p>KNN (subset=1)</p></th>
+<th class="head"><p>Naive Bayes (subset=1)</p></th>
+<th class="head"><p>RandomForest (subset=1)</p></th>
+<th class="head"><p>XGBoost (subset=1)</p></th>
+<th class="head"><p>AdaBoost (subset=1)</p></th>
+<th class="head"><p>LightGBM (subset=1)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>XS</p></td>
+<td><p>0.82</p></td>
+<td><p>0.84</p></td>
+<td><p>0.78</p></td>
+<td><p><strong>0.84</strong></p></td>
+<td><p>0.78</p></td>
+<td><p>0.82</p></td>
+</tr>
+<tr class="row-odd"><td><p>S</p></td>
+<td><p>0.16</p></td>
+<td><p>0.00</p></td>
+<td><p>0.16</p></td>
+<td><p>0.04</p></td>
+<td><p><strong>0.19</strong></p></td>
+<td><p>0.13</p></td>
+</tr>
+<tr class="row-even"><td><p>M</p></td>
+<td><p>0.07</p></td>
+<td><p>0.00</p></td>
+<td><p>0.07</p></td>
+<td><p>0.02</p></td>
+<td><p><strong>0.09</strong></p></td>
+<td><p>0.08</p></td>
+</tr>
+<tr class="row-odd"><td><p>L</p></td>
+<td><p><strong>0.07</strong></p></td>
+<td><p>0.00</p></td>
+<td><p>0.06</p></td>
+<td><p>0.05</p></td>
+<td><p><strong>0.07</strong></p></td>
+<td><p>0.06</p></td>
+</tr>
+<tr class="row-even"><td><p>XL</p></td>
+<td><p><strong>0.19</strong></p></td>
+<td><p>0.00</p></td>
+<td><p>0.11</p></td>
+<td><p>0.13</p></td>
+<td><p>0.14</p></td>
+<td><p>0.18</p></td>
+</tr>
+</tbody>
+</table>
+<p>For every model we can see that the predictions on the XS class are significantly better than every other class. For the KNN, Random Forest, and XGBoost all perform similar, having second best classes S and XL and worst classes M and L. The Naive Bayes classifier performs significantly worse on the S, M, and L classes and has second best class XL.
+Using subset 1 again mostly decreased performance on all classes, with the exception of the KNN classifier and classes L and XL where we can observe a slight increase in F1-score.</p>
+</section>
+<section id="id1">
+<h5>3-class split<a class="headerlink" href="#id1" title="Link to this heading"></a></h5>
+<p>In the following table we can see the F1-score of each model for each class in the 3-class split:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Class</p></th>
+<th class="head"><p>KNN</p></th>
+<th class="head"><p>Naive Bayes</p></th>
+<th class="head"><p>Random Forest</p></th>
+<th class="head"><p>XGBoost</p></th>
+<th class="head"><p>AdaBoost</p></th>
+<th class="head"><p>LightGBM</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>XS</p></td>
+<td><p>0.83</p></td>
+<td><p>0.82</p></td>
+<td><p>0.81</p></td>
+<td><p><strong>0.84</strong></p></td>
+<td><p>0.78</p></td>
+<td><p>0.83</p></td>
+</tr>
+<tr class="row-odd"><td><p>S,M,L</p></td>
+<td><p>0.27</p></td>
+<td><p>0.28</p></td>
+<td><p>0.30</p></td>
+<td><p>0.33</p></td>
+<td><p><strong>0.34</strong></p></td>
+<td><p><strong>0.34</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>XL</p></td>
+<td><p>0.16</p></td>
+<td><p>0.07</p></td>
+<td><p>0.13</p></td>
+<td><p>0.14</p></td>
+<td><p>0.12</p></td>
+<td><p><strong>0.19</strong></p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Class</p></th>
+<th class="head"><p>KNN (subset=1)</p></th>
+<th class="head"><p>Naive Bayes (subset=1)</p></th>
+<th class="head"><p>RandomForest (subset=1)</p></th>
+<th class="head"><p>XGBoost (subset=1)</p></th>
+<th class="head"><p>AdaBoost (subset=1)</p></th>
+<th class="head"><p>LightGBM (subset=1)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>XS</p></td>
+<td><p>0.82</p></td>
+<td><p>0.84</p></td>
+<td><p>0.79</p></td>
+<td><p><strong>0.84</strong></p></td>
+<td><p>0.79</p></td>
+<td><p>0.81</p></td>
+</tr>
+<tr class="row-odd"><td><p>S,M,L</p></td>
+<td><p>0.29</p></td>
+<td><p>0.00</p></td>
+<td><p>0.30</p></td>
+<td><p>0.22</p></td>
+<td><p><strong>0.32</strong></p></td>
+<td><p>0.28</p></td>
+</tr>
+<tr class="row-even"><td><p>XL</p></td>
+<td><p>0.18</p></td>
+<td><p>0.00</p></td>
+<td><p>0.11</p></td>
+<td><p>0.11</p></td>
+<td><p><strong>0.20</strong></p></td>
+<td><p>0.17</p></td>
+</tr>
+</tbody>
+</table>
+<p>For the 3-class split we observe similar performance for the XS and {S, M, L} classes for each model, while the LightGBM model slightly outperforms the other models. The LightGBM classifier is performing the best on the XL class while the Naive Bayes classifier performs worst. Interestingly, we can observe that the performance of the models on the XS class was barely affected by the merging of the S, M, and L classes while the performance on the XL class got worse for all of them. This needs to be considered, when evaluating the overall performance of the models on this data set split.
+The AdaBoost Classifier, trained on subset 1, performs best for the XL class. The KNN classifier got a slight boost in performance for the {S, M, L} and XL classes when using subset 1. All other models perform worse on subset 1.</p>
+</section>
+</section>
+</section>
+</section>
+<section id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading"></a></h2>
+<p>In summary, XGBoost consistently demonstrated superior performance, showcasing robust results across various splits and subsets. However, it is crucial to note that its elevated score is attributed to potential overfitting on the XS class. Given SumUp’s emphasis on accurate predictions for higher classes, we recommend considering LightGBM. This model outperformed XGBoost in predicting the XL class and the other classes, offering better results in both the five-class and three-class splits.</p>
+</section>
+</section>
+<section id="concepts-unrealized-ideas-miscellaneous">
+<h1>Concepts, Unrealized Ideas &amp; Miscellaneous<a class="headerlink" href="#concepts-unrealized-ideas-miscellaneous" title="Link to this heading"></a></h1>
+<!--
+SPDX-License-Identifier: MIT
+SPDX-FileCopyrightText: 2024 Felix Zailskas <felixzailskas@gmail.com>
+-->
+<section id="unused-ideas">
+<h2>Unused Ideas<a class="headerlink" href="#unused-ideas" title="Link to this heading"></a></h2>
+<p>This document lists ideas and implementations which have either not been tried yet or have been deprecated as they are not used in the current product version but still carry some conceptual value.</p>
+<section id="deprecated">
+<h3>Deprecated<a class="headerlink" href="#deprecated" title="Link to this heading"></a></h3>
+<p>The original implementation of the deprecated modules can be found in the <code class="docutils literal notranslate"><span class="pre">deprecated/</span></code> directory.</p>
+<section id="controller">
+<h4>Controller<a class="headerlink" href="#controller" title="Link to this heading"></a></h4>
+<p><strong><em>Note:</em></strong> This package has the additional dependency <code class="docutils literal notranslate"><span class="pre">pydantic==2.4.2</span></code></p>
+<p>The controller module was originally planned to be used as a communication device between EVP and BDC. Whenever the salesperson interface would register a new lead the controller is supposed to trigger the BDC pipeline to enrich the data of that lead and preprocess it to create a feature vector. The successful completion of the BDC pipeline is then registered at the controller which will then trigger an inference of the EVP to compute the predicted merchant size and write this back to the lead data. The computed merchant size can then be used to rank the leads and allow the salesperson to decide the value of the leads and which one to call.</p>
+<p>The current implementation of the module supports queueing messages from the BDC and EVP as indicated by their type. Depending on the message type the message is then routed to the corresponding module (EVP or BDC). The actual processing of the messages by the modules is not implemented. All of this is done asynchronously by using the python threading library.</p>
+</section>
+<section id="facebookgraphapi">
+<h4>FacebookGraphAPI<a class="headerlink" href="#facebookgraphapi" title="Link to this heading"></a></h4>
+<p><strong><em>Note:</em></strong> This package has the additional dependency <code class="docutils literal notranslate"><span class="pre">facebook-sdk==3.1.0</span></code>. Also the environment variables <code class="docutils literal notranslate"><span class="pre">FACEBOOK_APP_ID</span></code> <code class="docutils literal notranslate"><span class="pre">FACEBOOK_APP_SECRET</span></code> need to be set with a valid token.</p>
+<p>This step was supposed to be used for querying lead data from the facebook by using either the business owner’s name or the company name. The attempt was deprecated as the cost for the needed API token was evaluated too high and because the usage permissions of the facebook API were changed. Furthermore, it is paramount to check the legal ramifications of querying facebook for this kind of data as there might be legal consequences of searching for individuals on facebook instead of their businesses due to data privacy regulations in the EU.</p>
+</section>
+<section id="scrapeaddresses">
+<h4>ScrapeAddresses<a class="headerlink" href="#scrapeaddresses" title="Link to this heading"></a></h4>
+<p>This step was an early experiment, using only the custom domain from an email address. We check if there’s a live website running
+for the domain, and then try to parse the main site for a business address using a RegEx pattern. The pattern is not very precise
+and calling the website, as well as parsing it, takes quite some time, which accumulates for a lot of entries. The Google places
+step yields better results for the business address and is faster, that’s why <code class="docutils literal notranslate"><span class="pre">scrape_addresses.py</span></code> was deprecated.</p>
+</section>
+</section>
+<section id="possible-ml-improvements">
+<h3>Possible ML improvements<a class="headerlink" href="#possible-ml-improvements" title="Link to this heading"></a></h3>
+<section id="creating-data-subsets">
+<h4>Creating data subsets<a class="headerlink" href="#creating-data-subsets" title="Link to this heading"></a></h4>
+<p>The data collected by the BDC pipeline has not been refined to only include semantically valuable data fields. It is possible that some data fields contain no predictive power. This would mean they are practically polluting the dataset with unnecessary information. A proper analysis of the predictive power of all data fields would allow cutting down on the amount of data for each lead, reducing processing time and possibly make predictions more precise. This approach has been explored very briefly by the subset 1 as described in <code class="docutils literal notranslate"><span class="pre">Classifier-Comparison.md</span></code>. However, the choice of included features has not been justified by experiments making them somewhat arbitrary. Additionally, an analysis of this type could give insights on which data fields to expand on and what new data one might want to collect to increase the EVP’s performance in predicting merchant sizes.</p>
+<p>Possibly filtering data based on some quality metric could also improve general performance. The regional_atlas_score and google_confidence_score have been tried for this but did not improve performance. However, these values are computed somewhat arbitrarily and implementing a more refined quality metric might result in more promising results.</p>
+</section>
+</section>
+</section>
+<section id="controller">
+<h2>Controller<a class="headerlink" href="#controller" title="Link to this heading"></a></h2>
+<!--
+SPDX-License-Identifier: MIT
+SPDX-FileCopyrightText: 2023 Simon Zimmermann
+SPDX-FileCopyrightText: 2023 Berkay Bozkurt <resitberkaybozkurt@gmail.com>
+-->
+<section id="automation">
+<h3>Automation<a class="headerlink" href="#automation" title="Link to this heading"></a></h3>
+<p>The <em>Controller</em> is a planned component, that has not been implemented beyond a
+conceptual prototype. In the planned scenario, the controller would coordinate
+BDC, MSP and the external components as a centralized instance of control. In
+contrast to our current design, this scenario would enable the automation of our
+current workflow, where there are currently several steps of human interaction
+required to achieve a prediction result for initially unprocessed lead data.</p>
+<section id="diagrams">
+<h4>Diagrams<a class="headerlink" href="#diagrams" title="Link to this heading"></a></h4>
+<p>The following diagrams were created during the prototyping phase for the
+Controller component. As they are from an early stage of our project, the
+Merchant Size Predictor is labelled as the (Estimated) Value Predictor here.</p>
+<section id="component-diagram">
+<h5>Component Diagram<a class="headerlink" href="#component-diagram" title="Link to this heading"></a></h5>
+<p><img alt="Component Diagram" src="_images/component-diagram-with-controller.svg" /></p>
+</section>
+<section id="sequence-diagram">
+<h5>Sequence Diagram<a class="headerlink" href="#sequence-diagram" title="Link to this heading"></a></h5>
+<p><img alt="Sequence Diagram" src="_images/sequence-diagram.svg" /></p>
+</section>
+<section id="controller-workflow-diagram">
+<h5>Controller Workflow Diagram<a class="headerlink" href="#controller-workflow-diagram" title="Link to this heading"></a></h5>
+<p><img alt="Controller Workflow Diagram" src="_images/controller-workflow-diagram.jpg" /></p>
+</section>
+</section>
+</section>
+</section>
+<section id="twitter-api-limitation">
+<h2>Twitter API Limitation<a class="headerlink" href="#twitter-api-limitation" title="Link to this heading"></a></h2>
+<!--
+SPDX-License-Identifier: MIT
+SPDX-FileCopyrightText: 2023 Ahmed Sheta <ahmed.sheta@fau.de>
+-->
+<section id="limitations-of-twitter-api-for-user-information-retrieval-and-biased-sentiment-analysis">
+<h3>Limitations of Twitter API for user information retrieval and biased sentiment analysis<a class="headerlink" href="#limitations-of-twitter-api-for-user-information-retrieval-and-biased-sentiment-analysis" title="Link to this heading"></a></h3>
+<p>This documentation highlights the research and the limitations regarding customer information retrieval and unbiased sentiment analysis when using Twiiter API (tweepy). Two primary constraints include the absence of usernames in provided customer data and inherent biases in tweet content, which significantly impact the API’s utility for these purposes.</p>
+<section id="limitation-1-absence-of-usernames-in-provided-customer-data">
+<h4>Limitation 1: Absence of usernames in provided customer data:<a class="headerlink" href="#limitation-1-absence-of-usernames-in-provided-customer-data" title="Link to this heading"></a></h4>
+<p>A fundamental shortfall within the Twitter API (tweepy) lies in the unavailability of usernames in the customer information obtained through its endpoints. Twitter (X) primarily uses usernames as identifiers to retrieve user information, on the other hand we only have the Full Names of the customers as indicators.</p>
+</section>
+<section id="limitation-2-inherent-biases-in-tweet-content-for-sentiment-analysis">
+<h4>Limitation 2: Inherent Biases in Tweet Content for Sentiment Analysis:<a class="headerlink" href="#limitation-2-inherent-biases-in-tweet-content-for-sentiment-analysis" title="Link to this heading"></a></h4>
+<p>Conducting sentiment analysis on tweets extracted via the Twitter API poses challenges due to inherent biases embedded in tweet done by the customer themselves. Sentiment analysis on something like reviews would be definitely helpful. However, sentiment analysis done on tweet written by customer themselves would deeply imposes biases.</p>
+</section>
+<section id="links-to-twitter-s-api-documentation">
+<h4>Links to Twitter’s API documentation:<a class="headerlink" href="#links-to-twitter-s-api-documentation" title="Link to this heading"></a></h4>
+<p>tweepy documentaion: https://docs.tweepy.org/en/stable/</p>
+</section>
+</section>
+</section>
+<section id="contribution">
+<h2>Contribution<a class="headerlink" href="#contribution" title="Link to this heading"></a></h2>
+<!--
+SPDX-License-Identifier: MIT
+SPDX-FileCopyrightText: 2023 Ruchita Nathani
+SPDX-FileCopyrightText: 2023 Ahmed Sheta
+-->
+<section id="contribution-workflow">
+<h3>Contribution Workflow<a class="headerlink" href="#contribution-workflow" title="Link to this heading"></a></h3>
+<section id="branching-strategy">
+<h4>Branching Strategy<a class="headerlink" href="#branching-strategy" title="Link to this heading"></a></h4>
+<p><strong>main</strong>: It contains fully stable production code</p>
+<ul class="simple">
+<li><p><strong>dev</strong>: It contains stable under-development code</p>
+<ul>
+<li><p><strong>epic</strong>: It contains a module branch. Like high level of feature. For example, we have an authentication module then we can create a branch like “epic/authentication”</p>
+<ul>
+<li><p><strong>feature</strong>: It contains specific features under the module. For example, under authentication, we have a feature called registration. Sample branch name: “feature/registration”</p></li>
+<li><p><strong>bugfix</strong>: It contains bug fixing during the testing phase and branch name start with the issue number for example “bugfix/3-validate-for-wrong-user-name”</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="commits-and-pull-requests">
+<h4>Commits and Pull Requests<a class="headerlink" href="#commits-and-pull-requests" title="Link to this heading"></a></h4>
+<p>The stable branches <code class="docutils literal notranslate"><span class="pre">main</span></code> and <code class="docutils literal notranslate"><span class="pre">dev</span></code> are protected against direct pushes. To commit code to these branches create a pull request (PR) describing the feature/bugfix that you are committing to the <code class="docutils literal notranslate"><span class="pre">dev</span></code> branch. This PR will then be reviewed by another SD from the project. Only after being approved by another SD a PR may be merged into the <code class="docutils literal notranslate"><span class="pre">dev</span></code> branch. Periodically the stable code on the <code class="docutils literal notranslate"><span class="pre">dev</span></code> branch will be merged into the <code class="docutils literal notranslate"><span class="pre">main</span></code> branch by creating a PR from <code class="docutils literal notranslate"><span class="pre">dev</span></code>. Hence, every feature that should be committed to the <code class="docutils literal notranslate"><span class="pre">main</span></code> branch must first run without issues on the <code class="docutils literal notranslate"><span class="pre">dev</span></code> branch for some time.</p>
+<p>Before contributing to this repository make sure that you are identifiable in your git user settings. This way commits and PRs created by you can be identified and easily traced back.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>config<span class="w"> </span>--local<span class="w"> </span>user.name<span class="w"> </span><span class="s2">&quot;Manu Musterperson&quot;</span>
+git<span class="w"> </span>config<span class="w"> </span>--local<span class="w"> </span>user.email<span class="w"> </span><span class="s2">&quot;manu@musterperson.org&quot;</span>
+</pre></div>
+</div>
+<p>Any commit should always contain a commit message that references an issue created in the project. Also, always signoff on your commits for identification reasons.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Fixed issue #123&quot;</span><span class="w"> </span>--signoff
+</pre></div>
+</div>
+<p>When doing pair programming be sure to always have all SDs mentioned in the commit message. Each SD should be listed on a new line for clarity reasons.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>commit<span class="w"> </span>-a<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Fixed problem #123</span>
+<span class="s2">&gt; Co-authored-by: Manu Musterperson &lt;manu.musterperson@fau.de&gt;&quot;</span><span class="w"> </span>--signoff
+</pre></div>
+</div>
+</section>
+<section id="pull-request-workflow">
+<h4>Pull Request Workflow<a class="headerlink" href="#pull-request-workflow" title="Link to this heading"></a></h4>
+<p>The <strong>main</strong> and <strong>dev</strong> branches are protected against direct pushes, which means that we want to do a Pull Request (PR) in order to merge a developed branch into these branches. Having developed a branch (let’s call it <strong>feature-1</strong>) and we want to merge <strong>feature-1</strong> branch into <strong>main</strong> branch.</p>
+<p>Here is a standard way to merge pull requests:</p>
+<ol class="arabic">
+<li><p>Have all your local changes added, committed, and pushed on the remote <strong>feature-1</strong> branch</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>feature-1
+git<span class="w"> </span>add<span class="w"> </span>.
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;added a feature&quot;</span><span class="w"> </span>--signoff<span class="w">  </span><span class="c1"># don&#39;t forget the signoff ;)</span>
+git<span class="w"> </span>push
+</pre></div>
+</div>
+</li>
+<li><p>Make sure your local main branch up-to-date</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>main
+git<span class="w"> </span>pull<span class="w"> </span>main
+</pre></div>
+</div>
+</li>
+<li><p>Go to <a class="reference external" href="https://github.com/amosproj/amos2023ws06-sales-lead-qualifier/pulls">Pull Requests</a> &gt; click on “New pull request” &gt; make sure the base is <strong>main</strong> branch (or <strong>dev</strong> branch, depends on which branch you want to update) and the compare to be your <strong>feature-1</strong> branch, as highlighted in the photo below and click “create pull requests”:
+<img alt="image" src="https://github.com/amosproj/amos2023ws06-sales-lead-qualifier/assets/95130956/3eceb19d-bdb7-41bd-aa58-07ed7fb6148a" /></p>
+<p>Make sure to link the issue your PR relates to.</p>
+</li>
+<li><p>Inform the other SDs on slack that you have created the PR and it is awaiting a review and wait for others to review your code. The reviewers will potentially leave comments and change requests in their PR review. If this is the case reason why the change request is not warranted or checkout your branch again and apply the requested changes. Then push your branch once more and request another review by the reviewer. Once there are no more change requests and the PR has been approved by another SD you can merge the PR into the target branch.</p></li>
+<li><p>Delete the feature branch <strong>feature-1</strong> once it has been merged into the target branch.</p></li>
+</ol>
+<p><em><strong>In case of merge conflict:</strong></em></p>
+<p>Should we experience merge conflict after step 3, we should solve the merge conflicts manually, below the title of “This branch has conflicts that must be resolved” click on web editor (you can use vscode or any editor you want).
+The conflict should look like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;&lt;&lt;&lt;&lt;&lt;</span>&lt;<span class="w"> </span>HEAD
+//<span class="w"> </span>Your<span class="w"> </span>changes<span class="w"> </span>at<span class="w"> </span>**feature-1**<span class="w"> </span><span class="nv">branch</span>
+<span class="o">=======</span>
+//<span class="w"> </span>Data<span class="w"> </span>already<span class="w"> </span>on<span class="w"> </span>the<span class="w"> </span>main<span class="w"> </span>branch
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;<span class="w"> </span>main
+</pre></div>
+</div>
+<p>-choose which one of these you would adopt for the merge to the <strong>main</strong> branch, we would be better off solving the merge -conflicts together rather than alone, feel free to announce it in the slack group chat.
+-mark it as resolved and remerge the PR again, there shouldn’t any problem with it.</p>
+<p>Feel free to add more about that matter here.</p>
+</section>
+</section>
+</section>
+<section id="sbom-generator">
+<h2>SBOM Generator<a class="headerlink" href="#sbom-generator" title="Link to this heading"></a></h2>
+<section id="automatic-sbom-generation">
+<h3>Automatic SBOM generation<a class="headerlink" href="#automatic-sbom-generation" title="Link to this heading"></a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pipenv install</span>
+<span class="go">pipenv shell</span>
+
+<span class="go">pip install pipreqs</span>
+<span class="go">pip install cyclonedx-bom</span>
+<span class="go">pip install pip-licenses</span>
+
+<span class="gp"># </span>Create<span class="w"> </span>the<span class="w"> </span>SBOM<span class="w"> </span><span class="o">(</span>cyclonedx-bom<span class="o">)</span><span class="w"> </span>based<span class="w"> </span>on<span class="w"> </span><span class="o">(</span>pipreqs<span class="o">)</span><span class="w"> </span>requirements<span class="w"> </span>that<span class="w"> </span>are<span class="w"> </span>actually<span class="w"> </span>imported<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>.py<span class="w"> </span>files
+
+<span class="gp">$</span><span class="nv">sbom</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>pipreqs<span class="w"> </span>--print<span class="w"> </span><span class="p">|</span><span class="w"> </span>cyclonedx-py<span class="w"> </span>-r<span class="w"> </span>-pb<span class="w"> </span>-o<span class="w"> </span>-<span class="w"> </span>-i<span class="w"> </span>-
+
+<span class="gp"># </span>Create<span class="w"> </span>an<span class="w"> </span>XmlDocument<span class="w"> </span>object
+<span class="gp">$</span><span class="nv">xml</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>New-Object<span class="w"> </span>System.Xml.XmlDocument
+
+<span class="gp"># </span>Load<span class="w"> </span>XML<span class="w"> </span>content<span class="w"> </span>into<span class="w"> </span>the<span class="w"> </span>XmlDocument
+<span class="gp">$</span>xml.LoadXml<span class="o">(</span><span class="nv">$sbom</span><span class="o">)</span>
+
+
+<span class="gp"># </span>Create<span class="w"> </span>an<span class="w"> </span>empty<span class="w"> </span>CSV<span class="w"> </span>file
+<span class="gp">$</span><span class="nv">csvPath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;SBOM.csv&quot;</span>
+
+<span class="gp"># </span>Initialize<span class="w"> </span>an<span class="w"> </span>empty<span class="w"> </span>array<span class="w"> </span>to<span class="w"> </span>store<span class="w"> </span>rows
+<span class="gp">$</span><span class="nv">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>@<span class="o">()</span>
+
+<span class="gp"># </span>Iterate<span class="w"> </span>through<span class="w"> </span>the<span class="w"> </span>XML<span class="w"> </span>nodes<span class="w"> </span>and<span class="w"> </span>create<span class="w"> </span>rows<span class="w"> </span><span class="k">for</span><span class="w"> </span>each<span class="w"> </span>node
+<span class="gp">$</span>xml.SelectNodes<span class="o">(</span><span class="s2">&quot;//*[local-name()=&#39;component&#39;]&quot;</span><span class="o">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>ForEach-Object<span class="w"> </span><span class="o">{</span>
+
+<span class="gp">    $</span><span class="nv">row</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>@<span class="o">{</span>
+<span class="go">        &quot;Version&quot; = $_.Version</span>
+<span class="go">        &quot;Context&quot; = $_.Purl</span>
+<span class="go">        &quot;Name&quot; = if ($_.Name -eq &#39;scikit_learn&#39;) { &#39;scikit-learn&#39; } else { $_.Name }</span>
+<span class="go">    }</span>
+
+<span class="gp">    # </span>Get<span class="w"> </span>license<span class="w"> </span>information
+<span class="gp">    $</span><span class="nv">match</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>pip-licenses<span class="w"> </span>--from<span class="o">=</span>mixed<span class="w"> </span>--format<span class="o">=</span>csv<span class="w"> </span>--with-system<span class="w"> </span>--packages<span class="w"> </span><span class="nv">$row</span>.Name<span class="w"> </span><span class="p">|</span><span class="w"> </span>ConvertFrom-Csv
+
+<span class="gp">    # </span>Add<span class="w"> </span>license<span class="w"> </span>information<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>row
+<span class="gp">    $</span><span class="nv">result</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="o">[</span>PSCustomObject<span class="o">]</span>@<span class="o">{</span>
+<span class="go">        &quot;Context&quot; = $row.Context</span>
+<span class="go">        &quot;Name&quot; = $row.Name</span>
+<span class="go">        &quot;Version&quot; = $row.Version</span>
+<span class="go">        &quot;License&quot; = $match.License</span>
+<span class="go">    }</span>
+<span class="go">}</span>
+
+<span class="gp"># </span>Export<span class="w"> </span>the<span class="w"> </span>data<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>CSV<span class="w"> </span>file
+<span class="gp">$</span>result<span class="w"> </span><span class="p">|</span><span class="w"> </span>Export-Csv<span class="w"> </span>-Path<span class="w"> </span><span class="nv">$csvPath</span><span class="w"> </span>-NoTypeInformation
+
+<span class="gp"># </span>Create<span class="w"> </span>the<span class="w"> </span>license<span class="w"> </span>file
+<span class="gp">$</span><span class="nv">licensePath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">$csvPath</span><span class="w"> </span>+<span class="w"> </span><span class="s1">&#39;.license&#39;</span>
+<span class="go">@&quot;</span>
+<span class="go">SPDX-License-Identifier: CC-BY-4.0</span>
+<span class="go">SPDX-FileCopyrightText: 2023 Fabian-Paul Utech &lt;f.utech@gmx.net&gt;</span>
+<span class="go">&quot;@ | Out-File -FilePath $licensePath</span>
+
+<span class="go">exit</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="miscellaneous">
+<h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Link to this heading"></a></h2>
+<!--
+SPDX-License-Identifier: MIT
+SPDX-FileCopyrightText: 2023 Fabian-Paul Utech <f.utech@gmx.net>
+SPDX-FileCopyrightText: 2023 Felix Zailskas <felixzailskas@gmail.com>
+SPDX-FileCopyrightText: 2024 Simon Zimmermann <tim.simon.zimmermann@fau.de>
+-->
+<section id="miscellaneous-content">
+<h3>Miscellaneous Content<a class="headerlink" href="#miscellaneous-content" title="Link to this heading"></a></h3>
+<p>This file contains content that was moved over from our <a class="reference external" href="https://github.com/amosproj/amos2023ws06-sales-lead-qualifier/wiki">Wiki</a>, which we gave up in favor of having the documentation available more centrally. The contents of this file might to some extend overlap with the contents found in other documentation files.</p>
+</section>
+<section id="knowledge-base">
+<h3>Knowledge Base<a class="headerlink" href="#knowledge-base" title="Link to this heading"></a></h3>
+<section id="aws">
+<h4>AWS<a class="headerlink" href="#aws" title="Link to this heading"></a></h4>
+<ol class="arabic simple">
+<li><p>New password has to be &gt;= 16 char and contain special chars</p></li>
+<li><p>After changing the password you have to re-login</p></li>
+<li><p>Add MFA (IAM -&gt; Users -&gt; Your Name -&gt; Access Info)</p></li>
+<li><p>MFA device = FirstName.LastName like the credential</p></li>
+<li><p>Re-login</p></li>
+<li><p>Get access keys:</p>
+<ul class="simple">
+<li><p>IAM -&gt; Users -&gt; Your Name -&gt; Access Info -&gt; Scroll to Access Keys</p></li>
+<li><p>Create new access key (for local development)</p></li>
+<li><p>Accept the warning</p></li>
+<li><p>Copy the secret key to your .env file</p></li>
+<li><p>Don’t add description tags to your key</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="pr-management">
+<h4>PR Management:<a class="headerlink" href="#pr-management" title="Link to this heading"></a></h4>
+<ol class="arabic simple">
+<li><p>Create PR</p></li>
+<li><p>Link issue</p></li>
+<li><p>Other SD reviews the PR</p>
+<ul class="simple">
+<li><p>Modification needed?</p>
+<ul>
+<li><p>Fix/Discuss issue in the GitHub comments</p></li>
+</ul>
+</li>
+<li><p>Make new commit</p></li>
+<li><p>Return to step 3</p></li>
+<li><p>No Modification needed</p></li>
+<li><p>Reviewer approves PR</p></li>
+</ul>
+</li>
+<li><p>PR creator merges PR</p></li>
+<li><p>Delete the used branch</p></li>
+</ol>
+</section>
+<section id="branch-management">
+<h4>Branch-Management:<a class="headerlink" href="#branch-management" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Remove branches after merging</p></li>
+<li><p>Add reviews / pull requests so others check the code</p></li>
+<li><p>Feature branches with dev instead of main as base</p></li>
+</ul>
+</section>
+<section id="pre-commit">
+<h4>Pre-commit:<a class="headerlink" href="#pre-commit" title="Link to this heading"></a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># If not installed yet</span>
+pip<span class="w"> </span>install<span class="w"> </span>pre-commit
+
+<span class="c1"># pre-commit hooks now automatically are executed before every commit</span>
+python<span class="w"> </span>-m<span class="w"> </span>pre-commit<span class="w"> </span>install
+
+<span class="c1"># execute pre-commit manually</span>
+python<span class="w"> </span>pre-commit
+</pre></div>
+</div>
+</section>
+<section id="features">
+<h4>Features<a class="headerlink" href="#features" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Existing Website (Pingable, SEO-Score, DNS Lookup)</p></li>
+<li><p>Existing Google Business Entry (using the <a class="reference external" href="https://developers.google.com/maps/documentation/places/web-service?hl=de">Google Places API</a></p>
+<ul>
+<li><p>Opening Times</p></li>
+<li><p>Number, Quality of Ratings</p></li>
+<li><p>Overall “completeness” of the entry/# of available datapoints</p></li>
+<li><p>Price category</p></li>
+<li><p>Phone Number (compare with lead form input)</p></li>
+<li><p>Website (compare with lead form input)</p></li>
+<li><p>Number of visitors (estimate revenue from that?)</p></li>
+<li><p>Product recognition from images</p></li>
+<li><p>Merchant Category (e.g. cafe, restaurant, retailer, etc.)</p></li>
+</ul>
+</li>
+<li><p>Performance Indicators (NorthData, some other API)</p>
+<ul>
+<li><p>Revenue (as I understodd, this should be &gt; 5000$/month)</p></li>
+<li><p>Number of Employees</p></li>
+<li><p>Bundesanzeiger / Handelsregister (Deutschland API)</p></li>
+</ul>
+</li>
+<li><p>Popularity: Insta / facebook followers or website ranking on google</p></li>
+<li><p>Business type: google or website extraction (maybe with ChatGPT)</p></li>
+<li><p>Size of business: To categorize leads to decide whether they need to deal with a salesperson or self-direct their solution</p></li>
+<li><p>Business profile</p></li>
+<li><p>Sentiment Analysis: https://arxiv.org/pdf/2307.10234.pdf</p></li>
+</ul>
+</section>
+<section id="storage">
+<h4>Storage<a class="headerlink" href="#storage" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Unique ID for Lead (Felix)?</p></li>
+<li><p>How to handle frequent data layout changes at S3 (Simon)?</p></li>
+<li><p>3 stage file systems (Felix) vs. DB (Ruchita)?</p></li>
+<li><p>3 stage file system (Felix):</p>
+<ul>
+<li><p>BDC trigger on single new lead entries or batches</p></li>
+<li><p>After BDC enriched the data =&gt; store in a parquet file in the events folder with some tag</p></li>
+<li><p>BDC triggers the creation of the feature vectors</p></li>
+<li><p>Transform the data in the parquet file after it was stored in the events file and store them in the feature folder with the same tag</p></li>
+<li><p>Use the data as a input for the model, which is triggered after the creation of the input, and store the results in the model folder</p></li>
+</ul>
+</li>
+<li><p>Maybe the 3 stage file system as a part of the DB and hide the final decision behind the database abstraction layer (Simon)?</p></li>
+</ul>
+</section>
+<section id="control-flow-berkay">
+<h4>Control flow (Berkay)<a class="headerlink" href="#control-flow-berkay" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Listener</p></li>
+<li><p>MessageQueue</p></li>
+<li><p>RoutingQueue</p></li>
+</ul>
+<p>Listener, as the name suggests, listens for incoming messages from other component, such as BDC, EVP, and enqueues these messages in messageQueue to be “read” and processed. If there are not incoming messages, it is in idle status. messageQueue is, where listened messages are being processed. After each message is processed by messageQueue,it is enqueued in routingQueue, to be routed to corresponding component. Both messageQueue and routingQueue are in idle, if there are no elements in queues. Whole concept of Controller is multi-threaded and asynchronous. While it accepts new incoming messages, it processes messages and at the same time routes some other messages.</p>
+</section>
+<section id="ai">
+<h4>AI<a class="headerlink" href="#ai" title="Link to this heading"></a></h4>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">expected</span> <span class="pre">value</span> <span class="pre">=</span> <span class="pre">life-time</span> <span class="pre">value</span> <span class="pre">of</span> <span class="pre">lead</span> <span class="pre">x</span> <span class="pre">probability</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">lead</span> <span class="pre">becoming</span> <span class="pre">a</span> <span class="pre">customer</span></code></p>
+</div></blockquote>
+<p>AI models needed that solve a regression or probability problem</p>
+<section id="ai-models">
+<h5>AI Models<a class="headerlink" href="#ai-models" title="Link to this heading"></a></h5>
+<ul class="simple">
+<li><p>Classification:</p>
+<ul>
+<li><p>Decision Trees</p></li>
+<li><p>Random Forest</p></li>
+<li><p>Neural Networks</p></li>
+<li><p>Naïve Bayes</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="what-data-do-we-need">
+<h5>What data do we need?<a class="headerlink" href="#what-data-do-we-need" title="Link to this heading"></a></h5>
+<ul class="simple">
+<li><p>Classification: Labeled data</p></li>
+<li><p>Probability: Data with leads and customers</p></li>
+</ul>
+</section>
+<section id="ml-pipeline">
+<h5>ML Pipeline<a class="headerlink" href="#ml-pipeline" title="Link to this heading"></a></h5>
+<ol class="arabic simple">
+<li><p>Preprocessing</p></li>
+<li><p>Feature selection</p></li>
+<li><p>Dataset split / cross validation</p></li>
+<li><p>Dimensional reduction</p></li>
+<li><p>Training</p></li>
+<li><p>Testing / Evaluation</p></li>
+<li><p>Improve performance</p>
+<ul class="simple">
+<li><p>Batch Normalization</p></li>
+<li><p>Optimizer</p></li>
+<li><p>L1 / L2 regularization: reduced overfitting by regularize the model</p></li>
+<li><p>Dropout (NN)</p></li>
+<li><p>Depth and width (NN)</p></li>
+<li><p>Initialization techniques (NN: Xavier and He)</p>
+<ul>
+<li><p>He: Layers with ReLu activation</p></li>
+<li><p>Xavier: Layers with sigmoid activation</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+</section>
+</section>
+</section>
+<section id="troubleshooting">
+<h3>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h3>
+<section id="build">
+<h4>Build<a class="headerlink" href="#build" title="Link to this heading"></a></h4>
+<section id="pipenv">
+<h5>pipenv<a class="headerlink" href="#pipenv" title="Link to this heading"></a></h5>
+<section id="install-stuck">
+<h6>install stuck<a class="headerlink" href="#install-stuck" title="Link to this heading"></a></h6>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pipenv<span class="w"> </span>install<span class="w"> </span>–dev
+</pre></div>
+</div>
+<p><strong>Solution</strong>: Remove .lock file + restart PC</p>
+</section>
+</section>
+<section id="docker">
+<h5>Docker<a class="headerlink" href="#docker" title="Link to this heading"></a></h5>
+<section id="vscode">
+<h6>VSCode<a class="headerlink" href="#vscode" title="Link to this heading"></a></h6>
+<p>Terminal can’t run docker image (on windows)</p>
+<ul class="simple">
+<li><p><strong>Solution</strong>: workaround with git bash or with ubuntu</p></li>
+</ul>
+</section>
+</section>
+<section id="testing">
+<h5>Testing<a class="headerlink" href="#testing" title="Link to this heading"></a></h5>
+<section id="reuse">
+<h6>Reuse<a class="headerlink" href="#reuse" title="Link to this heading"></a></h6>
+<p>don’t analyze a certain part of the code with reuse
+<strong>Solution</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># REUSE-IgnoreStart</span>
+<span class="w">  </span>...
+<span class="c1"># REUSE-IgnoreEnd</span>
+</pre></div>
+</div>
+</section>
+<section id="failed-checks">
+<h6>Failed checks<a class="headerlink" href="#failed-checks" title="Link to this heading"></a></h6>
+<ol class="arabic simple">
+<li><p>Go to the specific pull request or Actions <a class="reference external" href="https://github.com/amosproj/amos2023ws06-sales-lead-qualifier/actions">Actions</a></p></li>
+<li><p>Click “show all checks”</p></li>
+<li><p>Click “details”</p></li>
+<li><p>Click on the elements with the “red marks”</p></li>
+</ol>
+</section>
+</section>
+</section>
+<section id="bdc">
+<h4>BDC<a class="headerlink" href="#bdc" title="Link to this heading"></a></h4>
+<section id="google-places-api">
+<h5>Google Places API<a class="headerlink" href="#google-places-api" title="Link to this heading"></a></h5>
+<p>Language is adjusted to the location from which the API is run</p>
+<ul class="simple">
+<li><p><strong>Solution</strong>: adjust the language feature, documentation in <a class="reference external" href="https://developers.google.com/places/web-service/search#FindPlaceRequests">Google Solution</a></p></li>
+</ul>
+<p>Google search results are based on the location from which the API is run</p>
+<ul class="simple">
+<li><p><strong>Solution</strong>: Pass a fixed point in the center of the country / city / area of the company (OSMNX) as a location bias, documentation in
+<a class="reference external" href="https://developers.google.com/places/web-service/search#FindPlaceRequests">Google Solution</a></p></li>
+</ul>
+</section>
+</section>
+<section id="id1">
+<h4>Branch-Management<a class="headerlink" href="#id1" title="Link to this heading"></a></h4>
+<section id="divergent-branch">
+<h5>Divergent branch<a class="headerlink" href="#divergent-branch" title="Link to this heading"></a></h5>
+<p>Commits on local and remote are not the same</p>
+<ul class="simple">
+<li><p><strong>Solution</strong>:</p>
+<ol class="arabic simple">
+<li><p>Pull remote changes</p></li>
+<li><p>Rebase the changes</p></li>
+<li><p>Solve any conflict during any commit you get from remote</p></li>
+</ol>
+</li>
+</ul>
+</section>
+</section>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="readme_link.html" class="btn btn-neutral float-left" title="Sales-Lead-Qualifier Project (AMOS WS 2023/24)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="modules.html" class="btn btn-neutral float-right" title="src" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, SumInsights.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bdc.steps.google_places &mdash; Sales Lead Qualifier 01.00.00 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=6386319a"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Sales Lead Qualifier
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme_link.html">Sales-Lead-Qualifier Project (AMOS WS 2023/24)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html">Build Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html#user-documentation">User Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html#design-documentation">Design Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html#classifier-comparison">Classifier Comparison</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html#concepts-unrealized-ideas-miscellaneous">Concepts, Unrealized Ideas &amp; Miscellaneous</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">src</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Sales Lead Qualifier</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">bdc.steps.google_places</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for bdc.steps.google_places</h1><div class="highlight"><pre>
+<span></span><span class="c1"># SPDX-License-Identifier: MIT</span>
+<span class="c1"># SPDX-FileCopyrightText: 2023 Lucca Baumgärtner &lt;lucca.baumgaertner@fau.de&gt;</span>
+<span class="c1"># SPDX-FileCopyrightText: 2023 Sophie Heasman &lt;sophieheasmann@gmail.com&gt;</span>
+<span class="c1"># SPDX-FileCopyrightText: 2023 Felix Zailskas &lt;felixzailskas@gmail.com&gt;</span>
+<span class="c1"># SPDX-FileCopyrightText: 2023 Fabian-Paul Utech  &lt;f.utech@gmx.net&gt;</span>
+<span class="c1"># SPDX-FileCopyrightText: 2023 Ruchita Nathani &lt;Ruchita.nathani@fau.de&gt;</span>
+<span class="c1"># SPDX-FileCopyrightText: 2023 Ahmed Sheta &lt;ahmed.sheta@fau.de&gt;</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">http</span> <span class="kn">import</span> <span class="n">HTTPStatus</span>
+
+<span class="kn">import</span> <span class="nn">googlemaps</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">googlemaps.exceptions</span> <span class="kn">import</span> <span class="n">ApiError</span><span class="p">,</span> <span class="n">HTTPError</span><span class="p">,</span> <span class="n">Timeout</span><span class="p">,</span> <span class="n">TransportError</span>
+<span class="kn">from</span> <span class="nn">requests</span> <span class="kn">import</span> <span class="n">RequestException</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="kn">from</span> <span class="nn">bdc.steps.helpers</span> <span class="kn">import</span> <span class="n">get_lead_hash_generator</span>
+<span class="kn">from</span> <span class="nn">bdc.steps.step</span> <span class="kn">import</span> <span class="n">Step</span><span class="p">,</span> <span class="n">StepError</span>
+<span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">GOOGLE_PLACES_API_KEY</span>
+<span class="kn">from</span> <span class="nn">logger</span> <span class="kn">import</span> <span class="n">get_logger</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="GooglePlaces">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.google_places.GooglePlaces">[docs]</a>
+<span class="k">class</span> <span class="nc">GooglePlaces</span><span class="p">(</span><span class="n">Step</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The GooglePlaces step will try to find the correct business entry in the Google Maps database. It will save basic</span>
+<span class="sd">    information along with the place id, that can be used to retrieve further detailed information and a confidence</span>
+<span class="sd">    score that should indicate the confidence in having found the correct result. Confidence can vary based on the data</span>
+<span class="sd">    source used for identifying the business and if multiple sources are used confidence is higher when results match.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        name: Name of this step, used for logging and as a column prefix</span>
+<span class="sd">        added_cols: List of fields that will be added to the main dataframe by executing this step</span>
+<span class="sd">        required_cols: List of fields that are required to be existent in the input dataframe before performing this step</span>
+
+<span class="sd">    Added Columns:</span>
+<span class="sd">        google_places_place_id (str): The place id of the business</span>
+<span class="sd">        google_places_business_status (str): The business status of the business</span>
+<span class="sd">        google_places_formatted_address (str): The formatted address of the business</span>
+<span class="sd">        google_places_name (str): The name of the business</span>
+<span class="sd">        google_places_user_ratings_total (int): The number of user ratings of the business</span>
+<span class="sd">        google_places_rating (float): The rating of the business</span>
+<span class="sd">        google_places_price_level (int): The price level of the business</span>
+<span class="sd">        google_places_candidate_count_mail (int): The number of candidates found by mail search</span>
+<span class="sd">        google_places_candidate_count_phone (int): The number of candidates found by phone search</span>
+<span class="sd">        google_places_place_id_matches_phone_search (bool): Whether the place id found by mail search matches the one found by phone search</span>
+<span class="sd">        google_places_confidence (float): A confidence score for the results</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Google_Places&quot;</span>
+
+    <span class="c1"># fields that are expected as an output of the df.apply lambda function</span>
+    <span class="n">df_fields</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;place_id&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;business_status&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;formatted_address&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;user_ratings_total&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;rating&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;price_level&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;candidate_count_mail&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;candidate_count_phone&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;place_id_matches_phone_search&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;confidence&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="c1"># Weirdly the expression [f&quot;{name}_{field}&quot; for field in df_fields] gives an error as name is not in the scope of the iterator</span>
+    <span class="n">added_cols</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">name</span> <span class="o">+</span> <span class="n">field</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">_&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_fields</span><span class="p">)),</span>
+            <span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">df_fields</span><span class="p">]),</span>
+        <span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="c1"># fields that are accessed directly from the api</span>
+    <span class="n">api_fields</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;place_id&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;business_status&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;formatted_address&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;user_ratings_total&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;rating&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;price_level&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="n">required_cols</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;Email&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;domain&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;first_name_in_account&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;last_name_in_account&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;number_formatted&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="n">gmaps</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="GooglePlaces.load_data">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.google_places.GooglePlaces.load_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make sure that the API key for Google places is present and construct the API client</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># don&#39;t perform this in class body or else it will fail in tests due to missing API key</span>
+        <span class="k">if</span> <span class="n">GOOGLE_PLACES_API_KEY</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StepError</span><span class="p">(</span><span class="s2">&quot;An API key for Google Places is needed to run this step!&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gmaps</span> <span class="o">=</span> <span class="n">googlemaps</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">GOOGLE_PLACES_API_KEY</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GooglePlaces.verify">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.google_places.GooglePlaces.verify">[docs]</a>
+    <span class="k">def</span> <span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">verify</span><span class="p">()</span> <span class="ow">and</span> <span class="n">GOOGLE_PLACES_API_KEY</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="GooglePlaces.run">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.google_places.GooglePlaces.run">[docs]</a>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="c1"># Call find_places API</span>
+        <span class="n">tqdm</span><span class="o">.</span><span class="n">pandas</span><span class="p">(</span><span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Getting info from Find Places API&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span>
+            <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_fields</span><span class="p">]</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">progress_apply</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">lead</span><span class="p">:</span> <span class="n">get_lead_hash_generator</span><span class="p">()</span><span class="o">.</span><span class="n">hash_check</span><span class="p">(</span>
+                <span class="n">lead</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_data_from_google_api</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_fields</span><span class="p">],</span>
+                <span class="n">lead</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># self.df[</span>
+        <span class="c1">#     [f&quot;{self.name.lower()}_{field}&quot; for field in self.df_fields]</span>
+        <span class="c1"># ] = self.df.progress_apply(</span>
+        <span class="c1">#     lambda lead: self.get_data_from_google_api(lead), axis=1</span>
+        <span class="c1"># )</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="GooglePlaces.finish">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.google_places.GooglePlaces.finish">[docs]</a>
+    <span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">p_matches</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;google_places_place_id_matches_phone_search&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">)</span>
+            <span class="o">*</span> <span class="mi">100</span>
+        <span class="p">)</span>
+        <span class="n">p_matches_rel</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;google_places_place_id_matches_phone_search&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;google_places_place_id_matches_phone_search&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">notna</span><span class="p">())</span>
+            <span class="o">*</span> <span class="mi">100</span>
+        <span class="p">)</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Percentage of mail search matching phone search (of all): </span><span class="si">{</span><span class="n">p_matches</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%&quot;</span>
+        <span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Percentage of mail search matching phone search (at least one result): </span><span class="si">{</span><span class="n">p_matches_rel</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GooglePlaces.get_data_from_google_api">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.google_places.GooglePlaces.get_data_from_google_api">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_data_from_google_api</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lead_row</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Request Google Places Text Search API&quot;&quot;&quot;</span>
+        <span class="n">error_return_value</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_fields</span><span class="p">))</span>
+
+        <span class="n">search_query</span> <span class="o">=</span> <span class="n">lead_row</span><span class="p">[</span><span class="s2">&quot;domain&quot;</span><span class="p">]</span>
+        <span class="n">phone_number</span> <span class="o">=</span> <span class="n">lead_row</span><span class="p">[</span><span class="s2">&quot;number_formatted&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">search_query</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">lead_row</span><span class="p">[</span><span class="s2">&quot;email_valid&quot;</span><span class="p">]:</span>
+            <span class="n">account_name</span> <span class="o">=</span> <span class="n">lead_row</span><span class="p">[</span><span class="s2">&quot;Email&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+                <span class="n">lead_row</span><span class="p">[</span><span class="s2">&quot;first_name_in_account&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">lead_row</span><span class="p">[</span><span class="s2">&quot;last_name_in_account&quot;</span><span class="p">]</span>
+            <span class="p">):</span>
+                <span class="c1"># use account name as search query and replace special characters with whitespace</span>
+                <span class="n">search_query</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[^a-zA-Z0-9\n]&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">account_name</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">search_query</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">phone_number</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># if account name consists only of first and last name and no custom domain is available,</span>
+            <span class="c1"># skip the search as no results are expected</span>
+            <span class="k">return</span> <span class="n">error_return_value</span>
+
+        <span class="n">response_by_mail</span><span class="p">,</span> <span class="n">response_count_mail</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_first_place_candidate</span><span class="p">(</span>
+            <span class="n">search_query</span><span class="p">,</span> <span class="s2">&quot;textquery&quot;</span>
+        <span class="p">)</span>
+
+        <span class="n">response_by_phone</span><span class="p">,</span> <span class="n">response_count_phone</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_first_place_candidate</span><span class="p">(</span>
+            <span class="n">phone_number</span><span class="p">,</span> <span class="s2">&quot;phonenumber&quot;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># compare the place_id, if it doesn&#39;t match just output results by email for now</span>
+        <span class="k">if</span> <span class="n">response_by_mail</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">response_by_phone</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">place_id_matches_phone_search</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">response_by_phone</span><span class="p">[</span><span class="s2">&quot;place_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">response_by_mail</span><span class="p">[</span><span class="s2">&quot;place_id&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">place_id_matches_phone_search</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">chosen_response</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">response_by_mail</span> <span class="k">if</span> <span class="n">response_by_mail</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">response_by_phone</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">chosen_response</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">error_return_value</span>
+
+        <span class="n">results_list</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">chosen_response</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">chosen_response</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_fields</span>
+        <span class="p">]</span>
+
+        <span class="c1"># add number of candidates, which is not a direct field in the api response but can be derived from it</span>
+        <span class="n">results_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">response_count_mail</span><span class="p">)</span>
+        <span class="n">results_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">response_count_phone</span><span class="p">)</span>
+
+        <span class="c1"># add boolean indicator whether search by phone result matches search by email</span>
+        <span class="n">results_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">place_id_matches_phone_search</span><span class="p">)</span>
+
+        <span class="c1"># calculate confidence score for google places results</span>
+        <span class="n">results_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calculate_confidence</span><span class="p">(</span><span class="n">results_list</span><span class="p">,</span> <span class="n">lead_row</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">results_list</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GooglePlaces.get_first_place_candidate">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.google_places.GooglePlaces.get_first_place_candidate">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_first_place_candidate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">input_type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">query</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">0</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gmaps</span><span class="o">.</span><span class="n">find_place</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">input_type</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">api_fields</span><span class="p">)</span>
+
+            <span class="c1"># Retrieve response</span>
+            <span class="c1"># response = requests.get(self.URL + domain + &quot;&amp;key=&quot; + GOOGLE_PLACES_API_KEY)</span>
+        <span class="k">except</span> <span class="n">RequestException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">0</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">ApiError</span><span class="p">,</span> <span class="n">HTTPError</span><span class="p">,</span> <span class="n">Timeout</span><span class="p">,</span> <span class="n">TransportError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">)</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">HTTPStatus</span><span class="o">.</span><span class="n">OK</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Failed to fetch data. Status code: </span><span class="si">{</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="s2">&quot;candidates&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">response</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;candidates&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">0</span>
+
+        <span class="n">top_result</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;candidates&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">no_candidates</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;candidates&quot;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">top_result</span><span class="p">,</span> <span class="n">no_candidates</span></div>
+
+
+<div class="viewcode-block" id="GooglePlaces.calculate_confidence">
+<a class="viewcode-back" href="../../../bdc.steps.html#bdc.steps.google_places.GooglePlaces.calculate_confidence">[docs]</a>
+    <span class="k">def</span> <span class="nf">calculate_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results_list</span><span class="p">,</span> <span class="n">lead</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate some confidence score, representing how sure we are to have found the correct Google Place</span>
+<span class="sd">        (using super secret, patented AI algorithm :P)</span>
+<span class="sd">        :param results_list:</span>
+<span class="sd">        :return: confidence</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">results_list</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">df_fields</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;place_id&quot;</span><span class="p">)]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># no result -&gt; no confidence</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">results_list</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">df_fields</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;place_id_matches_phone_search&quot;</span><span class="p">)]:</span>
+            <span class="c1"># phone search and email search returned same result -&gt; this has to be it!</span>
+            <span class="k">return</span> <span class="mf">0.99</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">results_list</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">df_fields</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;candidate_count_mail&quot;</span><span class="p">)]</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="ow">and</span> <span class="n">results_list</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">df_fields</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;candidate_count_phone&quot;</span><span class="p">)]</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="p">):</span>
+            <span class="c1"># phone number is a pretty good identifier</span>
+            <span class="k">return</span> <span class="mf">0.8</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">results_list</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">df_fields</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;candidate_count_mail&quot;</span><span class="p">)]</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="ow">and</span> <span class="n">results_list</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">df_fields</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;candidate_count_phone&quot;</span><span class="p">)]</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="p">):</span>
+            <span class="k">if</span> <span class="n">lead</span><span class="p">[</span><span class="s2">&quot;domain&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># a custom domain is also a pretty good identifier</span>
+                <span class="k">return</span> <span class="mf">0.7</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># without a domain the account name is used for search which is often generic</span>
+                <span class="k">return</span> <span class="mf">0.4</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">results_list</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">df_fields</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;candidate_count_mail&quot;</span><span class="p">)]</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="ow">and</span> <span class="n">results_list</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">df_fields</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;candidate_count_phone&quot;</span><span class="p">)]</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="p">):</span>
+            <span class="c1"># only two results but different... what is that supposed to mean?</span>
+            <span class="k">return</span> <span class="mf">0.2</span>
+        <span class="c1"># we found more than 1 result for either search method -&gt; low confidence</span>
+        <span class="k">return</span> <span class="mf">0.1</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, SumInsights.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

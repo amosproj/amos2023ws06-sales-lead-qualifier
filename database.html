@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>database package &mdash; Sales Lead Qualifier 01.00.00 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=6386319a"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="database.leads package" href="database.leads.html" />
+    <link rel="prev" title="config module" href="config.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Sales Lead Qualifier
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme_link.html">Sales-Lead-Qualifier Project (AMOS WS 2023/24)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html">Build Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html#user-documentation">User Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html#design-documentation">Design Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html#classifier-comparison">Classifier Comparison</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html#concepts-unrealized-ideas-miscellaneous">Concepts, Unrealized Ideas &amp; Miscellaneous</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="bdc.html">bdc package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config.html">config module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">database package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html">database.leads package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-database">Module contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#database.get_database"><code class="docutils literal notranslate"><span class="pre">get_database()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="demo.html">demo package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evp.html">evp package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logger.html">logger package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="preprocessing.html">preprocessing package</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Sales Lead Qualifier</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">src</a></li>
+      <li class="breadcrumb-item active">database package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/database.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="database-package">
+<h1>database package<a class="headerlink" href="#database-package" title="Link to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="database.leads.html">database.leads package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="database.leads.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="database.leads.html#module-database.leads.local_repository">database.leads.local_repository module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository"><code class="docutils literal notranslate"><span class="pre">LocalRepository</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.BASE_PATH"><code class="docutils literal notranslate"><span class="pre">LocalRepository.BASE_PATH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.CLASSIFICATION_REPORTS"><code class="docutils literal notranslate"><span class="pre">LocalRepository.CLASSIFICATION_REPORTS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.DF_HISTORICAL_OUTPUT"><code class="docutils literal notranslate"><span class="pre">LocalRepository.DF_HISTORICAL_OUTPUT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.DF_INPUT"><code class="docutils literal notranslate"><span class="pre">LocalRepository.DF_INPUT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.DF_OUTPUT"><code class="docutils literal notranslate"><span class="pre">LocalRepository.DF_OUTPUT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.DF_PREDICTION_OUTPUT"><code class="docutils literal notranslate"><span class="pre">LocalRepository.DF_PREDICTION_OUTPUT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.DF_PREPROCESSED_INPUT"><code class="docutils literal notranslate"><span class="pre">LocalRepository.DF_PREPROCESSED_INPUT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.GPT_RESULTS"><code class="docutils literal notranslate"><span class="pre">LocalRepository.GPT_RESULTS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.ML_MODELS"><code class="docutils literal notranslate"><span class="pre">LocalRepository.ML_MODELS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.REVIEWS"><code class="docutils literal notranslate"><span class="pre">LocalRepository.REVIEWS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.SNAPSHOTS"><code class="docutils literal notranslate"><span class="pre">LocalRepository.SNAPSHOTS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.clean_snapshots"><code class="docutils literal notranslate"><span class="pre">LocalRepository.clean_snapshots()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.create_snapshot"><code class="docutils literal notranslate"><span class="pre">LocalRepository.create_snapshot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.fetch_gpt_result"><code class="docutils literal notranslate"><span class="pre">LocalRepository.fetch_gpt_result()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.fetch_review"><code class="docutils literal notranslate"><span class="pre">LocalRepository.fetch_review()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.get_preprocessed_data_path"><code class="docutils literal notranslate"><span class="pre">LocalRepository.get_preprocessed_data_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.insert_data"><code class="docutils literal notranslate"><span class="pre">LocalRepository.insert_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.load_classification_report"><code class="docutils literal notranslate"><span class="pre">LocalRepository.load_classification_report()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.load_lookup_table"><code class="docutils literal notranslate"><span class="pre">LocalRepository.load_lookup_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.load_ml_model"><code class="docutils literal notranslate"><span class="pre">LocalRepository.load_ml_model()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.load_preprocessed_data"><code class="docutils literal notranslate"><span class="pre">LocalRepository.load_preprocessed_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.save_classification_report"><code class="docutils literal notranslate"><span class="pre">LocalRepository.save_classification_report()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.save_dataframe"><code class="docutils literal notranslate"><span class="pre">LocalRepository.save_dataframe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.save_gpt_result"><code class="docutils literal notranslate"><span class="pre">LocalRepository.save_gpt_result()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.save_lookup_table"><code class="docutils literal notranslate"><span class="pre">LocalRepository.save_lookup_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.save_ml_model"><code class="docutils literal notranslate"><span class="pre">LocalRepository.save_ml_model()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.save_prediction"><code class="docutils literal notranslate"><span class="pre">LocalRepository.save_prediction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.local_repository.LocalRepository.save_review"><code class="docutils literal notranslate"><span class="pre">LocalRepository.save_review()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="database.leads.html#module-database.leads.repository">database.leads.repository module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository"><code class="docutils literal notranslate"><span class="pre">Repository</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.DATETIME_FORMAT"><code class="docutils literal notranslate"><span class="pre">Repository.DATETIME_FORMAT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.DF_HISTORICAL_OUTPUT"><code class="docutils literal notranslate"><span class="pre">Repository.DF_HISTORICAL_OUTPUT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.DF_INPUT"><code class="docutils literal notranslate"><span class="pre">Repository.DF_INPUT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.DF_OUTPUT"><code class="docutils literal notranslate"><span class="pre">Repository.DF_OUTPUT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.GPT_RESULTS"><code class="docutils literal notranslate"><span class="pre">Repository.GPT_RESULTS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.REVIEWS"><code class="docutils literal notranslate"><span class="pre">Repository.REVIEWS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.SNAPSHOTS"><code class="docutils literal notranslate"><span class="pre">Repository.SNAPSHOTS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.clean_snapshots"><code class="docutils literal notranslate"><span class="pre">Repository.clean_snapshots()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.create_snapshot"><code class="docutils literal notranslate"><span class="pre">Repository.create_snapshot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.fetch_gpt_result"><code class="docutils literal notranslate"><span class="pre">Repository.fetch_gpt_result()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.fetch_review"><code class="docutils literal notranslate"><span class="pre">Repository.fetch_review()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.get_dataframe"><code class="docutils literal notranslate"><span class="pre">Repository.get_dataframe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.get_enriched_data_path"><code class="docutils literal notranslate"><span class="pre">Repository.get_enriched_data_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.get_input_path"><code class="docutils literal notranslate"><span class="pre">Repository.get_input_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.get_preprocessed_data_path"><code class="docutils literal notranslate"><span class="pre">Repository.get_preprocessed_data_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.insert_data"><code class="docutils literal notranslate"><span class="pre">Repository.insert_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.load_classification_report"><code class="docutils literal notranslate"><span class="pre">Repository.load_classification_report()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.load_lookup_table"><code class="docutils literal notranslate"><span class="pre">Repository.load_lookup_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.load_ml_model"><code class="docutils literal notranslate"><span class="pre">Repository.load_ml_model()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.load_preprocessed_data"><code class="docutils literal notranslate"><span class="pre">Repository.load_preprocessed_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.save_classification_report"><code class="docutils literal notranslate"><span class="pre">Repository.save_classification_report()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.save_dataframe"><code class="docutils literal notranslate"><span class="pre">Repository.save_dataframe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.save_gpt_result"><code class="docutils literal notranslate"><span class="pre">Repository.save_gpt_result()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.save_lookup_table"><code class="docutils literal notranslate"><span class="pre">Repository.save_lookup_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.save_ml_model"><code class="docutils literal notranslate"><span class="pre">Repository.save_ml_model()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.save_prediction"><code class="docutils literal notranslate"><span class="pre">Repository.save_prediction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.save_review"><code class="docutils literal notranslate"><span class="pre">Repository.save_review()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository.set_dataframe"><code class="docutils literal notranslate"><span class="pre">Repository.set_dataframe()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="database.leads.html#module-database.leads.s3_repository">database.leads.s3_repository module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository"><code class="docutils literal notranslate"><span class="pre">S3Repository</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.CLASSIFICATION_REPORTS"><code class="docutils literal notranslate"><span class="pre">S3Repository.CLASSIFICATION_REPORTS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.DF_HISTORICAL_OUTPUT"><code class="docutils literal notranslate"><span class="pre">S3Repository.DF_HISTORICAL_OUTPUT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.DF_INPUT"><code class="docutils literal notranslate"><span class="pre">S3Repository.DF_INPUT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.DF_OUTPUT"><code class="docutils literal notranslate"><span class="pre">S3Repository.DF_OUTPUT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.DF_PREDICTION_OUTPUT"><code class="docutils literal notranslate"><span class="pre">S3Repository.DF_PREDICTION_OUTPUT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.DF_PREPROCESSED_INPUT"><code class="docutils literal notranslate"><span class="pre">S3Repository.DF_PREPROCESSED_INPUT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.EVENTS_BUCKET"><code class="docutils literal notranslate"><span class="pre">S3Repository.EVENTS_BUCKET</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.FEATURES_BUCKET"><code class="docutils literal notranslate"><span class="pre">S3Repository.FEATURES_BUCKET</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.GPT_RESULTS"><code class="docutils literal notranslate"><span class="pre">S3Repository.GPT_RESULTS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.LOOKUP_TABLES"><code class="docutils literal notranslate"><span class="pre">S3Repository.LOOKUP_TABLES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.ML_MODELS"><code class="docutils literal notranslate"><span class="pre">S3Repository.ML_MODELS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.MODELS_BUCKET"><code class="docutils literal notranslate"><span class="pre">S3Repository.MODELS_BUCKET</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.REVIEWS"><code class="docutils literal notranslate"><span class="pre">S3Repository.REVIEWS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.SNAPSHOTS"><code class="docutils literal notranslate"><span class="pre">S3Repository.SNAPSHOTS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.clean_snapshots"><code class="docutils literal notranslate"><span class="pre">S3Repository.clean_snapshots()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.create_snapshot"><code class="docutils literal notranslate"><span class="pre">S3Repository.create_snapshot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.fetch_gpt_result"><code class="docutils literal notranslate"><span class="pre">S3Repository.fetch_gpt_result()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.fetch_review"><code class="docutils literal notranslate"><span class="pre">S3Repository.fetch_review()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.get_preprocessed_data_path"><code class="docutils literal notranslate"><span class="pre">S3Repository.get_preprocessed_data_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.insert_data"><code class="docutils literal notranslate"><span class="pre">S3Repository.insert_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.load_classification_report"><code class="docutils literal notranslate"><span class="pre">S3Repository.load_classification_report()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.load_lookup_table"><code class="docutils literal notranslate"><span class="pre">S3Repository.load_lookup_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.load_ml_model"><code class="docutils literal notranslate"><span class="pre">S3Repository.load_ml_model()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.load_preprocessed_data"><code class="docutils literal notranslate"><span class="pre">S3Repository.load_preprocessed_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.save_classification_report"><code class="docutils literal notranslate"><span class="pre">S3Repository.save_classification_report()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.save_dataframe"><code class="docutils literal notranslate"><span class="pre">S3Repository.save_dataframe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.save_gpt_result"><code class="docutils literal notranslate"><span class="pre">S3Repository.save_gpt_result()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.save_lookup_table"><code class="docutils literal notranslate"><span class="pre">S3Repository.save_lookup_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.save_ml_model"><code class="docutils literal notranslate"><span class="pre">S3Repository.save_ml_model()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.save_prediction"><code class="docutils literal notranslate"><span class="pre">S3Repository.save_prediction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.S3Repository.save_review"><code class="docutils literal notranslate"><span class="pre">S3Repository.save_review()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="database.leads.html#database.leads.s3_repository.decode_s3_url"><code class="docutils literal notranslate"><span class="pre">decode_s3_url()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="database.leads.html#module-database.leads">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="module-database">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-database" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="database.get_database">
+<span class="sig-prename descclassname"><span class="pre">database.</span></span><span class="sig-name descname"><span class="pre">get_database</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="database.leads.html#database.leads.repository.Repository" title="database.leads.repository.Repository"><span class="pre">Repository</span></a></span></span><a class="reference internal" href="_modules/database.html#get_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.get_database" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="config.html" class="btn btn-neutral float-left" title="config module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="database.leads.html" class="btn btn-neutral float-right" title="database.leads package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, SumInsights.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
