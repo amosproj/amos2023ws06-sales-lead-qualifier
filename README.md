@@ -14,72 +14,9 @@ SPDX-FileCopyrightText: 2023 Berkay Bozkurt <resitberkaybozkurt@gmail.com>
   <img alt="Sum Insights Logo" src="https://github.com/amosproj/amos2023ws06-sales-lead-qualifier/assets/45459787/a7314df0-1917-4384-8f6c-2ab9f9831047">
 </picture>
 
-## Creating the Environment
+## Documentation
 
-The repository contains the file `.env.template`. This file is a template for the environment variables that need to be set for the application to run. Copy this file into a file called `.env` at the root level of this repository and fill in all values with the corresponding secrets.
-
-To create the virtual environment in this project you must have `pipenv` installed on your machine. Then run the following commands:
-
-```bash
-# for development environment
-pipenv install --dev
-# for production environment
-pipenv install
-```
-
-To work within the environment you can now run:
-
-```bash
-# to activate the virtual environment
-pipenv shell
-# to run a single command
-pipenv run <COMMAND>
-```
-
-To install new packages in the environment add them to the `Pipfile`. Always pin the exact package version to avoid package conflicts and unexpected side effects from package upgrades.
-
-```bash
-# to add a package to the development environment
-[dev-packages]
-<PACKAGE_NAME> = "==<VERSION_NUMBER>"
-# to add a package to the production environment
-[packages]
-<PACKAGE_NAME> = "==<VERSION_NUMBER>"
-```
-
-Note that this project runs under an MIT license and we only permit the use of non-copyleft-licensed packages. Please be aware of this when installing new packages and inform yourself before blindly installing.
-
-When you have any issues with the environment contact `felix-zailskas`.
-
-## Build Process
-
-This application is run using a Docker container. For this the `Dockerfile` at root level is used. It copies the Pipfile to the container and installs the deployment environment using pipenv. Afterwards all source code from the `src/`. As the entrypoint the main.py is chosen. Ensure that Docker is installed and that the Docker daemon is running.
-
-To build the application run
-
-```bash
-./build_app.sh
-```
-
-To run the application interactively run
-
-```bash
-./run_app.sh
-```
-
-## Database Connection
-
-To build the Docker containers
-
-```bash
-docker-compose build
-```
-
-To run the Docker containers
-
-```bash
-docker-compose run sumup_app
-```
+For build, user, design documentations (and more) please refer to our dedicated [Documentation Page](https://amosproj.github.io/amos2023ws06-sales-lead-qualifier).
 
 ### License
 
