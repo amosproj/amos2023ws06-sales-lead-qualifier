@@ -32,4 +32,4 @@ we try to combine the search methods and derive the most probable result.
 4. Else: Return Phone-based search results
 5. Else: Return nothing
 
-![Search Strategy](./Media/google_places_strategy.drawio.png)
+![Search Strategy](./_static/google_places_strategy.drawio.png)
