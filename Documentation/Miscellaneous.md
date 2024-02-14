@@ -47,7 +47,7 @@ This file contains content that was moved over from our [Wiki](https://github.co
 
 ## Pre-commit:
 
-```[bash]
+```bash
 # If not installed yet
 pip install pre-commit
 
@@ -147,7 +147,7 @@ AI models needed that solve a regression or probability problem
 
 #### install stuck
 
-```[bash]
+```bash
 pipenv install –dev
 ```
 
@@ -168,7 +168,7 @@ Terminal can't run docker image (on windows)
 don't analyze a certain part of the code with reuse
 **Solution**:
 
-```[bash]
+```bash
 # REUSE-IgnoreStart
   ...
 # REUSE-IgnoreEnd

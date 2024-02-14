@@ -24,20 +24,20 @@ The stable branches `main` and `dev` are protected against direct pushes. To com
 
 Before contributing to this repository make sure that you are identifiable in your git user settings. This way commits and PRs created by you can be identified and easily traced back.
 
-```[bash]
+```bash
 git config --local user.name "Manu Musterperson"
 git config --local user.email "manu@musterperson.org"
 ```
 
 Any commit should always contain a commit message that references an issue created in the project. Also, always signoff on your commits for identification reasons.
 
-```[bash]
+```bash
 git commit -m "Fixed issue #123" --signoff
 ```
 
 When doing pair programming be sure to always have all SDs mentioned in the commit message. Each SD should be listed on a new line for clarity reasons.
 
-```[bash]
+```bash
 git commit -a -m "Fixed problem #123
 > Co-authored-by: Manu Musterperson <manu.musterperson@fau.de>" --signoff
 ```
@@ -50,7 +50,7 @@ Here is a standard way to merge pull requests:
 
 1. Have all your local changes added, committed, and pushed on the remote **feature-1** branch
 
-   ```[bash]
+   ```bash
    git checkout feature-1
    git add .
    git commit -m "added a feature" --signoff  # don't forget the signoff ;)
@@ -59,7 +59,7 @@ Here is a standard way to merge pull requests:
 
 2. Make sure your local main branch up-to-date
 
-   ```[bash]
+   ```bash
    git checkout main
    git pull main
    ```
@@ -78,7 +78,7 @@ _**In case of merge conflict:**_
 Should we experience merge conflict after step 3, we should solve the merge conflicts manually, below the title of "This branch has conflicts that must be resolved" click on web editor (you can use vscode or any editor you want).
 The conflict should look like this:
 
-```[bash]
+```bash
 <<<<<<< HEAD
 // Your changes at **feature-1** branch
 =======

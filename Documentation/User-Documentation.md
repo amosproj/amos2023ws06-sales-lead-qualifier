@@ -25,7 +25,7 @@ To execute the final program, ensure the environment is installed (refer to
 build-documents.md) and run `python .\src\main.py` either locally or via the
 build process. The user will be presented with the following options:
 
-```[bash]
+```bash
 Choose demo:
 (0) : Base Data Collector
 (1) : Data preprocessing
@@ -41,7 +41,7 @@ Configuration options are presented:
 
 `Do you want to list all available pipeline configs? (y/N)` If `y`:
 
-```[bash]
+```bash
 Please enter the index of requested pipeline config:
 (0) : config_sprint09_release.json
 (1) : just_run_search_offeneregister.json
@@ -57,7 +57,7 @@ Please enter the index of requested pipeline config:
 If `n`: proceed to pipeline step selection for data enrichment. Subsequent
 questions arise:
 
-```[bash]
+```bash
 Run Scrape Address (will take a long time)(y/N)?
 Run Search OffeneRegister (will take a long time)(y/N)?
 Run Phone Number Validation (y/N)?
@@ -127,7 +127,7 @@ preprocessed_data is stored.
 
 Six machine learning models are available:
 
-```[bash]
+```bash
 (0) : Random Forest
 (1) : XGBoost
 (2) : Naive Bayes
@@ -147,7 +147,7 @@ prompted with a series of questions:
   instead of the 5 classes. It is worth noting that grouping the S, M and L
   classes alltogether as one class resulted in boosting the classification
   performance.
-- ```[bash]
+- ```bash
   Do you want to train on a subset of features?
   (0) : ['Include all features']
   (1) : ['google_places_rating', 'google_places_user_ratings_total', 'google_places_confidence', 'regional_atlas_regional_score']
@@ -159,7 +159,7 @@ learning models
 
 Then, the user would be given multiple options:
 
-```[bash]
+```bash
 (1) Train
 (2) Test
 (3) Predict on single lead
