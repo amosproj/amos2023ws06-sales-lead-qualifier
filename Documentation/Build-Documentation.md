@@ -58,3 +58,21 @@ be started via
 ```bash
 pipenv run python src/main.py
 ```
+
+# Pre-Commit Hooks
+
+This repository uses `pre-commit` hooks to ensure a consistent and clean file organization. Each registered hook will be executed when committing to the repository. To ensure that the hooks will be executed they need to be installed using the following command:
+
+```bash
+pre-commit install
+```
+
+The following things are done by hooks automatically:
+
+- formatting of python files using black and isort
+- formatting of other files using prettier
+- syntax check of JSON and yaml files
+- adding new line at the end of files
+- removing trailing whitespaces
+- prevent commits to `dev` and `main` branch
+- check adherence to REUSE licensing format
